@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import '@tarojs/taro/html.css'
 import './app.scss'
 
 const App = createApp({
