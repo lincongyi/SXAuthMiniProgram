@@ -1,15 +1,16 @@
 const config = {
   projectName: 'SXAuthMiniProgram',
   date: '2022-6-6',
-  designWidth: 750,
+  designWidth: 375,
   deviceRatio: {
     640: 2.34 / 2,
     750: 1,
-    828: 1.81 / 2
+    828: 1.81 / 2,
+    375: 2 / 1
   },
   sourceRoot: 'src',
   outputRoot: 'dist',
-  plugins: [],
+  plugins: ['@tarojs/plugin-html'],
   defineConstants: {
   },
   copy: {
@@ -59,6 +60,9 @@ const config = {
         }
       }
     }
+  },
+  sass: {
+    data: '@import "@nutui/nutui-taro/dist/styles/variables.scss";',
   }
 }
 
