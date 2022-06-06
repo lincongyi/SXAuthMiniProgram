@@ -3,10 +3,9 @@
   <view class="banner"></view>
 
   <view class="wrap">
-
     <!-- 通知消息 start -->
     <view class="notice" wx:if="{{hasNotice}}">
-      <!-- <image class="notice-icon" mode="widthFix" src="../../src/images/notice.png"/> -->
+      <image class="notice-icon" mode="widthFix" :src="noticeImage"/>
       <view class="info">
         您有
         <view class="amount">10</view>
@@ -19,7 +18,7 @@
     <!-- 二维码认证 start -->
     <view class="content">
       <view class="section">
-        <!-- <image class="icon" mode="widthFix" src="../../src/images/scan-qrcode.png" /> -->
+        <image class="icon" mode="widthFix" :src="scanQrcodeImage" />
         <view class="column" bindtap="handleScanCode">
           <view class="title">扫码认证</view>
           <view class="info">扫描二维码进行身份认证</view>
@@ -28,7 +27,7 @@
       </view>
 
       <view class="section">
-        <!-- <image class="icon" mode="widthFix" src="../../src/images/show-qrcode.png" /> -->
+        <image class="icon" mode="widthFix" :src="showQrcodeImage" />
         <view class="column">
           <view class="title">个人身份二维码</view>
           <view class="info">出示二维码进行身份认证</view>
@@ -38,18 +37,24 @@
     </view>
     <!-- 二维码认证 end -->
   </view>
-  <nut-button type="primary">主要按钮</nut-button>
-  <nut-button type="info">信息按钮</nut-button>
 </view>
+<!-- copyright -->
+<copyright isFixed="true"></copyright>
 
 <!-- <view class="mask {{isMaskShow ? 'is-mask-show' : ''}}"></view> -->
 
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, defineAsyncComponent } from 'vue'
 import './index.scss'
+import noticeImage from '@images/notice.png'
+import scanQrcodeImage from '@images/scan-qrcode.png'
+import showQrcodeImage from '@images/show-qrcode.png'
+
 
 const hasNotice = ref(true) // 是否存在通知信息
 const isMaskShow = ref(false) // 控制遮罩层显示隐藏
+
+const copyright = defineAsyncComponent(() => import('../../components/copyright/index.vue'))
 </script>

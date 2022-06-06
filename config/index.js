@@ -1,3 +1,4 @@
+const path = require('path')
 const config = {
   projectName: 'SXAuthMiniProgram',
   date: '2022-6-6',
@@ -63,7 +64,13 @@ const config = {
   },
   sass: {
     data: '@import "@nutui/nutui-taro/dist/styles/variables.scss";',
-  }
+  },
+  alias: {
+    '@': path.resolve(__dirname, '..', 'src'),
+    '@api': path.resolve(__dirname, '..', 'src/api'),
+    '@images': path.resolve(__dirname, '..', 'src/images'),
+    '@components': path.resolve(__dirname, '..', 'src/components'),
+  },
 }
 
 module.exports = function (merge) {
