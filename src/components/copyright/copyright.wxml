@@ -1,0 +1,5 @@
+<view class="copyright {{isFixed ? 'isFixed':''}}">
+  <view class='image-wrap'>
+    <image class="image-item" src='../../images/copyright.png'></image>
+  </view>
+</view>

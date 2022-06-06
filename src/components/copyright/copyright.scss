@@ -1,0 +1,14 @@
+.copyright {
+  width: 100%;
+  text-align: center;
+  padding-bottom: 30rpx;
+  box-sizing: border-box;
+  position: absolute;
+  // bottom: 0;
+  left: 0;
+  z-index: 1;
+  .image-item {
+    width: 200rpx;
+    height: 48rpx;
+  }
+}
