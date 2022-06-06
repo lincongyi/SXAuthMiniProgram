@@ -1,7 +1,7 @@
 const config = {
   projectName: 'SXAuthMiniProgram',
   date: '2022-6-6',
-  designWidth: 375,
+  designWidth: 750,
   deviceRatio: {
     640: 2.34 / 2,
     750: 1,
@@ -25,7 +25,7 @@ const config = {
       pxtransform: {
         enable: true,
         config: {
-
+          selectorBlackList: [/nut-/]
         }
       },
       url: {

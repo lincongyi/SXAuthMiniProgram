@@ -31,6 +31,7 @@ module.exports = {
     'no-multiple-empty-lines': [2, {'max': 2}],
     'no-useless-escape': 0,
     'vue/multi-word-component-names': 0,
+    'no-undef': 0,
     'no-unused-vars': [
       'error',
       // we are only using this rule to check for unused arguments since TS
