@@ -1,7 +1,7 @@
 <template>
   <view class="tab-bar">
     <view class="tab-bar-border"></view>
-      <view v-for="(item, index) in list" :key="index" class="tab-bar-item" @tap="switchTab(index, item.pagePath)">
+      <view v-for="(item, index) in list" :key="index" class="tab-bar-item" @tap="switchTab(item.pagePath)">
         <image :src="selected === index ? item.selectedIconPath : item.iconPath" />
         <view :style="{ color: selected === index ? selectedColor : color }">{{item.text}}</view>
       </view>
@@ -10,7 +10,7 @@
 
 <script setup>
 import {ref} from 'vue'
-import Taro from '@tarojs/taro'
+import Taro, { useRouter, useDidShow } from '@tarojs/taro'
 
 const list = [
   {
@@ -26,11 +26,19 @@ const list = [
     text: '我的'
   }
 ]
-const selected = ref(1)
+const selected = ref(0)
 const color = '#000000'
 const selectedColor = '#0A7AEE'
-function switchTab(index, url) {
-  // Taro.switchTab({ url })
+const switchTab = (url) => {
+  Taro.switchTab({ url })
+}
+
+const init = () => {
+  const page = getCurrentPages().pop()
+  const route = page ? page.route.split('?')[0] : ''
+  const target = list.findIndex((item) =>
+    (item.pagePath.startsWith('/') ? item.pagePath.substr(1) : item.pagePath) === `${route}`
+  )
 }
 
 </script>

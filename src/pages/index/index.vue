@@ -54,6 +54,7 @@
 
 <script setup>
 import { ref, defineAsyncComponent } from 'vue'
+import Taro, { useRouter, useDidShow } from '@tarojs/taro'
 import './index.scss'
 import noticeImage from '@images/notice.png'
 import scanQrcodeImage from '@images/scan-qrcode.png'
@@ -64,27 +65,26 @@ const hasNotice = ref(true) // 是否存在通知信息
 const dialogVisible = ref(false) // 控制弹出框显示隐藏
 const isMaskShow = ref(false) // 控制遮罩层显示隐藏
 
-/**
-  * 扫码认证
-  */
+// 扫码认证
 const handleScanCode = () => {
   dialogVisible.value = true
 }
-/**
-  * 跳转到登录页面
-  */
+// 跳转到登录页面
 const toLogin = () => {
-  // wx.navigateTo({
+  // Taro.navigateTo({
   //   url: '/pages/login/login'
   // })
 }
-/**
-  * 跳转到认证请求页面
-  */
+// 跳转到认证请求页面
 const toAuthRequest = () => {
-  // wx.navigateTo({
+  // Taro.navigateTo({
   //   url: '/pages/authRequest/authRequest'
   // })
 }
 
+const router = useRouter()
+useDidShow(() => {
+  const currentInstance = Taro.getCurrentInstance().page
+  Taro.getTabBar(currentInstance).selected = 0
+})
 </script>
