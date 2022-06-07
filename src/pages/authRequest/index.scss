@@ -1,0 +1,81 @@
+.no-auth-record {
+  display: block;
+  margin: 240px auto 40px;
+  width: 400px;
+  height: 300px;
+}
+
+.no-auth-record-tips {
+  font-size: 30px;
+  text-align: center;
+  color: #666;
+}
+
+.auth-list {
+  margin-top: 20px;
+  padding: 0 40px;
+  background-color: #fff;
+
+  .list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 34px 0;
+    border-bottom: 2px solid #e5e5e5;
+
+    .auth-method {
+      margin-bottom: 22px;
+      font-size: 32px;
+      color: #333;
+    }
+
+    .auth-info {
+      margin-bottom: 16px;
+      font-size: 28px;
+      color: #999;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .emphasize {
+        color: #ff3b30;
+      }
+    }
+
+    .item-btn {
+      padding: 0 24px;
+      height: 64px;
+      border-radius: 8px;
+      text-align: center;
+      color: #fff;
+      background-color: #0a7aee;
+      line-height: 64px;
+    }
+
+    .auth-result {
+      display: flex;
+
+      .auth-status {
+        margin-right: 16px;
+        font-size: 30px;
+
+        &.success {
+          color: #0a7aee;
+        }
+
+        &.fail {
+          color: #ff3d3d;
+        }
+
+        &.expire {
+          color: #999;
+        }
+      }
+    }
+  }
+}
+
+.flex {
+  display: flex;
+}
