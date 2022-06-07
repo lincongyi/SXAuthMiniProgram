@@ -1,0 +1,55 @@
+.content {
+  padding-top: 46px;
+  background-color: #fff;
+}
+
+.top-box {
+  text-align: center;
+
+  .logo {
+    margin: 20px;
+    width: 108px;
+    height: 108px;
+  }
+
+  .title {
+    margin-bottom: 20px;
+    font-size: 38px;
+    font-weight: bold;
+    color: #333;
+  }
+}
+
+.form-group {
+  padding-left: 32px;
+}
+
+.submit-btn {
+  margin: 60px 32px 24px;
+  height: 88px;
+  font-size: 32px;
+  border-radius: 10px;
+  text-align: center;
+  color: #fff;
+  background-color: #0a7aee;
+  opacity: 0.5;
+  line-height: 88px;
+
+  &.is-active {
+    opacity: 1;
+  }
+}
+
+.tips-textarea {
+  font-size: 26px;
+  color: #999;
+
+  .normal {
+    display: flex;
+    justify-content: center;
+  }
+
+  .emphasize {
+    color: #3b83ff;
+  }
+}

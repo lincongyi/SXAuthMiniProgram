@@ -71,14 +71,14 @@ const handleScanCode = () => {
 }
 // 跳转到登录页面
 const toLogin = () => {
-  // Taro.navigateTo({
-  //   url: '/pages/login/login'
-  // })
+  Taro.navigateTo({
+    url: '/pages/login/index'
+  })
 }
 // 跳转到认证请求页面
 const toAuthRequest = () => {
   // Taro.navigateTo({
-  //   url: '/pages/authRequest/authRequest'
+  //   url: '/pages/authRequest/index'
   // })
 }
 

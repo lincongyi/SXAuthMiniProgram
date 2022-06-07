@@ -49,6 +49,7 @@
     content="您尚未登录"
     cancel-text="暂不登录"
     ok-text="立即登录"
+    overlay-class="overlay"
     v-model:visible="dialogVisible"
     @ok="handleLogin"
   />
