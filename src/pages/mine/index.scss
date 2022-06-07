@@ -1,0 +1,71 @@
+.user-info-box {
+  display: flex;
+  align-items: center;
+  padding: 30px 40px;
+  background-color: #1091f3;
+
+  .avatar {
+    overflow: hidden;
+    margin-right: 30px;
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+  }
+
+  .unlogin {
+    display: flex;
+    align-items: center;
+    font-size: 30px;
+    color: #fff;
+  }
+
+  .info-wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 110px;
+    color: #fff;
+    flex: 1;
+
+    .name {
+      font-size: 40px;
+    }
+
+    .id-number {
+      font-size: 30px;
+    }
+  }
+}
+
+.column {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+
+  .column-icon {
+    margin-right: 12px;
+    margin-left: 44px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .cell {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-right: 40px;
+    height: 120px;
+    border-bottom: 1px solid #e5e5e5;
+    flex: 1;
+    line-height: 120px;
+  }
+
+  &:last-child .cell {
+    border-bottom: 0;
+  }
+
+  .left-label {
+    font-size: 32px;
+    color: #333;
+  }
+}

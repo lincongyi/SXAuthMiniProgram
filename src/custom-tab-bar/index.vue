@@ -1,10 +1,10 @@
 <template>
   <view class="tab-bar">
     <view class="tab-bar-border"></view>
-      <view v-for="(item, index) in list" :key="index" class="tab-bar-item" @tap="switchTab(item.pagePath)">
-        <image :src="selected === index ? item.selectedIconPath : item.iconPath" />
-        <view :style="{ color: selected === index ? selectedColor : color }">{{item.text}}</view>
-      </view>
+    <view v-for="(item, index) in list" :key="index" class="tab-bar-item" @tap="switchTab(item.pagePath)">
+      <image :src="selected === index ? item.selectedIconPath : item.iconPath" />
+      <view :style="{ color: selected === index ? selectedColor : color }">{{item.text}}</view>
+    </view>
   </view>
 </template>
 
@@ -63,6 +63,7 @@ const init = () => {
   transform: scaleY(0.5);
 }
 .tab-bar-item {
+  padding-top: 16px;
   flex: 1;
   text-align: center;
   display: flex;
@@ -71,8 +72,9 @@ const init = () => {
   flex-direction: column;
 }
 .tab-bar-item image {
-  width: 54px;
-  height: 54px;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 6px;
 }
 .tab-bar-item view {
   font-size: 20px;

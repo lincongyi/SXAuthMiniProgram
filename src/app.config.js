@@ -1,7 +1,7 @@
 export default defineAppConfig({
   pages: [
-    'pages/index/index', // 首页
     'pages/mine/index', // 我的
+    'pages/index/index', // 首页
   ],
   tabBar: {
     'custom': true,
