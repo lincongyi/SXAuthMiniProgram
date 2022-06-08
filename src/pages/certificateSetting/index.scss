@@ -1,0 +1,40 @@
+.container {
+  background-color: #fff;
+}
+
+.column {
+  margin-left: 32px;
+  padding: 40px 0;
+  border-bottom: 2px solid #e5e5e5;
+
+  .top-conent {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 32px;
+    color: #333;
+  }
+
+  .selected-date {
+    margin-top: 22px;
+  }
+
+  .unselected {
+    color: #bbb;
+  }
+
+  .right-controller {
+    display: flex;
+    align-items: center;
+    margin-right: 32px;
+
+    .right-label {
+      margin-right: 12px;
+    }
+  }
+}
+
+.btn-warp {
+  margin: 0 50px;
+  margin-top: 80px;
+}

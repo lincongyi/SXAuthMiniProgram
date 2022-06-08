@@ -1,0 +1,76 @@
+<template>
+  <view class="container">
+    <view class="certificate-pannel">
+      <view class="column">
+        <view class="top-conent">起始日期</view>
+        <view :class="['selected-date', {'unselected':!startDate}]" @tap="showDatePicker(0)">{{startDate||'请选择身份证有效期起始日期'}}</view>
+      </view>
+      <view class="column">
+        <view class="top-conent">
+          <text>截止日期</text>
+          <view class="right-controller">
+            <view class="right-label">长期有效</view>
+            <nut-switch v-model="isPermanent" @change="isPermanentChange"/>
+          </view>
+        </view>
+        <view v-show="!isPermanent" :class="['selected-date', {'unselected':!endDate}]" @tap="showDatePicker(1)">{{endDate||'请选择身份证有效期截止日期'}}</view>
+      </view>
+    </view>
+    <view class="btn-warp">
+      <nut-button type="primary" shape="square" block @tap="handleConfirm">确定</nut-button>
+    </view>
+  </view>
+  <nut-datepicker
+    :title="datePickerTitle"
+    v-model="currentDate"
+    v-model:visible="datePickerShow"
+    :min-date="minDate"
+    :max-date="maxDate"
+    :is-show-chinese="true"
+    @confirm="confirm"
+  ></nut-datepicker>
+
+  <!-- Copyright -->
+  <copyright />
+</template>
+
+<script setup>
+import { ref, defineAsyncComponent } from 'vue'
+import Taro from '@tarojs/taro'
+import './index.scss'
+const copyright = defineAsyncComponent(() => import('@components/copyright/index.vue'))
+
+const datePickerIndex = ref(0) // 0.起始日期；1.截至日期
+const datePickerTitle = ref('') // 日期选择器标题
+const datePickerShow = ref(false) // 控制日期选择器显示隐藏
+const currentDate = ref(new Date()) // 日期选择器日期
+const startDate = ref('') // 起始日期
+const endDate = ref('') // 截至日期
+const minDate = ref(new Date('2000,01,01')) // 限制开始时间
+const maxDate = ref(new Date('2030,12,31')) // 限制结束时间
+const isPermanent = ref(false) // 是否长期有效
+
+// 显示日期选择器
+const showDatePicker = (index) => {
+  datePickerIndex.value = index
+  datePickerTitle.value = ['起始日期', '截至日期'][index]
+  minDate.value = [new Date('2000,01,01'), new Date()][index]
+  maxDate.value = [new Date(), new Date('2030,12,31')][index]
+  datePickerShow.value = true
+}
+
+// 选择日期
+const confirm = ({ selectedValue }) => {
+  ([startDate, endDate][datePickerIndex.value]).value = selectedValue.join('.')
+}
+
+// 切换是否长期有效
+const isPermanentChange = () => endDate.value = ''
+
+// 确定
+const handleConfirm =() => {
+  Taro.navigateBack({
+    delta: 1
+  })
+}
+</script>

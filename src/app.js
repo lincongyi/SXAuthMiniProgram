@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import './app.scss'
-import { Button, Icon, Dialog, Popup, OverLay, Input, Cell, CellGroup, Divider } from '@nutui/nutui-taro'
+import { Button, Icon, Dialog, Popup, OverLay, Input, Cell, CellGroup, Divider, DatePicker, Picker, Switch } from '@nutui/nutui-taro'
 
 const App = createApp({
   onShow (options) {},
@@ -14,5 +14,7 @@ App
   .use(Input)
   .use(Cell).use(CellGroup)
   .use(Divider)
+  .use(DatePicker).use(Picker)
+  .use(Switch)
 
 export default App

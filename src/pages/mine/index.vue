@@ -42,7 +42,7 @@
   </view>
 
   <!-- Copyright -->
-  <copyright isFixed="true"></copyright>
+  <copyright :isFixed="true" />
 
   <nut-dialog
     title="温馨提示"
@@ -57,19 +57,19 @@
 
 <script setup>
 import { ref, defineAsyncComponent } from 'vue'
-import Taro, { useRouter, useDidShow } from '@tarojs/taro'
+import Taro, { useDidShow } from '@tarojs/taro'
 import './index.scss'
 import avatarImage from '@images/avatar-default.png' // 用户默认头像
 import userCenterRecordImage from '@images/user-center-record.png'
 import userCenterSettingImage from '@images/user-center-setting.png'
 const copyright = defineAsyncComponent(() => import('@components/copyright/index.vue'))
 
-const loginStatus = ref(0) // 判断用户是否登录状态
+const loginStatus = ref(1) // 判断用户是否登录状态
 const dialogVisible = ref(false) // 控制弹出框显示隐藏
 
 useDidShow(() => {
   const currentInstance = Taro.getCurrentInstance().page
-  Taro.getTabBar(currentInstance).selected = 1
+  if (Taro.getTabBar) Taro.getTabBar(currentInstance).selected = 1
 })
 
 // 登录/注册

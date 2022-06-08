@@ -6,6 +6,7 @@ export default defineAppConfig({
     'pages/authResult/index', // 认证结果
     'pages/authDetail/index', // 认证详情
     'pages/mine/index', // 我的
+    'pages/certificateSetting/index', // 证件有效期限
   ],
   tabBar: {
     'custom': true,

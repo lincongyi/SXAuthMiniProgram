@@ -39,7 +39,7 @@
     </view>
   </view>
   <!-- copyright -->
-  <copyright isFixed="true"></copyright>
+  <copyright :isFixed="true" />
 
   <nut-dialog
     title="温馨提示"
@@ -85,6 +85,6 @@ const toAuthRequest = () => {
 const router = useRouter()
 useDidShow(() => {
   const currentInstance = Taro.getCurrentInstance().page
-  Taro.getTabBar(currentInstance).selected = 0
+  if (Taro.getTabBar) Taro.getTabBar(currentInstance).selected = 0
 })
 </script>
