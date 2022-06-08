@@ -1,3 +1,3 @@
 export default definePageConfig({
-  navigationBarTitleText: '认证结果'
+  navigationBarTitleText: '认证详情'
 })

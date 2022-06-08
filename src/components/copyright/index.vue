@@ -1,5 +1,5 @@
 <template>
-  <view class="copyright {{isFixed ? 'is-fixed':''}}">
+  <view :class="['copyright',{'is-fixed':isFixed}]">
     <view class='image-wrap'>
       <image class="image-item" :src='copyrightImage'></image>
     </view>

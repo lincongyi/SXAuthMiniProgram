@@ -36,13 +36,13 @@
     </view>
     <block v-if="!authResult">
       <view class="btn-warp">
-        <nut-button type="primary" block>立即认证</nut-button>
+        <nut-button type="primary" shape="square" block>立即认证</nut-button>
       </view>
     </block>
   </view>
 
   <!-- Copyright -->
-  <copyright></copyright>
+  <copyright />
 </template>
 
 <script setup>

@@ -27,7 +27,7 @@
   </view>
 
   <!-- Copyright -->
-  <copyright></copyright>
+  <copyright />
 
   <nut-dialog
     title="温馨提示"

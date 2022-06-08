@@ -30,7 +30,7 @@
   </view>
 
   <!-- Copyright -->
-  <copyright></copyright>
+  <copyright />
 </template>
 
 <script setup>
