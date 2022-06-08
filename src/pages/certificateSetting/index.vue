@@ -43,7 +43,7 @@ const copyright = defineAsyncComponent(() => import('@components/copyright/index
 const datePickerIndex = ref(0) // 0.起始日期；1.截至日期
 const datePickerTitle = ref('') // 日期选择器标题
 const datePickerShow = ref(false) // 控制日期选择器显示隐藏
-const currentDate = ref(new Date()) // 日期选择器日期
+const currentDate = ref('') // 日期选择器日期
 const startDate = ref('') // 起始日期
 const endDate = ref('') // 截至日期
 const minDate = ref(new Date('2000,01,01')) // 限制开始时间
@@ -52,6 +52,9 @@ const isPermanent = ref(false) // 是否长期有效
 
 // 显示日期选择器
 const showDatePicker = (index) => {
+  let target = [startDate, endDate][index].value.replaceAll('.', ',')
+  currentDate.value = target ? new Date(target) : new Date()
+
   datePickerIndex.value = index
   datePickerTitle.value = ['起始日期', '截至日期'][index]
   minDate.value = [new Date('2000,01,01'), new Date()][index]
@@ -69,8 +72,40 @@ const isPermanentChange = () => endDate.value = ''
 
 // 确定
 const handleConfirm =() => {
-  Taro.navigateBack({
-    delta: 1
+
+  if (!startDate.value){
+    return Taro.showToast({
+      icon: 'none',
+      title: '请选择起始日期'
+    })
+  } else if (!endDate.value){
+    return Taro.showToast({
+      icon: 'none',
+      title: '请选择截止日期'
+    })
+  } else if (startDate.value===endDate.value){
+    return Taro.showModal({
+      title: '温馨提示',
+      content: '起始日期不能大于或等于截止日期',
+      showCancel: false
+    })
+  }
+  Taro.showLoading({
+    title: '加载中',
   })
+  setTimeout(() => {
+    let userInfo = Taro.getStorageSync('userInfo') ? JSON.parse(Taro.getStorageSync('userInfo')) : {}
+    Taro.setStorageSync('userInfo', JSON.stringify({...userInfo, ...{startDate: startDate.value, endDate: endDate.value}}))
+    Taro.hideLoading()
+    Taro.showToast({
+      mask: true,
+      title: '证件有效期添加成功',
+      success: () => {
+        Taro.navigateBack({
+          delta: 1
+        })
+      }
+    })
+  }, 1500)
 }
 </script>

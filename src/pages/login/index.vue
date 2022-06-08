@@ -10,8 +10,6 @@
         <nut-input v-model="formData.type" readonly label="证件类型" />
         <nut-input v-model="formData.fullName" label="姓名" placeholder="请输入姓名" clearable required maxlength="20" />
         <nut-input v-model="formData.idcardNum" label="证件号码" placeholder="请输入证件号码" clearable required maxlength="18" />
-        <nut-input v-model="formData.address" label="地址" placeholder="请输入地址" clearable maxlength="30" />
-        <nut-input v-model="formData.email" label="邮箱" placeholder="请输入邮箱" clearable maxlength="-1" :border="false" />
       </view>
       <!-- 用户信息录入 end -->
     </view>
@@ -48,8 +46,6 @@ const formData = reactive({
   type: '第二代居民身份证',
   fullName: '',
   idcardNum: '',
-  address: '',
-  email: '',
 })
 const dialogVisible = ref(false) // 控制弹出框显示隐藏
 const isActive = computed(() => formData.fullName && formData.idcardNum)

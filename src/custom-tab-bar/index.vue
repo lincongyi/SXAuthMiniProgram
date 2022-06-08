@@ -10,7 +10,7 @@
 
 <script setup>
 import {ref} from 'vue'
-import Taro, { useRouter, useDidShow } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
 
 const list = [
   {
@@ -31,14 +31,6 @@ const color = '#000000'
 const selectedColor = '#0A7AEE'
 const switchTab = (url) => {
   Taro.switchTab({ url })
-}
-
-const init = () => {
-  const page = getCurrentPages().pop()
-  const route = page ? page.route.split('?')[0] : ''
-  const target = list.findIndex((item) =>
-    (item.pagePath.startsWith('/') ? item.pagePath.substr(1) : item.pagePath) === `${route}`
-  )
 }
 
 </script>

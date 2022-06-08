@@ -54,7 +54,7 @@
 
 <script setup>
 import { ref, defineAsyncComponent } from 'vue'
-import Taro, { useRouter, useDidShow } from '@tarojs/taro'
+import Taro, { useDidShow } from '@tarojs/taro'
 import './index.scss'
 import noticeImage from '@images/notice.png'
 import scanQrcodeImage from '@images/scan-qrcode.png'
@@ -82,7 +82,6 @@ const toAuthRequest = () => {
   // })
 }
 
-const router = useRouter()
 useDidShow(() => {
   const currentInstance = Taro.getCurrentInstance().page
   if (Taro.getTabBar) Taro.getTabBar(currentInstance).selected = 0

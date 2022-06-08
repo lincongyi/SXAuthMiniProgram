@@ -1,12 +1,13 @@
 export default defineAppConfig({
   pages: [
+    'pages/userInfo/index', // 个人信息
+    'pages/certificateSetting/index', // 证件有效期限
+    'pages/mine/index', // 我的
     'pages/index/index', // 首页
     'pages/login/index', // 登录
     'pages/authRequest/index', // 认证请求
     'pages/authResult/index', // 认证结果
     'pages/authDetail/index', // 认证详情
-    'pages/mine/index', // 我的
-    'pages/certificateSetting/index', // 证件有效期限
   ],
   tabBar: {
     'custom': true,

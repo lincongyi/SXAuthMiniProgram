@@ -82,7 +82,7 @@ const handleLogin = () => {
 // 跳转到个人信息页面
 const toUserInfo =() => {
   Taro.navigateTo({
-    url: '/pages/userInfo/userInfo'
+    url: '/pages/userInfo/index'
   })
 }
 </script>

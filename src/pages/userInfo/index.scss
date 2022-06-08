@@ -1,0 +1,53 @@
+.container {
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.user-avatar {
+  display: block;
+  overflow: hidden;
+  margin: 70px auto 20px;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+}
+
+.column {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 32px;
+  padding: 40px;
+  padding-left: 0;
+  font-size: 32px;
+  border-bottom: 2px solid #e5e5e5;
+
+  .left-label {
+    color: #666;
+  }
+
+  .right-content {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    color: #333;
+    flex: 1;
+
+    &.unfilled {
+      color: #0a7aee;
+    }
+
+    &.unbound {
+      color: #999;
+    }
+  }
+}
+
+.info-pannel {
+  .column:last-child {
+    border-bottom: 0;
+  }
+}
+
+.input {
+  height: 19px;
+}
