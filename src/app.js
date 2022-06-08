@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import './app.scss'
-import { Button, Icon, Dialog, Popup, OverLay, Input } from '@nutui/nutui-taro'
+import { Button, Icon, Dialog, Popup, OverLay, Input, Cell, CellGroup, Divider } from '@nutui/nutui-taro'
 
 const App = createApp({
   onShow (options) {},
@@ -12,5 +12,7 @@ App
   .use(Icon)
   .use(Dialog).use(Popup).use(OverLay)
   .use(Input)
+  .use(Cell).use(CellGroup)
+  .use(Divider)
 
 export default App

@@ -1,0 +1,48 @@
+/* stylelint-disable-next-line selector-type-no-unknown */
+page {
+  background-color: #fff;
+}
+
+.auth-result {
+  margin: 80px 0;
+  text-align: center;
+
+  .result-image {
+    margin-bottom: 18px;
+    width: 120px;
+    height: 120px;
+  }
+
+  .description {
+    font-size: 40px;
+    font-weight: bold;
+    color: #333;
+  }
+}
+
+.auth-info {
+  margin-bottom: 80px;
+}
+
+.title-class {
+  color: #666;
+}
+
+.btn-warp {
+  margin: 0 50px;
+}
+
+.tips {
+  margin: 40px;
+  font-size: 24px;
+  color: #999;
+}
+
+/* stylelint-disable-next-line selector-class-pattern */
+.nut-cell__value {
+  color: #333;
+}
+
+.nut-cell-group .nut-cell::after {
+  border-bottom: 0;
+}

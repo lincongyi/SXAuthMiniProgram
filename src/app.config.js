@@ -1,5 +1,6 @@
 export default defineAppConfig({
   pages: [
+    'pages/authDetail/index', // 认证结果
     'pages/authRequest/index', // 认证请求
     'pages/index/index', // 首页
     'pages/login/index', // 登录
