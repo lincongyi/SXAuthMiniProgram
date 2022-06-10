@@ -35,6 +35,7 @@
 
 <script setup>
 import { ref, reactive, defineAsyncComponent } from 'vue'
+import Taro, { useDidShow, useRouter } from '@tarojs/taro'
 import noAuthRecordImage from '@images/no-auth-record.png'
 import './index.scss'
 
@@ -60,4 +61,13 @@ const authList = reactive([
 const toConfirmAuth = () => {
 
 }
+useDidShow(() => {
+  let router = useRouter()
+  let isFromResult = Number(router.params?.isFromResult) || false
+  console.log(isFromResult)
+  Taro.setNavigationBarTitle({
+    title: ['认证请求', '认证记录'][isFromResult]
+  })
+})
+
 </script>
