@@ -39,34 +39,44 @@
     </view>
   </view>
   <!-- copyright -->
-  <copyright :isFixed="true" />
-
-  <nut-dialog
-    title="温馨提示"
-    content="请登录后再进行操作"
-    v-model:visible="dialogVisible"
-    @ok="toLogin"
-  />
-
-  <!-- <view class="mask {{isMaskShow ? 'is-mask-show' : ''}}"></view> -->
-
+  <copyright :isFixed="!ISALIPAY" />
 </template>
 
 <script setup>
-import { ref, defineAsyncComponent } from 'vue'
+import { ref } from 'vue'
 import Taro, { useDidShow } from '@tarojs/taro'
 import './index.scss'
+import { getEnv } from '@utils/index.js'
 import noticeImage from '@images/notice.png'
 import scanQrcodeImage from '@images/scan-qrcode.png'
 import showQrcodeImage from '@images/show-qrcode.png'
 
+const ISALIPAY = getEnv() === 'ALIPAY'
 const hasNotice = ref(true) // 是否存在通知信息
-const dialogVisible = ref(false) // 控制弹出框显示隐藏
-const isMaskShow = ref(false) // 控制遮罩层显示隐藏
+
+// 判断用户是否登录
+const isLogin = () => {
+  // 未登录
+  let loginStatus = false
+  if (!loginStatus){
+    Taro.showModal({
+      title: '温馨提示',
+      content: '请登录后再进行操作',
+      success: (res) => {
+        if (res.confirm) {
+          Taro.navigateTo({
+            url: '/pages/login/index'
+          })
+        }
+      }
+    })
+    return false
+  }
+}
 
 // 扫码认证
 const handleScanCode = () => {
-  dialogVisible.value = true
+  if (!isLogin()) return
 }
 // 跳转到登录页面
 const toLogin = () => {

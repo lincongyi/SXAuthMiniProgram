@@ -1,3 +1,4 @@
 export default definePageConfig({
-  navigationBarTitleText: '首页'
+  navigationBarTitleText: '陕西公民实人认证',
+  navigationBarBackgroundColor: '#0A7AEE',
 })
