@@ -7,13 +7,17 @@
       </view>
       <!-- 用户信息录入 start -->
       <view class="form-group">
-        <nut-input v-model="formData.type" readonly label="证件类型" />
-        <nut-input v-model="formData.fullName" label="姓名" placeholder="请输入姓名" clearable required maxlength="20" />
-        <nut-input v-model="formData.idcardNum" label="证件号码" placeholder="请输入证件号码" clearable required maxlength="18" />
+        <nut-input v-model="userInfo.type" readonly label="证件类型" />
+        <nut-input v-model="userInfo.fullName" label="姓名" placeholder="请输入姓名" clearable required maxlength="20" />
+        <nut-input v-model="userInfo.idNum" label="证件号码" placeholder="请输入证件号码" clearable required maxlength="18" />
       </view>
       <!-- 用户信息录入 end -->
     </view>
-    <view :class="['submit-btn',{'is-active':isActive,}]" @tap="handleSubmit">下一步</view>
+    <!-- <view :class="['submit-btn',{'is-active':isActive,}]" @tap="handleSubmit">下一步</view> -->
+
+    <view class="btn-warp">
+      <nut-button type="primary" shape="square" block @tap="handleSubmit" :class="{'disabled':btnDisabled}">下一步</nut-button>
+    </view>
 
     <view class="tips-textarea">
       <view class="normal">未注册用户登录时将完成注册，登录即代表</view>
@@ -41,21 +45,21 @@ import loginImage from '@images/logo.png'
 import './index.scss'
 
 // 用户录入信息
-const formData = reactive({
+const userInfo = reactive({
   type: '第二代居民身份证',
   fullName: '',
-  idcardNum: '',
+  idNum: '',
 })
+const btnDisabled = computed(() => !userInfo.fullName || !userInfo.idNum)
 const dialogVisible = ref(false) // 控制弹出框显示隐藏
-const isActive = computed(() => formData.fullName && formData.idcardNum)
 const handleSubmit = () => {
-  let {fullName, idcardNum} = formData
+  let {fullName, idNum} = userInfo
   if (!fullName){
     return Taro.showToast({
       icon: 'none',
       title: '请输入姓名'
     })
-  } else if (!idcardNum){
+  } else if (!idNum){
     return Taro.showToast({
       icon: 'none',
       title: '请输入证件号码'
