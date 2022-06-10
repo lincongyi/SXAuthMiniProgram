@@ -6,15 +6,15 @@
 
     </block>
     <block v-else>
-      <nut-input placeholder="请输入邮箱地址"  v-model="mailBox" label="邮箱" max-length="20" />
+      <nut-input placeholder="请输入邮箱地址" clearable v-model="mailBox" label="邮箱" max-length="20" />
     </block>
     <nut-input v-model="verificationCode" clearable center label="邮箱验证码" placeholder="请输入邮箱验证码" max-length="6">
       <template #button>
-        <nut-button size="small" type="primary" shape="square" :disabled="isDisabled" @tap="getCode"> {{getCodeBtnTxt}} </nut-button>
+        <nut-button size="small" type="primary" shape="square" :disabled="!canGetCode || isDisabled" @tap="getCode"> {{getCodeBtnTxt}} </nut-button>
       </template>
     </nut-input>
     <view class="btn-warp">
-      <nut-button type="primary" shape="square" block @tap="handleConfirm">{{confirmBtnTxt}}</nut-button>
+      <nut-button type="primary" shape="square" block @tap="handleConfirm" :class="{'disabled':btnDisabled}">{{confirmBtnTxt}}</nut-button>
     </view>
   </view>
 
@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import Taro, { useDidShow, useRouter } from '@tarojs/taro'
 import './index.scss'
 
@@ -37,9 +37,19 @@ const period = 45 // 重新发送验证码周期（秒）
 const currentTime = ref(period) // 当前剩余重发秒数
 
 const confirmBtnTxt = ref('') // 确认按钮文字内容
+const btnDisabled = computed(() => !mailBox.value || !verificationCode.value)
+const mailBoxReg = /\w{3,}(\.\w+)*@[A-z0-9]+(\.[A-z]{2,5}){1,2}/
+const canGetCode = computed(() => mailBoxReg.test(mailBox.value))
 
 // 获取验证码
 const getCode = () => {
+  if (!canGetCode.value){
+    return Taro.showToast({
+      icon: 'none',
+      title: '请输入正确的邮箱地址'
+    })
+  }
+
   Taro.showToast({
     icon: 'none',
     title: '邮箱验证码已发送'
