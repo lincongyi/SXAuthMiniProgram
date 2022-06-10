@@ -62,7 +62,6 @@ import './index.scss'
 import avatarImage from '@images/avatar-default.png' // 用户默认头像
 import userCenterRecordImage from '@images/user-center-record.png'
 import userCenterSettingImage from '@images/user-center-setting.png'
-const copyright = defineAsyncComponent(() => import('@components/copyright/index.vue'))
 
 const loginStatus = ref(1) // 判断用户是否登录状态
 const dialogVisible = ref(false) // 控制弹出框显示隐藏

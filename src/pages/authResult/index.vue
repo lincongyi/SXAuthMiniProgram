@@ -21,7 +21,6 @@ import { ref, defineAsyncComponent } from 'vue'
 import './index.scss'
 import certificationSuccessfulImage from '@images/certification-successful.png'
 import certificationFailedImage from '@images/certification-failed.png'
-const copyright = defineAsyncComponent(() => import('@components/copyright/index.vue'))
 
 const authResult=ref(0) // 0.认证成功；1.认证失败；
 const resultList = [

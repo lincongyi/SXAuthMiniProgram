@@ -1,7 +1,9 @@
 <template>
   <view class="container">
     <view class="user-avatar">
-      <open-data type="userAvatarUrl"></open-data>
+      <block v-if="!ISALIPAY">
+        <open-data type="userAvatarUrl"></open-data>
+      </block>
     </view>
     <view class="info-pannel">
       <view class="column">
@@ -43,9 +45,10 @@
 <script setup>
 import { ref, defineAsyncComponent } from 'vue'
 import Taro, { useDidShow } from '@tarojs/taro'
+import { getEnv } from '@utils/index.js'
 import './index.scss'
-const copyright = defineAsyncComponent(() => import('@components/copyright/index.vue'))
 
+const ISALIPAY = getEnv() === 'ALIPAY'
 const valid = ref('') // 证件有效期
 
 // 跳转到设置证件有效期限页面

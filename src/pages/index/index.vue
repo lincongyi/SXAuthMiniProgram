@@ -59,7 +59,6 @@ import './index.scss'
 import noticeImage from '@images/notice.png'
 import scanQrcodeImage from '@images/scan-qrcode.png'
 import showQrcodeImage from '@images/show-qrcode.png'
-const copyright = defineAsyncComponent(() => import('@components/copyright/index.vue'))
 
 const hasNotice = ref(true) // 是否存在通知信息
 const dialogVisible = ref(false) // 控制弹出框显示隐藏

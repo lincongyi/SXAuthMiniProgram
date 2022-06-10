@@ -37,7 +37,6 @@
 import { ref, reactive, defineAsyncComponent } from 'vue'
 import noAuthRecordImage from '@images/no-auth-record.png'
 import './index.scss'
-const copyright = defineAsyncComponent(() => import('@components/copyright/index.vue'))
 
 const hasAuthRecord = ref(1)
 const authList = reactive([

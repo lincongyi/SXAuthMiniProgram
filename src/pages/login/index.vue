@@ -39,7 +39,6 @@ import { ref, reactive, defineAsyncComponent, computed } from 'vue'
 import Taro from '@tarojs/taro'
 import loginImage from '@images/logo.png'
 import './index.scss'
-const copyright = defineAsyncComponent(() => import('@components/copyright/index.vue'))
 
 // 用户录入信息
 const formData = reactive({

@@ -52,7 +52,6 @@ import toBeCertifiedImage from '@images/to-be-certified.png'
 import certificationSuccessfulImage from '@images/certification-successful.png'
 import certificationFailedImage from '@images/certification-failed.png'
 import certificationExpiredImage from '@images/certification-expired.png'
-const copyright = defineAsyncComponent(() => import('@components/copyright/index.vue'))
 
 const authResult = ref(1) // 0.待认证；1.认证成功；2.认证失败；3.认证过期
 const resultList = [

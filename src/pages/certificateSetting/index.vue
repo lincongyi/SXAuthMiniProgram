@@ -38,7 +38,6 @@
 import { ref, defineAsyncComponent } from 'vue'
 import Taro from '@tarojs/taro'
 import './index.scss'
-const copyright = defineAsyncComponent(() => import('@components/copyright/index.vue'))
 
 const datePickerIndex = ref(0) // 0.起始日期；1.截至日期
 const datePickerTitle = ref('') // 日期选择器标题
