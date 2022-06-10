@@ -55,7 +55,7 @@
     align-items: center;
     padding-right: 40px;
     height: 120px;
-    border-bottom: 1px solid #e5e5e5;
+    border-bottom: 1px solid $border-color;
     flex: 1;
     line-height: 120px;
   }
@@ -66,6 +66,6 @@
 
   .left-label {
     font-size: 32px;
-    color: #333;
+    color: $primary-font-color;
   }
 }

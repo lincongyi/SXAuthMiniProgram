@@ -19,21 +19,21 @@
   padding: 40px;
   padding-left: 0;
   font-size: 32px;
-  border-bottom: 2px solid #e5e5e5;
+  border-bottom: 1px solid $border-color;
 
   .left-label {
-    color: #666;
+    color: $secondary-font-color;
   }
 
   .right-content {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    color: #333;
+    color: $primary-font-color;
     flex: 1;
 
     &.unfilled {
-      color: #0a7aee;
+      color: $primary-color;
     }
 
     &.unbound {

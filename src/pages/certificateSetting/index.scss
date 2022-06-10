@@ -5,14 +5,14 @@
 .column {
   margin-left: 32px;
   padding: 40px 0;
-  border-bottom: 2px solid #e5e5e5;
+  border-bottom: 1px solid $border-color;
 
   .top-conent {
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-size: 32px;
-    color: #333;
+    color: $primary-font-color;
   }
 
   .selected-date {

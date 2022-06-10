@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import './app.scss'
+import '@styles/theme.scss'
 import copyright from '@components/copyright/index.vue'
 import { Button, Icon, Dialog, Popup, OverLay, Input, Cell, CellGroup, Divider, DatePicker, Picker, Switch } from '@nutui/nutui-taro'
 

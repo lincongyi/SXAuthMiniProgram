@@ -27,11 +27,11 @@
       <view class="column">
         <image class="column-icon" mode="widthFix" :src="userCenterRecordImage" />
         <view class="cell">
-          <view class="left-label">认证记录</view>
+          <view class="left-label" @tap="toAuthRequest">认证记录</view>
           <nut-icon name="arrow-right" size="16" color="#bbb"></nut-icon>
         </view>
       </view>
-      <view class="column">
+      <view class="column" @tap="toSetting">
         <image class="column-icon" mode="widthFix" :src="userCenterSettingImage" />
         <view class="cell">
           <view class="left-label">设置</view>
@@ -81,9 +81,23 @@ const handleLogin = () => {
 }
 
 // 跳转到个人信息页面
-const toUserInfo =() => {
+const toUserInfo = () => {
   Taro.navigateTo({
     url: '/pages/userInfo/index'
+  })
+}
+
+// 跳转到认证记录页面
+const toAuthRequest = () => {
+  Taro.navigateTo({
+    url: '/pages/authRequest/index'
+  })
+}
+
+// 跳转到设置页面
+const toSetting = () => {
+  Taro.navigateTo({
+    url: '/pages/setting/index'
   })
 }
 </script>

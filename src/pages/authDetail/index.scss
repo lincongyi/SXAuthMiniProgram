@@ -16,7 +16,7 @@ page {
   .description {
     font-size: 40px;
     font-weight: bold;
-    color: #333;
+    color: $primary-font-color;
   }
 }
 
@@ -25,7 +25,7 @@ page {
 }
 
 .title-class {
-  color: #666;
+  color: $secondary-font-color;
 }
 
 .btn-warp {
@@ -40,7 +40,7 @@ page {
 
 /* stylelint-disable-next-line selector-class-pattern */
 .nut-cell__value {
-  color: #333;
+  color: $primary-font-color;
 }
 
 .nut-cell-group .nut-cell::after {

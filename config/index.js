@@ -63,11 +63,15 @@ const config = {
     }
   },
   sass: {
+    resource: [
+      path.resolve(__dirname, '..', 'src/assets/styles/theme.scss')
+    ],
     data: '@import "@nutui/nutui-taro/dist/styles/variables.scss";',
   },
   alias: {
     '@': path.resolve(__dirname, '..', 'src'),
     '@api': path.resolve(__dirname, '..', 'src/api'),
+    '@styles': path.resolve(__dirname, '..', 'src/assets/styles'),
     '@utils': path.resolve(__dirname, '..', 'src/utils'),
     '@images': path.resolve(__dirname, '..', 'src/images'),
     '@components': path.resolve(__dirname, '..', 'src/components'),
