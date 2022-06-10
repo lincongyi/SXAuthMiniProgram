@@ -1,13 +1,14 @@
 export default defineAppConfig({
   pages: [
-    'pages/authResult/index', // 认证结果
-    'pages/index/index', // 首页
-    'pages/login/index', // 登录
-    'pages/authRequest/index', // 认证请求
-    'pages/authDetail/index', // 认证详情
     'pages/mine/index', // 我的
     'pages/userInfo/index', // 个人信息
     'pages/certificateSetting/index', // 证件有效期限
+    'pages/updateMailBox/index', // 绑定邮箱 || 解绑邮箱
+    'pages/index/index', // 首页
+    'pages/login/index', // 登录
+    'pages/authRequest/index', // 认证请求 || 认证结果
+    'pages/authResult/index', // 认证结果
+    'pages/authDetail/index', // 认证详情
   ],
   tabBar: {
     'custom': true,

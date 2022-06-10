@@ -63,8 +63,7 @@ const toConfirmAuth = () => {
 }
 useDidShow(() => {
   let router = useRouter()
-  let isFromResult = Number(router.params?.isFromResult) || false
-  console.log(isFromResult)
+  let isFromResult = Number(router.params?.isFromResult || false)
   Taro.setNavigationBarTitle({
     title: ['认证请求', '认证记录'][isFromResult]
   })
