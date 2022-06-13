@@ -46,7 +46,8 @@
 import { ref } from 'vue'
 import Taro, { useDidShow } from '@tarojs/taro'
 import './index.scss'
-import { getEnv } from '@utils/index.js'
+import { getEnv } from '@utils/index'
+import { handleLogin } from '@utils/taro'
 import noticeImage from '@images/notice.png'
 import scanQrcodeImage from '@images/scan-qrcode.png'
 import showQrcodeImage from '@images/show-qrcode.png'
@@ -76,7 +77,10 @@ const isLogin = () => {
 
 // 扫码认证
 const handleScanCode = () => {
-  if (!isLogin()) return
+  // if (!isLogin()) return
+  if (ISALIPAY){
+    console.log(Taro.ap)
+  }
 }
 // 跳转到登录页面
 const toLogin = () => {
@@ -94,5 +98,7 @@ const toAuthRequest = () => {
 useDidShow(() => {
   const currentInstance = Taro.getCurrentInstance().page
   if (Taro.getTabBar) Taro.getTabBar(currentInstance).selected = 0
+
+  handleLogin()
 })
 </script>

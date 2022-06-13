@@ -1,11 +1,19 @@
 import { createApp } from 'vue'
+import Taro from '@tarojs/taro'
+import { handleUpdate } from '@utils/taro'
 import './app.scss'
 import '@styles/theme.scss'
 import copyright from '@components/copyright/index.vue'
 import { Button, Icon, Dialog, Popup, OverLay, Input, Cell, CellGroup, Divider, DatePicker, Picker, Switch } from '@nutui/nutui-taro'
 
 const App = createApp({
-  onShow (options) {},
+  async onLaunch (options) {
+    // 清理本地数据缓存
+    Taro.clearStorageSync()
+    // 版本更新
+    handleUpdate()
+  },
+  onShow () {},
   // 入口组件不需要实现 render 方法，即使实现了也会被 taro 所覆盖
 })
 
