@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import Taro from '@tarojs/taro'
-import { handleUpdate } from '@utils/taro'
+import { getEnv, handleUpdate } from '@utils/taro'
 import './app.scss'
 import '@styles/theme.scss'
 import copyright from '@components/copyright/index.vue'
@@ -10,6 +10,9 @@ const App = createApp({
   async onLaunch (options) {
     // 清理本地数据缓存
     Taro.clearStorageSync()
+
+    // 获取小程序当前环境
+    getEnv()
     // 版本更新
     handleUpdate()
   },

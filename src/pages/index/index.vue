@@ -46,13 +46,14 @@
 import { ref } from 'vue'
 import Taro, { useDidShow } from '@tarojs/taro'
 import './index.scss'
-import { getEnv } from '@utils/index'
-import { handleLogin } from '@utils/taro'
+import { handleLogin, getUserInfo, getOpenUserInfo } from '@utils/taro'
 import noticeImage from '@images/notice.png'
 import scanQrcodeImage from '@images/scan-qrcode.png'
 import showQrcodeImage from '@images/show-qrcode.png'
 
-const ISALIPAY = getEnv() === 'ALIPAY'
+const env = Taro.getStorageSync('env')
+const ISALIPAY = env === 'ALIPAY'
+
 const hasNotice = ref(true) // 是否存在通知信息
 
 // 判断用户是否登录
@@ -95,10 +96,16 @@ const toAuthRequest = () => {
   // })
 }
 
-useDidShow(() => {
+useDidShow(async () => {
   const currentInstance = Taro.getCurrentInstance().page
   if (Taro.getTabBar) Taro.getTabBar(currentInstance).selected = 0
 
-  handleLogin()
+  // 区分支付宝和微信的登录流程
+  if (ISALIPAY){
+    console.log('alipay app')
+  } else {
+    await handleLogin()
+    await getUserInfo()
+  }
 })
 </script>
