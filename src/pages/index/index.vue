@@ -1,6 +1,24 @@
 <template>
   <view class="container">
-    <view class="banner"></view>
+    <view class="banner">
+      <!-- <swiper
+        class='banner-swiper'
+        :indicator-dots="true"
+        indicator-color='#6EB0F4'
+        indicator-active-color='#fff'
+        :circular="true"
+        :autoplay="true"
+      >
+        <swiper-item v-for="(item,index) in bannerList" :key="index">
+          <image class="banner-image" mode="scaleToFill" :src="item" />
+        </swiper-item>
+      </swiper> -->
+      <nut-swiper :pagination-visible="true" pagination-color="#fff" auto-play="3000">
+        <nut-swiper-item v-for="(item,index) in bannerList" :key="index">
+          <img class="banner-image" :src="item" />
+        </nut-swiper-item>
+      </nut-swiper>
+    </view>
 
     <view class="wrap">
       <!-- 通知消息 start -->
@@ -38,8 +56,17 @@
       <!-- 二维码认证 end -->
     </view>
   </view>
-  <!-- copyright -->
-  <copyright :isFixed="!ISALIPAY" />
+
+  <block v-if="!loginStatus">
+    <view :class="['login-tips',{'is-fixed':!ISALIPAY}]">
+      <text>登录后体验更多功能</text>
+      <view class="login-btn" @tap="handleLogin">立即登录</view>
+    </view>
+  </block>
+  <block v-else>
+    <!-- copyright -->
+    <copyright :isFixed="!ISALIPAY" />
+  </block>
 </template>
 
 <script setup>
@@ -47,20 +74,24 @@ import { ref } from 'vue'
 import Taro, { useDidShow } from '@tarojs/taro'
 import './index.scss'
 import { handleLogin, getUserInfo, getOpenUserInfo } from '@utils/taro'
+import banner_01 from '@images/banner-01.png'
+import banner_02 from '@images/banner-02.png'
 import noticeImage from '@images/notice.png'
 import scanQrcodeImage from '@images/scan-qrcode.png'
 import showQrcodeImage from '@images/show-qrcode.png'
+import { testApi } from '@api/common'
 
 const env = Taro.getStorageSync('env')
 const ISALIPAY = env === 'ALIPAY'
 
+const bannerList = [banner_01, banner_02]
 const hasNotice = ref(true) // 是否存在通知信息
+const loginStatus = ref(false)
 
 // 判断用户是否登录
 const isLogin = () => {
   // 未登录
-  let loginStatus = false
-  if (!loginStatus){
+  if (!loginStatus.value){
     Taro.showModal({
       title: '温馨提示',
       content: '请登录后再进行操作',
@@ -104,8 +135,10 @@ useDidShow(async () => {
   if (ISALIPAY){
     console.log('alipay app')
   } else {
-    await handleLogin()
-    await getUserInfo()
+    let code = await handleLogin()
+    let res = await getUserInfo()
+    console.log(code)
+    console.log(res)
   }
 })
 </script>

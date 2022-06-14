@@ -46,12 +46,12 @@
 </template>
 
 <script setup>
-import { ref, reactive, defineAsyncComponent } from 'vue'
+import { ref, reactive } from 'vue'
 import Taro, { useDidShow } from '@tarojs/taro'
-import { getEnv } from '@utils/index.js'
 import './index.scss'
 
-const ISALIPAY = getEnv() === 'ALIPAY'
+const env = Taro.getStorageSync('env')
+const ISALIPAY = env === 'ALIPAY'
 // 用户信息
 let userInfo = reactive({
   fullName: 'XXX', // 姓名

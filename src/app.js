@@ -4,7 +4,7 @@ import { getEnv, handleUpdate } from '@utils/taro'
 import './app.scss'
 import '@styles/theme.scss'
 import copyright from '@components/copyright/index.vue'
-import { Button, Icon, Dialog, Popup, OverLay, Input, Cell, CellGroup, Divider, DatePicker, Picker, Switch } from '@nutui/nutui-taro'
+import { Button, Icon, Dialog, Popup, OverLay, Input, Cell, CellGroup, Divider, DatePicker, Picker, Switch, Swiper, SwiperItem } from '@nutui/nutui-taro'
 
 const App = createApp({
   async onLaunch (options) {
@@ -31,5 +31,6 @@ App
   .use(Divider)
   .use(DatePicker).use(Picker)
   .use(Switch)
+  .use(Swiper).use(SwiperItem)
 
 export default App

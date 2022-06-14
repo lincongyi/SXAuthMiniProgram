@@ -1,16 +1,21 @@
-function request (options={}) {
-  const { url, data, header, method, dataType, responseType, success, fail, complete } = options
+import Taro from '@tarojs/taro'
+const BASE_URL = ''
+function request (options = {}) {
 
-  return new Promise((resolve, reject) => {
-    wx.request({
-      url,
-      data,
-      header,
-      method,
-      dataType,
-      responseType,
+  const { url, data, method='get' } = options
+  const baseOptions = {
+    url: `${BASE_URL}${url}`,
+    data,
+    method,
+    header: {
+      'content-type': 'application/json',
+    }
+  }
+
+  return new Promise((resolve) => {
+    Taro.request({
+      ...baseOptions,
       success: (r) => {
-        console.log(r)
         //网络错误
         if (!r.statusCode || r.statusCode !== 200) {
           resolve({
@@ -19,23 +24,15 @@ function request (options={}) {
               retMessage: '网络错误(' + r.statusCode + '),请稍后重试',
             },
           })
-          return false
         }
-
         //登录失效
-        if (r.data.retCode === 20) {
-          return wx.showModal({
+        else if (r.data.retCode === 20) {
+          return Taro.showModal({
             title: '温馨提示',
             content: r.data.retMessage,
             showCancel: false,
-            complete: function () {
-              // wx.reLaunch({
-              //   url: '/pages/miniProgram/miniProgram',
-              // })
-            },
           })
         }
-
         //网络请求成功 返回数据
         resolve(r)
       },
@@ -47,7 +44,6 @@ function request (options={}) {
               retMessage: '请求超时,请稍后重试',
             },
           })
-          return
         }
         resolve({
           data: {
@@ -55,7 +51,7 @@ function request (options={}) {
             retMessage: '网络错误,请检查设备网络状态',
           },
         })
-      },
+      }
     })
   })
 }

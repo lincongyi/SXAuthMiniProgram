@@ -59,12 +59,12 @@
 import { ref } from 'vue'
 import Taro, { useDidShow } from '@tarojs/taro'
 import './index.scss'
-import { getEnv } from '@utils/index.js'
 import avatarImage from '@images/avatar-default.png' // 用户默认头像
 import userCenterRecordImage from '@images/user-center-record.png'
 import userCenterSettingImage from '@images/user-center-setting.png'
 
-const ISALIPAY = getEnv() === 'ALIPAY'
+const env = Taro.getStorageSync('env')
+const ISALIPAY = env === 'ALIPAY'
 const loginStatus = ref(1) // 判断用户是否登录状态
 const dialogVisible = ref(false) // 控制弹出框显示隐藏
 

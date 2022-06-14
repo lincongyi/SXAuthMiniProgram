@@ -60,10 +60,10 @@ export function handleLogin(){
 export function getUserInfo(){
   return new Promise((resolve, reject) => {
     Taro.getUserInfo({
-      success: ({signature, userInfo: userSystemInfo}) => {
-        Taro.setStorageSync('signature', signature)
-        Taro.setStorageSync('userSystemInfo', userSystemInfo)
-        resolve()
+      success: (res) => {
+        Taro.setStorageSync('signature', res.signature)
+        Taro.setStorageSync('userSystemInfo', res.userSystemInfo)
+        resolve(res)
       },
       fail: (err) => {
         reject(err)
