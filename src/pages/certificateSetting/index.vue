@@ -45,8 +45,8 @@ const datePickerShow = ref(false) // 控制日期选择器显示隐藏
 const currentDate = ref('') // 日期选择器日期
 const startDate = ref('') // 起始日期
 const endDate = ref('') // 截至日期
-const minDate = ref(new Date('2000,01,01')) // 限制开始时间
-const maxDate = ref(new Date('2030,12,31')) // 限制结束时间
+const minDate = ref(new Date('2000-01-01')) // 限制开始时间
+const maxDate = ref(new Date('2030-12-31')) // 限制结束时间
 const isPermanent = ref(false) // 是否长期有效
 
 // 显示日期选择器
@@ -56,8 +56,8 @@ const showDatePicker = (index) => {
 
   datePickerIndex.value = index
   datePickerTitle.value = ['起始日期', '截至日期'][index]
-  minDate.value = [new Date('2000,01,01'), new Date()][index]
-  maxDate.value = [new Date(), new Date('2030,12,31')][index]
+  minDate.value = [new Date('2000-01-01'), new Date()][index]
+  maxDate.value = [new Date(), new Date('2030-12-31')][index]
   datePickerShow.value = true
 }
 

@@ -27,8 +27,11 @@
       <view class="column">
         <view class="left-label">手机号码</view>
         <view class="right-content">
-          {{userInfo.phone}}
-          <nut-icon name="arrow-right" size="16" color="#bbb"></nut-icon>
+          <view class="btn-relative">
+            {{userInfo.phone}}
+            <nut-icon name="arrow-right" size="16" color="#bbb"></nut-icon>
+            <button open-type="getPhoneNumber" class="get-phone-number-btn"	@getphonenumber="getPhoneNumber"></button>
+          </view>
         </view>
       </view>
       <view class="column">
@@ -75,6 +78,18 @@ const toCertificateSetting = () => {
   Taro.navigateTo({
     url: '/pages/certificateSetting/index'
   })
+}
+
+// 更换绑定手机
+const getPhoneNumber = (event) => {
+  console.log(event.detail)
+  if (event.detail.errMsg.indexOf('getPhoneNumber:ok') === -1) {
+    return Taro.showModal({
+      title: '温馨提示',
+      content: '获取手机号失败，请重试',
+      showCancel: false,
+    })
+  }
 }
 
 // 绑定or解绑邮箱

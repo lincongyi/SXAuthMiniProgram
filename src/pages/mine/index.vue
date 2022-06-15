@@ -24,10 +24,10 @@
       </block>
     </view>
     <view class="nav">
-      <view class="column">
+      <view class="column" @tap="toAuthRequest">
         <image class="column-icon" mode="widthFix" :src="userCenterRecordImage" />
         <view class="cell">
-          <view class="left-label" @tap="toAuthRequest">认证记录</view>
+          <view class="left-label">认证记录</view>
           <nut-icon name="arrow-right" size="16" color="#bbb"></nut-icon>
         </view>
       </view>

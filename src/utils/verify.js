@@ -1,7 +1,7 @@
 import { getSetting, openSetting, getLocation, getNetworkType, getSystemInfo, getAccountInfoSync } from '@utils/taro'
 import { getCertToken } from '@api/auth'
 // 认证流程
-export async function verify(){
+export async function verify(agent=false, mode=66){
   //  1.收集信息
   let collectionInfo = await handleCollection()
   // console.log(collectionInfo)
@@ -12,7 +12,7 @@ export async function verify(){
 /**
   * 收集信息
  */
-const handleCollection = async (agent=false, mode=66) => {
+const handleCollection = async () => {
   let collectionInfo = {
     appInfo: {
       appName: '陕西公民实人认证',
@@ -63,7 +63,7 @@ const handleCollection = async (agent=false, mode=66) => {
   return collectionInfo
 }
 
-const handleCertToken = async(collectionInfo, agent=false, mode=66,) => {
+const handleCertToken = async(collectionInfo) => {
   getCertToken({
     agent,
     mode,
