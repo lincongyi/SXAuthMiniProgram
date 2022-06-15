@@ -7,7 +7,7 @@
       </view>
       <!-- 用户信息录入 start -->
       <view class="form-group">
-        <nut-input v-model="userInfo.type" readonly label="证件类型" />
+        <nut-input v-model="type" readonly label="证件类型" />
         <nut-input v-model="userInfo.fullName" label="姓名" placeholder="请输入姓名" clearable required maxlength="20" />
         <nut-input v-model="userInfo.idNum" label="证件号码" placeholder="请输入证件号码" clearable required maxlength="18" />
       </view>
@@ -27,7 +27,6 @@
       </view>
     </view>
   </view>
-
   <!-- Copyright -->
   <copyright />
 
@@ -39,19 +38,22 @@
   />
 </template>
 <script setup>
-import { ref, reactive, defineAsyncComponent, computed } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import Taro from '@tarojs/taro'
 import loginImage from '@images/logo.png'
 import './index.scss'
+import { getSetting, openSetting, getLocation, getNetworkType, getSystemInfo, getAccountInfoSync } from '@utils/taro'
+import { getCertToken } from '@api/auth'
 
 // 用户录入信息
+const type = '第二代居民身份证'
 const userInfo = reactive({
-  type: '第二代居民身份证',
-  fullName: '',
-  idNum: '',
+  fullName: '林聪毅',
+  idNum: '440105199203182415',
 })
 const btnDisabled = computed(() => !userInfo.fullName || !userInfo.idNum)
 const dialogVisible = ref(false) // 控制弹出框显示隐藏
+
 const handleSubmit = () => {
   let {fullName, idNum} = userInfo
   if (!fullName){
@@ -65,6 +67,77 @@ const handleSubmit = () => {
       title: '请输入证件号码'
     })
   }
-  dialogVisible.value = true
+  vertifyProcess()
 }
+
+// 认证流程
+const vertifyProcess = async () => {
+  //  1.收集信息
+  let agent = false // 代他人认证
+  let mode = 66
+  let collectionInfo = {
+    appInfo: {
+      appName: '陕西公民实人认证',
+      authtermHost: '',
+      buildTime: '',
+      buildType: '',
+      bundleIdVersion: '',
+      lvdtVer: '',
+      readerVer: '',
+      versionName: '',
+      wechatVersion: '',
+      wiiauthHost: ''
+    },
+    appType: 'sxfama',
+    latestLocation: '',
+    locationBean: {
+      latitude: 0,
+      longitude: 0
+    },
+    phoneInfo: {
+      imei: '',
+      manufacturer: '',
+      networkOperatorName: '',
+      networkType: '',
+      osVersion: '',
+      phoneModel: ''
+    },
+    platform: ''
+  }
+  let authSetting = await getSetting()
+  if (!authSetting['scope.userLocation']){
+    let canGetLocation = await openSetting() // 允许获取用户地理位置信息
+    if (!canGetLocation) return false
+  }
+  let { latitude, longitude } = await getLocation()
+  collectionInfo.latestLocation = `${longitude},${latitude}`
+  collectionInfo.locationBean = {longitude, latitude}
+  let networkType = await getNetworkType()
+  collectionInfo.phoneInfo.networkType = networkType
+  let {platform, system, model, brand, version} = await getSystemInfo()
+  collectionInfo.phoneInfo.osVersion = system
+  collectionInfo.phoneInfo.phoneModel = model
+  collectionInfo.phoneInfo.manufacturer = brand
+  collectionInfo.platform = platform
+  collectionInfo.appInfo.wechatVersion = version
+  const accountInfo = getAccountInfoSync()
+  collectionInfo.appInfo.versionName = accountInfo.miniProgram.version
+  getCertToken({
+    agent,
+    mode,
+    collectionInfo
+  }).then(({retCode, retMessage, tokenInfo}) => {
+    if (retCode) {
+      return Taro.showModal({
+        title: '温馨提示',
+        content: retMessage,
+        showCancel: false,
+      })
+    }
+    console.log(tokenInfo)
+  })
+}
+
+// 认证成功后回调
+// dialogVisible.value = true
 </script>

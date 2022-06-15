@@ -130,13 +130,90 @@ export function getSetting(){
   })
 }
 
+/**
+  * 调起客户端小程序设置界面，返回用户设置的操作结果。
+ */
 export function openSetting(){
-  Taro.openSetting({
-    success: (res) => {
-      console.log(res)
-    },
-    fail: () => {
-
-    }
+  return new Promise((resolve) => {
+    Taro.openSetting({
+      success: ({authSetting}) => {
+        resolve(authSetting['scope.userLocation'])
+      },
+      fail: () => {
+        return Taro.showModal({
+          title: '温馨提示',
+          content: '请在个人设置中允许获取地理位置',
+          showCancel: false,
+        })
+      }
+    })
   })
+}
+
+/**
+  * 获取当前的地理位置、速度
+ */
+export function getLocation(){
+  return new Promise((resolve) => {
+    Taro.getLocation({
+      type: 'gcj02',
+      success: (res) => {
+        resolve(res)
+      },
+      fail: () => {
+        return Taro.showModal({
+          title: '温馨提示',
+          content: '获取定位失败, 请重试',
+          showCancel: false,
+        })
+      }
+    })
+  })
+}
+
+/**
+  * 获取网络类型
+ */
+export function getNetworkType(){
+  return new Promise((resolve) => {
+    Taro.getNetworkType({
+      success: ({networkType}) => {
+        resolve(networkType)
+      },
+      fail: () => {
+        return Taro.showModal({
+          title: '温馨提示',
+          content: '获取网络类型失败, 请重试',
+          showCancel: false,
+        })
+      }
+    })
+  })
+}
+
+/**
+  * 获取系统信息
+ */
+export function getSystemInfo(){
+  return new Promise((resolve) => {
+    Taro.getSystemInfo({
+      success: (res) => {
+        resolve(res)
+      },
+      fail: () => {
+        return Taro.showModal({
+          title: '温馨提示',
+          content: '获取系统信息失败, 请重试',
+          showCancel: false,
+        })
+      }
+    })
+  })
+}
+
+/**
+  * 获取当前帐号信息
+ */
+export function getAccountInfoSync(){
+  return Taro.getAccountInfoSync()
 }

@@ -1,18 +1,6 @@
 <template>
   <view class="container">
     <view class="banner">
-      <!-- <swiper
-        class='banner-swiper'
-        :indicator-dots="true"
-        indicator-color='#6EB0F4'
-        indicator-active-color='#fff'
-        :circular="true"
-        :autoplay="true"
-      >
-        <swiper-item v-for="(item,index) in bannerList" :key="index">
-          <image class="banner-image" mode="scaleToFill" :src="item" />
-        </swiper-item>
-      </swiper> -->
       <nut-swiper :pagination-visible="true" pagination-color="#fff" auto-play="3000">
         <nut-swiper-item v-for="(item,index) in bannerList" :key="index">
           <img class="banner-image" :src="item" />
@@ -79,7 +67,7 @@ import banner_02 from '@images/banner-02.png'
 import noticeImage from '@images/notice.png'
 import scanQrcodeImage from '@images/scan-qrcode.png'
 import showQrcodeImage from '@images/show-qrcode.png'
-import { testApi } from '@api/common'
+import { login } from '@api/login'
 
 const env = Taro.getStorageSync('env')
 const ISALIPAY = env === 'ALIPAY'
@@ -114,7 +102,7 @@ const handleScanCode = () => {
     console.log(Taro.ap)
   }
 }
-// 跳转到登录页面
+// 跳转到登录 || 注册页面
 const toLogin = () => {
   Taro.navigateTo({
     url: '/pages/login/index'
@@ -135,10 +123,22 @@ useDidShow(async () => {
   if (ISALIPAY){
     console.log('alipay app')
   } else {
-    let code = await handleLogin()
-    let res = await getUserInfo()
-    console.log(code)
-    console.log(res)
+    // 登录流程
+    let jsCode = await handleLogin()
+    let { encryptedData, iv } = await getUserInfo()
+    login({ jsCode, encryptedData, iv }).then(({retCode, retMessage}) => {
+      // 用户未注册
+      if (retCode === 5202){
+        Taro.showModal({
+          title: '温馨提示',
+          content: retMessage,
+          showCancel: false,
+          success: ({confirm}) => {
+            if (confirm) toLogin()
+          }
+        })
+      }
+    })
   }
 })
 </script>

@@ -1,7 +1,7 @@
 export default defineAppConfig({
   pages: [
     'pages/index/index', // 首页
-    'pages/login/index', // 登录
+    'pages/login/index', // 登录 || 注册
     'pages/authRequest/index', // 认证请求 || 认证结果
     'pages/authResult/index', // 认证结果
     'pages/authDetail/index', // 认证详情
@@ -34,5 +34,11 @@ export default defineAppConfig({
     navigationBarBackgroundColor: '#fff',
     navigationBarTitleText: '陕西公民实人认证',
     navigationBarTextStyle: 'black',
+  },
+  lazyCodeLoading: 'requiredComponents',
+  permission: {
+    'scope.userLocation': {
+      desc: '你的位置信息将用于小程序位置接口的效果展示'
+    }
   }
 })

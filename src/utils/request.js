@@ -1,8 +1,8 @@
 import Taro from '@tarojs/taro'
-const BASE_URL = ''
+const BASE_URL = 'http://gat.shaanxi.gov.cn/auth/sxfama'
 function request (options = {}) {
 
-  const { url, data, method='get' } = options
+  const { url, data, method='post' } = options
   const baseOptions = {
     url: `${BASE_URL}${url}`,
     data,
@@ -18,23 +18,15 @@ function request (options = {}) {
       success: (r) => {
         //网络错误
         if (!r.statusCode || r.statusCode !== 200) {
-          resolve({
-            data: {
-              retCode: r.statusCode,
-              retMessage: '网络错误(' + r.statusCode + '),请稍后重试',
-            },
-          })
-        }
-        //登录失效
-        else if (r.data.retCode === 20) {
           return Taro.showModal({
             title: '温馨提示',
             content: r.data.retMessage,
             showCancel: false,
           })
         }
+        // console.log(r.data)
         //网络请求成功 返回数据
-        resolve(r)
+        resolve(r.data)
       },
       fail(err) {
         if (err.errMsg.indexOf('timeout') !== -1 || err.errMsg.indexOf('请求超时') !== -1) {
