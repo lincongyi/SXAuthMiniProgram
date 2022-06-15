@@ -38,6 +38,13 @@
           <nut-icon name="arrow-right" size="16" color="#bbb"></nut-icon>
         </view>
       </view>
+      <view class="column">
+        <view class="left-label">地址</view>
+        <view :class="['right-content',{'unfilled':!userInfo.address}] " @tap="toUpdateAddress">
+          {{userInfo.startDate||'去补充'}}
+          <nut-icon name="arrow-right" size="16" color="#bbb"></nut-icon>
+        </view>
+      </view>
     </view>
   </view>
 
@@ -60,6 +67,7 @@ let userInfo = reactive({
   startDate: '', // 起始日期
   endDate: '', // 截止日期
   mailBox: '', // 邮箱
+  address: '' // 地址
 })
 
 // 跳转到设置证件有效期限页面
@@ -78,6 +86,13 @@ const toUpdateMailBox = () => {
     url+='?isUnBound=0'
   }
   Taro.navigateTo({ url })
+}
+
+// 跳转到填写地址页面
+const toUpdateAddress = () => {
+  Taro.navigateTo({
+    url: '/pages/updateAddress/index'
+  })
 }
 
 useDidShow(() => {

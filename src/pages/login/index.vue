@@ -66,6 +66,7 @@ const handleSubmit = () => {
       title: '请输入证件号码'
     })
   }
+  // 认证流程
   verify()
 }
 

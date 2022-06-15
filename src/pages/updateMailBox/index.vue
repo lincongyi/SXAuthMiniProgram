@@ -3,7 +3,6 @@
     <block v-if="isUnBound">
       <view class="title">当前绑定邮箱</view>
       <view class="mail-box">{{mailBox}}</view>
-
     </block>
     <block v-else>
       <nut-input placeholder="请输入邮箱地址" clearable v-model="mailBox" label="邮箱" max-length="20" />
@@ -93,9 +92,11 @@ const handleConfirm = () => {
       mask: true,
       title: '绑定成功',
       success: () => {
-        Taro.navigateBack({
-          delta: 1
-        })
+        setTimeout(() => {
+          Taro.navigateBack({
+            delta: 1
+          })
+        }, 1500)
       }
     })
   }, 1500)
