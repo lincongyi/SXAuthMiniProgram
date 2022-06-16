@@ -39,7 +39,7 @@ export default defineAppConfig({
   lazyCodeLoading: 'requiredComponents',
   permission: {
     'scope.userLocation': {
-      desc: '你的位置信息将用于小程序位置接口的效果展示'
+      'desc': '是否允许获取你当前的地理位置信息？'
     }
   }
 })

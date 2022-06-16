@@ -47,8 +47,8 @@ import { verify } from '@utils/verify'
 // 用户录入信息
 const type = '第二代居民身份证'
 const userInfo = reactive({
-  fullName: '林聪毅',
   idNum: '440105199203182415',
+  fullName: '林聪毅',
 })
 const btnDisabled = computed(() => !userInfo.fullName || !userInfo.idNum)
 const dialogVisible = ref(false) // 控制弹出框显示隐藏
@@ -67,7 +67,14 @@ const handleSubmit = () => {
     })
   }
   // 认证流程
-  verify()
+  let idInfo = {
+    idNum: userInfo.idNum,
+    fullName: userInfo.fullName,
+  }
+  let options = {
+    idInfo
+  }
+  verify(options)
 }
 
 // 认证成功后回调

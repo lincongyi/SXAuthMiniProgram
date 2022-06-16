@@ -163,8 +163,13 @@ export function getLocation(){
       fail: () => {
         return Taro.showModal({
           title: '温馨提示',
-          content: '获取定位失败, 请重试',
+          content: '获取定位失败，请重试',
           showCancel: false,
+          success: () => {
+            Taro.navigateBack({
+              delta: 1
+            })
+          }
         })
       }
     })

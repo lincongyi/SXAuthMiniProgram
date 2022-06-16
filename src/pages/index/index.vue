@@ -101,6 +101,7 @@ const handleScanCode = () => {
   if (ISALIPAY){
     console.log(Taro.ap)
   }
+  toLogin()
 }
 // 跳转到登录 || 注册页面
 const toLogin = () => {
