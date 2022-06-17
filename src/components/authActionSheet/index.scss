@@ -1,0 +1,43 @@
+.nut-actionsheet-panel .nut-actionsheet-title {
+  padding: 20px 10px;
+  font-size: 16px;
+  border-bottom: 0;
+}
+
+.action-sheet-content {
+  padding: 0 60px;
+  padding-bottom: calc(20px + env(safe-area-inset-bottom));
+
+  .tips {
+    padding: 34px 0;
+    border-bottom: 1px solid $border-color;
+  }
+}
+
+.agreement-protocol {
+  display: flex;
+  align-items: center;
+  margin: 32px 0;
+  font-size: 24px;
+  color: #999;
+}
+
+.checkbox {
+  margin-right: 14px;
+}
+
+.protocol {
+  margin-bottom: 40px;
+  font-size: 24px;
+
+  .protocol-link {
+    color: #4a90e2;
+  }
+}
+
+.nut-icon {
+  padding: 4px;
+  height: 14px;
+  border: 1px solid $border-color;
+  border-radius: 5px;
+}

@@ -89,9 +89,7 @@ const handleConfirm =() => {
       showCancel: false
     })
   }
-  Taro.showLoading({
-    title: '请稍候...',
-  })
+  Taro.showLoading({title: '请稍候...'})
   setTimeout(() => {
     let userInfo = Taro.getStorageSync('userInfo') ? JSON.parse(Taro.getStorageSync('userInfo')) : {}
     Taro.setStorageSync('userInfo', JSON.stringify({...userInfo, ...{startDate: startDate.value, endDate: endDate.value}}))

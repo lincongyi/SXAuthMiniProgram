@@ -27,6 +27,17 @@
       </view>
     </view>
   </view>
+
+  <authActionSheet
+    ref="authActionSheetComponent"
+    :beforeAuth="beforeAuth"
+    :beforeProtocol="beforeProtocol"
+    :protocolName="protocolName"
+    :protocolUrl="protocolUrl"
+    @onConfirm="handleConfirm"
+  >
+  </authActionSheet>
+
   <!-- Copyright -->
   <copyright />
 
@@ -38,11 +49,12 @@
   />
 </template>
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, defineAsyncComponent } from 'vue'
 import Taro from '@tarojs/taro'
 import loginImage from '@images/logo.png'
 import './index.scss'
-import { verify } from '@utils/verify'
+import { beforeVerify } from '@utils/beforeVerify'
+import { getUserIdKey } from '@api/auth'
 
 // 用户录入信息
 const type = '第二代居民身份证'
@@ -53,7 +65,14 @@ const userInfo = reactive({
 const btnDisabled = computed(() => !userInfo.fullName || !userInfo.idNum)
 const dialogVisible = ref(false) // 控制弹出框显示隐藏
 
-const handleSubmit = () => {
+const beforeAuth = ref('') // 动作面板温馨提示内容
+const beforeProtocol = ref('') // 同意协议提示内容
+const protocolName = ref('') // 《用户服务协议》
+const protocolUrl = ref('') // 《用户服务协议》url
+const authActionSheet = defineAsyncComponent(() => import('@components/authActionSheet/index.vue'))
+const authActionSheetComponent = ref(null)
+
+const handleSubmit = async () => {
   let {fullName, idNum} = userInfo
   if (!fullName){
     return Taro.showToast({
@@ -66,15 +85,45 @@ const handleSubmit = () => {
       title: '请输入证件号码'
     })
   }
-  // 认证流程
-  let idInfo = {
-    idNum: userInfo.idNum,
-    fullName: userInfo.fullName,
-  }
+
+  // 调起人脸认证前的校验流程
   let options = {
-    idInfo
+    idInfo: {
+      idNum: userInfo.idNum,
+      fullName: userInfo.fullName,
+    }
   }
-  verify(options)
+  Taro.showLoading({title: '请稍候...'})
+  let {authTipsInfo, authUser} = await beforeVerify(options)
+  Taro.hideLoading()
+  authActionSheetComponent.value.actionSheetVisible = true
+  beforeAuth.value = authTipsInfo.beforeAuth
+  beforeProtocol.value = authTipsInfo.beforeProtocol
+  let protocol = authTipsInfo.protocolList[0]
+  protocolName.value = protocol.name
+  protocolUrl.value = protocol.url
+}
+
+// 确认授权
+const handleConfirm = async () => {
+  Taro.showLoading({title: '请稍候...'})
+  let {userIdKey} = await getUserIdKey({
+    idNum: userInfo.idNum,
+    fullName: userInfo.fullName
+  })
+  Taro.hideLoading()
+  Taro.checkIsSupportFacialRecognition({
+    success: (res) => {
+      console.log(res)
+    },
+    fail: (e) => {
+      Taro.showModal({
+        title: '温馨提示',
+        content: e.errMsg,
+        showCancel: false,
+      })
+    }
+  })
 }
 
 // 认证成功后回调

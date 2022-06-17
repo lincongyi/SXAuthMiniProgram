@@ -24,7 +24,6 @@ function request (options = {}) {
             showCancel: false,
           })
         }
-        // console.log(r.data)
         //网络请求成功 返回数据
         resolve(r.data)
       },
@@ -43,7 +42,14 @@ function request (options = {}) {
             retMessage: '网络错误,请检查设备网络状态',
           },
         })
-      }
+      },
+      // complete(e) {
+      //   console.log({
+      //     url,
+      //     options,
+      //     result: e,
+      //   })
+      // },
     })
   })
 }
