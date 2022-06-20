@@ -23,3 +23,11 @@ export function getUserIdKey(data){
     data
   })
 }
+
+// 小程序刷脸通过后调用
+export function checkCertCodeAgent(data){
+  return request({
+    url: '/checkCertCodeAgent',
+    data
+  })
+}

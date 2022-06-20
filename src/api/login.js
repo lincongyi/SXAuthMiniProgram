@@ -6,3 +6,7 @@ export function login(data){
     data
   })
 }
+
+export function logout(data){
+
+}

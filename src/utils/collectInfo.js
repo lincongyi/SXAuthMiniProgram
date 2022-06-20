@@ -1,40 +1,9 @@
-import Taro from '@tarojs/taro'
 import { getSetting, openSetting, getLocation, getNetworkType, getSystemInfo, getAccountInfoSync } from '@utils/taro'
-import { getCertToken, checkCerTokenAgent, getUserIdKey } from '@api/auth'
-
-let appId
-/**
- * 调起人脸认证前的校验流程
- * @param {object} options
- *  @param {boolean} agent // 代人认证
- *  @param {number} mode // 认证模式。64：,66：
- *  @param {string} authType // 认证类型。regular：常规认证；QrcodeRegular：个人二维码；ScanAuth：扫码认证
- *  @param {object} idInfo // 用户录入信息
- */
-export async function beforeVerify(options){
-  //  1.收集信息
-  let collectionInfo = await handleCollection()
-  // 2.获取certToken
-  let {agent=false, mode=66, authType='regular', idInfo} = options
-  let result = await getCertToken({agent, mode, authType, collectionInfo, idInfo}) // 获取certToken
-  let {retCode, retMessage, tokenInfo} = result
-  if (retCode) {
-    return Taro.showModal({
-      title: '温馨提示',
-      content: retMessage,
-      showCancel: false,
-    })
-  }
-  // 3.校验certToken，并返回授权信息
-  let {certToken, qrcodeContent} = tokenInfo
-  result = await checkCerTokenAgent({agent, appId, certToken})
-  return result.data
-}
 
 /**
   * 收集信息
  */
-const handleCollection = async () => {
+export async function collectInfo () {
   let collectionInfo = {
     appInfo: {
       appName: '陕西公民实人认证',
@@ -82,6 +51,8 @@ const handleCollection = async () => {
   collectionInfo.appInfo.wechatVersion = version
   const accountInfo = getAccountInfoSync()
   collectionInfo.appInfo.versionName = accountInfo.miniProgram.version
-  appId = accountInfo.miniProgram.appId
-  return collectionInfo
+  return {
+    collectionInfo,
+    appId: accountInfo.miniProgram.appId
+  }
 }

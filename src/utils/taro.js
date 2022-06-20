@@ -222,3 +222,43 @@ export function getSystemInfo(){
 export function getAccountInfoSync(){
   return Taro.getAccountInfoSync()
 }
+
+/**
+  * 检测设备是否支持活体检测
+ */
+export function checkIsSupportFacialRecognition(){
+  return new Promise((resolve, reject) => {
+    Taro.checkIsSupportFacialRecognition({
+      success: (res) => {
+        resolve(res)
+      },
+      fail: (e) => {
+        reject(e)
+        return Taro.showModal({
+          title: '温馨提示',
+          content: e.errMsg,
+          showCancel: false,
+        })
+      }
+    })
+  })
+}
+
+/**
+  * 活体检测
+ */
+export function startFacialRecognitionVerify(name, idCardNumber, userIdKey){
+  return new Promise((resolve) => {
+    Taro.startFacialRecognitionVerify({
+      name,
+      idCardNumber,
+      userIdKey,
+      success: ({verifyResult}) => {
+        resolve(verifyResult)
+      },
+      fail: (e) => {
+        console.log(e)
+      }
+    })
+  })
+}

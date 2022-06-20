@@ -13,7 +13,6 @@
       </view>
       <!-- 用户信息录入 end -->
     </view>
-    <!-- <view :class="['submit-btn',{'is-active':isActive,}]" @tap="handleSubmit">下一步</view> -->
 
     <view class="btn-warp">
       <nut-button type="primary" shape="square" block @tap="handleSubmit" :class="{'disabled':btnDisabled}">下一步</nut-button>
@@ -53,17 +52,22 @@ import { ref, reactive, computed, defineAsyncComponent } from 'vue'
 import Taro from '@tarojs/taro'
 import loginImage from '@images/logo.png'
 import './index.scss'
-import { beforeVerify } from '@utils/beforeVerify'
-import { getUserIdKey } from '@api/auth'
+import { collectInfo } from '@utils/collectInfo'
+import { checkIsSupportFacialRecognition, startFacialRecognitionVerify } from '@utils/taro'
+import { getCertToken, checkCerTokenAgent, getUserIdKey, checkCertCodeAgent } from '@api/auth'
 
 // 用户录入信息
 const type = '第二代居民身份证'
+const mode = ref(66)
 const userInfo = reactive({
   idNum: '440105199203182415',
   fullName: '林聪毅',
 })
 const btnDisabled = computed(() => !userInfo.fullName || !userInfo.idNum)
 const dialogVisible = ref(false) // 控制弹出框显示隐藏
+
+const canSelfAuth = ref('') // 是否代他人认证
+const certToken = ref('') // certToken
 
 const beforeAuth = ref('') // 动作面板温馨提示内容
 const beforeProtocol = ref('') // 同意协议提示内容
@@ -72,6 +76,7 @@ const protocolUrl = ref('') // 《用户服务协议》url
 const authActionSheet = defineAsyncComponent(() => import('@components/authActionSheet/index.vue'))
 const authActionSheetComponent = ref(null)
 
+// 下一步
 const handleSubmit = async () => {
   let {fullName, idNum} = userInfo
   if (!fullName){
@@ -94,8 +99,29 @@ const handleSubmit = async () => {
     }
   }
   Taro.showLoading({title: '请稍候...'})
-  let {authTipsInfo, authUser} = await beforeVerify(options)
+  //  1.收集信息
+  let {collectionInfo, appId} = await collectInfo()
+  Taro.setStorageSync('collectionInfo', JSON.stringify(collectionInfo))
+  // 2.获取certToken
+  let {agent=false, authType='regular', idInfo} = options
+  let result = await getCertToken({agent, mode: mode.value, authType, collectionInfo, idInfo}) // 获取certToken
+  let {retCode, retMessage, tokenInfo} = result
+  if (retCode) {
+    return Taro.showModal({
+      title: '温馨提示',
+      content: retMessage,
+      showCancel: false,
+    })
+  }
+  // let {certToken, qrcodeContent} = tokenInfo // qrcodeContent:用户二维码地址
+  certToken.value = tokenInfo.certToken
+
+  // 3.校验certToken，并返回授权信息
+  result = await checkCerTokenAgent({agent, appId, certToken: certToken.value})
+  let {authTipsInfo, authUser} = result.data
+  canSelfAuth.value = result.data.canSelfAuth
   Taro.hideLoading()
+
   authActionSheetComponent.value.actionSheetVisible = true
   beforeAuth.value = authTipsInfo.beforeAuth
   beforeProtocol.value = authTipsInfo.beforeProtocol
@@ -104,28 +130,47 @@ const handleSubmit = async () => {
   protocolUrl.value = protocol.url
 }
 
-// 确认授权
+// 确认授权 开始人脸识别
 const handleConfirm = async () => {
   Taro.showLoading({title: '请稍候...'})
   let {userIdKey} = await getUserIdKey({
     idNum: userInfo.idNum,
     fullName: userInfo.fullName
   })
+  authActionSheetComponent.value.actionSheetVisible = false
   Taro.hideLoading()
-  Taro.checkIsSupportFacialRecognition({
-    success: (res) => {
-      console.log(res)
-    },
-    fail: (e) => {
-      Taro.showModal({
-        title: '温馨提示',
-        content: e.errMsg,
-        showCancel: false,
-      })
+  await checkIsSupportFacialRecognition() // 检测设备是否支持活体检测
+  let verifyResult = await startFacialRecognitionVerify(userInfo.fullName, userInfo.idNum, userIdKey) // 活体检测
+
+  // 从第三方跳转过来要重新收集信息
+  let collectionInfo
+  // if (!Taro.getStorageSync('collectionInfo')){
+
+  // }
+  collectionInfo = Taro.getStorageSync('collectionInfo')
+  // 微信小程序刷脸通过后调用
+  let {retCode, retMessage} = await checkCertCodeAgent({
+    collectionInfo,
+    usedAgent: canSelfAuth.value,
+    usedMode: mode.value,
+    wxpvCode: verifyResult,
+    certToken: certToken.value
+  })
+  if (retCode){
+    return Taro.showModal({
+      title: '温馨提示',
+      content: retMessage,
+      showCancel: false
+    })
+  }
+  Taro.showToast({
+    icon: 'none',
+    title: '认证成功',
+    success: () => {
+      setTimeout(() => {
+        Taro.switchTab({url: '/index'})
+      }, 1500)
     }
   })
 }
-
-// 认证成功后回调
-// dialogVisible.value = true
 </script>
