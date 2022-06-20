@@ -40,7 +40,7 @@ export function handleUpdate(){
 /**
   * 用户登录 -> 微信小程序
  */
-export function handleLogin(){
+export function TaroLogin(){
   return new Promise((resolve, reject) => {
     Taro.login({
       success: ({code}) => {
@@ -109,7 +109,7 @@ export function checkSession(){
     },
     fail: () => {
       // session_key 已经失效，需要重新执行登录流程
-      handleLogin() //重新登录
+      TaroLogin() //重新登录
     }
   })
 }
@@ -161,15 +161,11 @@ export function getLocation(){
         resolve(res)
       },
       fail: () => {
+        Taro.hideLoading()
         return Taro.showModal({
           title: '温馨提示',
           content: '获取定位失败，请重试',
           showCancel: false,
-          success: () => {
-            Taro.navigateBack({
-              delta: 1
-            })
-          }
         })
       }
     })

@@ -1,7 +1,7 @@
 import Taro from '@tarojs/taro'
 const BASE_URL = 'http://gat.shaanxi.gov.cn/auth/sxfama'
-function request (options = {}) {
 
+function request (options = {}) {
   const { url, data, method='post' } = options
   const baseOptions = {
     url: `${BASE_URL}${url}`,
@@ -9,15 +9,36 @@ function request (options = {}) {
     method,
     header: {
       'content-type': 'application/json',
+      'login-token': Taro.getStorageSync('loginToken')
     }
   }
 
   return new Promise((resolve) => {
+    Taro.showLoading({title: '请稍候...'})
     Taro.request({
       ...baseOptions,
       success: (r) => {
+        Taro.hideLoading()
         //网络错误
         if (!r.statusCode || r.statusCode !== 200) {
+          return Taro.showModal({
+            title: '温馨提示',
+            content: r.data.retMessage,
+            showCancel: false,
+          })
+        }
+        // 用户未注册
+        if (r.data.retCode === 5202){
+          return Taro.showModal({
+            title: '温馨提示',
+            content: r.data.retMessage,
+            showCancel: false,
+            success: ({confirm}) => {
+              // 跳转到登录 || 注册页面
+              if (confirm) Taro.navigateTo({ url: '/pages/login/index' })
+            }
+          })
+        } else if (r.data.retCode){
           return Taro.showModal({
             title: '温馨提示',
             content: r.data.retMessage,
@@ -43,13 +64,13 @@ function request (options = {}) {
           },
         })
       },
-      // complete(e) {
-      //   console.log({
-      //     url,
-      //     options,
-      //     result: e,
-      //   })
-      // },
+      complete(e) {
+        console.log({
+          url,
+          options,
+          result: e,
+        })
+      },
     })
   })
 }

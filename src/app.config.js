@@ -1,7 +1,8 @@
 export default defineAppConfig({
   pages: [
-    'pages/login/index', // 登录 || 注册
     'pages/index/index', // 首页
+    'pages/accountManagement/index', // 账号管理
+    'pages/login/index', // 登录 || 注册
     'pages/userInfo/index', // 个人信息
     'pages/authRequest/index', // 认证请求 || 认证结果
     'pages/authResult/index', // 认证结果
@@ -11,7 +12,6 @@ export default defineAppConfig({
     'pages/updateMailBox/index', // 绑定邮箱 || 解绑邮箱
     'pages/updateAddress/index', // 地址
     'pages/setting/index', // 设置
-    'pages/accountManagement/index', // 账号管理
   ],
   tabBar: {
     'custom': true,

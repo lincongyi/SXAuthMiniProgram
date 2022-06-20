@@ -10,7 +10,7 @@
       <view class="agreement"></view>
 
       <view class="agreement-protocol">
-        <nut-checkbox v-model="isChecked" icon-name="" icon-active-name="checklist">
+        <nut-checkbox v-model="isChecked" class="checkbox" icon-name="" icon-active-name="checklist">
           <text v-html="beforeProtocol"></text>
         </nut-checkbox>
       </view>

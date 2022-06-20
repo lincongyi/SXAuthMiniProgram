@@ -34,7 +34,7 @@
 
         <view class="section">
           <image class="icon" mode="widthFix" :src="showQrcodeImage" />
-          <view class="column">
+          <view class="column" @tap="toPersonalQrcode">
             <view class="title">个人身份二维码</view>
             <view class="info">出示二维码进行身份认证</view>
           </view>
@@ -48,7 +48,7 @@
   <block v-if="!loginStatus">
     <view :class="['login-tips',{'is-fixed':!ISALIPAY}]">
       <text>登录后体验更多功能</text>
-      <view class="login-btn" @tap="handleLogin">立即登录</view>
+      <view class="login-btn" @tap="TaroLogin">立即登录</view>
     </view>
   </block>
   <block v-else>
@@ -61,54 +61,69 @@
 import { ref } from 'vue'
 import Taro, { useDidShow } from '@tarojs/taro'
 import './index.scss'
-import { handleLogin, getUserInfo, getOpenUserInfo } from '@utils/taro'
+import { getEnv, TaroLogin, getUserInfo } from '@utils/taro'
 import banner_01 from '@images/banner-01.png'
 import banner_02 from '@images/banner-02.png'
 import noticeImage from '@images/notice.png'
 import scanQrcodeImage from '@images/scan-qrcode.png'
 import showQrcodeImage from '@images/show-qrcode.png'
 import { login } from '@api/login'
+import { generateUUID } from '@utils/index'
 
-const env = Taro.getStorageSync('env')
+// 获取小程序当前环境
+const env = getEnv()
 const ISALIPAY = env === 'ALIPAY'
 
 const bannerList = [banner_01, banner_02]
 const hasNotice = ref(true) // 是否存在通知信息
-const loginStatus = ref(false)
 
 // 判断用户是否登录
-const isLogin = () => {
-  // 未登录
-  if (!loginStatus.value){
-    Taro.showModal({
-      title: '温馨提示',
-      content: '请登录后再进行操作',
-      success: (res) => {
-        if (res.confirm) {
-          Taro.navigateTo({
-            url: '/pages/login/index'
-          })
-        }
-      }
-    })
-    return false
+const isLogin = async () => {
+  // 登录流程
+  if (!Taro.getStorageSync('loginToken')){
+    // 区分支付宝和微信的登录流程
+    if (ISALIPAY){
+      console.log('alipay app')
+      Taro.hideLoading()
+    } else {
+      let jsCode = await TaroLogin()
+      let { encryptedData, iv } = await getUserInfo()
+      login({ jsCode, encryptedData, iv, loginType: 0 }).then(({retCode, retMessage, userData}) => {
+        let {aesUnionId} = userData // 加密后的unionId
+        Taro.setStorageSync('aesUnionId', aesUnionId)
+      })
+    }
   }
+  return true
 }
 
 // 扫码认证
-const handleScanCode = () => {
-  // if (!isLogin()) return
-  if (ISALIPAY){
-    console.log(Taro.ap)
+const handleScanCode = async () => {
+  if (await isLogin()) {
+    console.log('isLogin')
+  } else {
+    // Taro.ap.faceVerify({
+    //   bizId: generateUUID(), //业务流水号，商户自行生成，需要保证唯一性，不超过64位
+    //   bizType: '1',
+    //   success: (res) => {
+    //     console.log(res)
+    //     if (res.faceRetCode === 1000) { // 返回码1000 代表人脸采集成功
+
+    //     }
+    //   }
+    // })
   }
-  toLogin()
 }
-// 跳转到登录 || 注册页面
-const toLogin = () => {
-  Taro.navigateTo({
-    url: '/pages/login/index'
-  })
+
+// 个人身份二维码
+const toPersonalQrcode = async () => {
+  if (await isLogin()) {
+    console.log('isLogin')
+  } else {
+    console.log('unLogin')
+  }
 }
+
 // 跳转到认证请求页面
 const toAuthRequest = () => {
   // Taro.navigateTo({
@@ -119,27 +134,5 @@ const toAuthRequest = () => {
 useDidShow(async () => {
   const currentInstance = Taro.getCurrentInstance().page
   if (Taro.getTabBar) Taro.getTabBar(currentInstance).selected = 0
-
-  // 区分支付宝和微信的登录流程
-  if (ISALIPAY){
-    console.log('alipay app')
-  } else {
-    // 登录流程
-    let jsCode = await handleLogin()
-    let { encryptedData, iv } = await getUserInfo()
-    login({ jsCode, encryptedData, iv }).then(({retCode, retMessage}) => {
-      // 用户未注册
-      if (retCode === 5202){
-        Taro.showModal({
-          title: '温馨提示',
-          content: retMessage,
-          showCancel: false,
-          success: ({confirm}) => {
-            if (confirm) toLogin()
-          }
-        })
-      }
-    })
-  }
 })
 </script>

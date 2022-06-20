@@ -30,7 +30,7 @@
           <view class="btn-relative">
             {{userInfo.phone}}
             <nut-icon name="arrow-right" size="16" color="#bbb"></nut-icon>
-            <button open-type="getPhoneNumber" class="get-phone-number-btn"	@getphonenumber="getPhoneNumber"></button>
+            <button class="get-phone-number-btn" open-type="getPhoneNumber" @getphonenumber="getPhoneNumber"></button>
           </view>
         </view>
       </view>
@@ -80,7 +80,7 @@ const toCertificateSetting = () => {
   })
 }
 
-// 更换绑定手机
+// 获取手机号码
 const getPhoneNumber = (event) => {
   console.log(event.detail)
   if (event.detail.errMsg.indexOf('getPhoneNumber:ok') === -1) {

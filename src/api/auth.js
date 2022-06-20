@@ -31,3 +31,11 @@ export function checkCertCodeAgent(data){
     data
   })
 }
+
+// 获取手机号码
+export function getUserPhoneNum(data){
+  return request({
+    url: '/getUserPhoneNum',
+    data
+  })
+}
