@@ -73,7 +73,7 @@ const beforeAuth = ref('') // 动作面板温馨提示内容
 const beforeProtocol = ref('') // 同意协议提示内容
 const protocolName = ref('') // 《用户服务协议》
 const protocolUrl = ref('') // 《用户服务协议》url
-const authActionSheet = defineAsyncComponent(() => import('@components/authActionSheet/index.vue'))
+const authActionSheet = defineAsyncComponent(() => import('@components/authActionSheet/index.vue')) // 授权弹窗
 const authActionSheetComponent = ref(null)
 
 // 下一步
@@ -140,7 +140,8 @@ const handleConfirm = async () => {
   authActionSheetComponent.value.actionSheetVisible = false
   Taro.hideLoading()
   await checkIsSupportFacialRecognition() // 检测设备是否支持活体检测
-  let verifyResult = await startFacialRecognitionVerify(userInfo.fullName, userInfo.idNum, userIdKey) // 活体检测
+  // 4.活体检测
+  let verifyResult = await startFacialRecognitionVerify(userInfo.fullName, userInfo.idNum, userIdKey)
 
   // 从第三方跳转过来要重新收集信息
   let collectionInfo
@@ -148,7 +149,7 @@ const handleConfirm = async () => {
 
   // }
   collectionInfo = Taro.getStorageSync('collectionInfo')
-  // 微信小程序刷脸通过后调用
+  // 5.校验活体检测结果
   let {retCode, retMessage} = await checkCertCodeAgent({
     collectionInfo,
     usedAgent: canSelfAuth.value,
