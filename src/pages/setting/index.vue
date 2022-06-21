@@ -9,7 +9,7 @@
       <nut-cell title="切换账号" @tap="toLogin"></nut-cell>
     </nut-cell-group>
     <view class="btn-warp">
-      <nut-button type="primary" shape="square" plain block color="#666" @tap="logout">退出登录</nut-button>
+      <nut-button type="primary" shape="square" plain block color="#666" @tap="handleLogout">退出登录</nut-button>
     </view>
   </view>
 
@@ -20,6 +20,7 @@
 <script setup>
 import Taro from '@tarojs/taro'
 import './index.scss'
+import { logout } from '@api/login'
 
 // 账号管理
 const toAccountManagement = () => {
@@ -36,13 +37,24 @@ const toLogin = () => {
 }
 
 // 退出登录
-const logout = () => {
+const handleLogout = () => {
   Taro.showModal({
     title: '退出登录',
     content: '是否确认退出登录',
-    success: (res) => {
+    success: async (res) => {
       if (res.confirm) {
-        console.log('用户点击确定')
+        await logout()
+        Taro.removeStorageSync('loginToken') // 退出登录，移除loginToken
+        Taro.showToast({
+          icon: 'none',
+          title: '已退出登录',
+          mask: true,
+          success: () => {
+            setTimeout(() => {
+              Taro.switchTab({url: '/pages/index/index'})
+            }, 1500)
+          }
+        })
       }
     }
   })

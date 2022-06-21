@@ -47,8 +47,8 @@ const deleteAccount = () => {
       if (res.confirm) {
         Taro.showLoading({title: '请稍候...'})
 
-        //  1.收集信息
-        let collectionInfo, appId
+        // 1.收集信息
+        let collectionInfo
         if (!Taro.getStorageSync('collectionInfo')){
           let result = await collectInfo()
           collectionInfo = result.collectionInfo
@@ -68,7 +68,7 @@ const deleteAccount = () => {
         }
         certToken.value = tokenInfo.certToken
         // 3.校验certToken，并返回授权信息
-        result = await checkCerTokenAgent({appId, certToken: certToken.value})
+        result = await checkCerTokenAgent({certToken: certToken.value})
         let {authTipsInfo, authUser} = result.data
         canSelfAuth.value = result.data.canSelfAuth
         Taro.hideLoading()

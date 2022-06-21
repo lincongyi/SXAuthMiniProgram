@@ -23,7 +23,7 @@ export function register(data){
 /**
   * 退出登录
  */
-export function logout(data){
+export function logout(data={}){
   return request({
     url: '/logout',
     data

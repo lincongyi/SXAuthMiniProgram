@@ -11,7 +11,7 @@
       </view>
       <view class="qrcode-box">
         <view class="qrcode-image-wrap">
-          <canvas class="qrcode-canvas" canvas-id="canvas" id="canvas"/>
+          <canvas class="qrcode-canvas" canvas-id="canvas" id="canvas" width="230" height="230" style="width: 230px; height: 230px;"/>
           <img class="personal-qrcode-logo" :src="personalQrcodeLogo" />
         </view>
         <view class="refresh-wrap">
@@ -37,33 +37,47 @@ import avatarDefault from '@images/avatar-default.png'
 import refresh from '@images/refresh.png'
 import personalQrcodeLogo from '@images/personal-qrcode-logo.png'
 import QR from '@utils/qrcode.js'
+import { getCertToken } from '@api/auth'
+import { collectInfo } from '@utils/collectInfo'
 
-const qrcodeUrl = ref('https://taro-docs.jd.com/taro/docs/components/canvas/')
 // 刷新二维码
-const handleRefresh = () => {
-  let url = 'https://www.baidu.com/'
-  generateQrcode(url)
-  Taro.showToast({
-    icon: 'none',
-    title: '刷新成功',
-    mask: true,
+const handleRefresh = async () => {
+  let {qrcodeContent} = await preStep()
+  generateQrcode(qrcodeContent)
+}
+
+// 生成二维码前置流程
+const preStep = async () => {
+  // 收集信息
+  let collectionInfo
+  if (!Taro.getStorageSync('collectionInfo')){
+    let result = await collectInfo()
+    collectionInfo = result.collectionInfo
+    Taro.setStorageSync('collectionInfo', collectionInfo)
+  } else {
+    collectionInfo = Taro.getStorageSync('collectionInfo')
+  }
+  // 获取certToken
+  let authType='regular'
+  let {tokenInfo} = await getCertToken({authType, collectionInfo}) // 获取certToken
+  return tokenInfo
+}
+
+// 生成二维码
+const generateQrcode = (text) => {
+  // 不加setTimeout，首次渲染画不出来二维码
+  setTimeout(() => {
+    QR({
+      width: 230,
+      height: 230,
+      canvasId: 'canvas',
+      text,
+    })
   })
 }
 
-const generateQrcode = async (text) => {
-  const res = await Taro.getSystemInfo()
-  const scale = res.screenWidth / 375
-  QR({
-    width: 300,
-    height: 225,
-    canvasId: 'canvas',
-    text,
-    background: '#fff',
-    foreground: '#000'
-  })
-}
-
-useDidShow(() => {
-  generateQrcode(qrcodeUrl.value)
+useDidShow(async () => {
+  let {qrcodeContent} = await preStep()
+  generateQrcode(qrcodeContent)
 })
 </script>

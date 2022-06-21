@@ -1094,7 +1094,13 @@
       qrcode.make()
 
       // get canvas context
-      var ctx = my.createCanvasContext && my.createCanvasContext(options.canvasId)
+      var target
+      try {
+        target = wx
+      } catch (error) {
+        target = my
+      }
+      var ctx = target.createCanvasContext && target.createCanvasContext(options.canvasId)
 
       // compute tileW/tileH based on options.width/options.height
       var tileW = options.width / qrcode.getModuleCount()
