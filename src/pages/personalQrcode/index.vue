@@ -30,7 +30,6 @@
   <view id="qrcode"></view>
 </template>
 <script setup>
-import { ref } from 'vue'
 import Taro, {useDidShow} from '@tarojs/taro'
 import './index.scss'
 import avatarDefault from '@images/avatar-default.png'
