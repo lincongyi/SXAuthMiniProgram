@@ -1,3 +1,34 @@
+import Taro from '@tarojs/taro'
+import { TaroLogin, getUserInfo } from '@utils/taro'
+import { login } from '@api/login'
+
+// 判断用户未登录 -> 登录 or 注册 || 已登录
+export async function isLogin(){
+  // 登录流程
+  if (!Taro.getStorageSync('loginToken')){
+    // 区分支付宝和微信的登录流程
+    const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
+    if (ISALIPAY){
+      console.log('alipay app')
+      Taro.hideLoading()
+    } else {
+      let jsCode = await TaroLogin()
+      let { encryptedData, iv } = await getUserInfo()
+      login({ jsCode, encryptedData, iv, loginType: 0 }).then(({loginToken, loginUser, openId}) => {
+        Taro.setStorageSync('loginToken', loginToken)
+        Taro.setStorageSync('loginUser', loginUser)
+        Taro.showToast({
+          icon: 'none',
+          title: '登录成功',
+          mask: true,
+        })
+      })
+    }
+  } else {
+    return true
+  }
+}
+
 /**
  * 日期时间格式化
  */

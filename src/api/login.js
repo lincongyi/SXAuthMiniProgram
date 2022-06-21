@@ -29,3 +29,13 @@ export function logout(data){
     data
   })
 }
+
+/**
+  * 注销账户
+ */
+export function logoff(data){
+  return request({
+    url: '/logoff',
+    data
+  })
+}

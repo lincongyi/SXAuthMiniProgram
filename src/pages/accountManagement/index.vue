@@ -26,7 +26,7 @@ import Taro from '@tarojs/taro'
 import './index.scss'
 import { collectInfo } from '@utils/collectInfo'
 import { getCertToken, checkCerTokenAgent, getUserIdKey, checkCertCodeAgent } from '@api/auth'
-import { logout } from '@api/login'
+import { logoff } from '@api/login'
 import { checkIsSupportFacialRecognition, startFacialRecognitionVerify } from '@utils/taro'
 
 const canSelfAuth = ref('') // 是否代他人认证
@@ -87,13 +87,16 @@ const deleteAccount = () => {
 // 确认授权 开始人脸识别
 const handleConfirm = async () => {
   Taro.showLoading({title: '请稍候...'})
-  let {userIdKey} = await getUserIdKey(toRaw(userInfo))
+  let loginToken = Taro.getStorageSync('loginToken')
+  let {userIdKey} = await getUserIdKey({loginToken})
   authActionSheetComponent.value.actionSheetVisible = false
   await checkIsSupportFacialRecognition() // 检测设备是否支持活体检测
   // 4.活体检测
-  let verifyResult = await startFacialRecognitionVerify(userIdKey)
 
-  // 如果从第三方小程序跳转过来，就要重新收集信息
+  let loginUser = Taro.getStorageSync('loginUser')
+  let verifyResult = await startFacialRecognitionVerify(loginUser.fullName, loginUser.idNum, userIdKey)
+
+  // collectionInfo尝试从storage里面取
   let collectionInfo
   if (!Taro.getStorageSync('collectionInfo')){
     let result = await collectInfo()
@@ -102,25 +105,20 @@ const handleConfirm = async () => {
     collectionInfo = Taro.getStorageSync('collectionInfo')
   }
   // 5.校验活体检测结果
-  let {retCode, retMessage} = await checkCertCodeAgent({
+  await checkCertCodeAgent({
     collectionInfo,
     usedAgent: canSelfAuth.value,
     wxpvCode: verifyResult,
-    certToken: certToken.value
+    certToken: certToken.value,
+    usedMode: 66, // 注销流程66模式实人认证
   })
-  Taro.hideLoading()
-  if (retCode){
-    return Taro.showModal({
-      title: '温馨提示',
-      content: retMessage,
-      showCancel: false
-    })
-  }
-  Taro.showLoading({title: '请稍候...'})
-  await logout({ wxpvCode: verifyResult }).then((res) => {
-    console.log(res)
+
+  await logoff({
+    certToken: certToken.value,
+    wxpvCode: verifyResult
+  }).then(() => {
+    Taro.removeStorageSync('loginToken') // 注销账户，移除loginToken
   })
-  Taro.hideLoading()
   Taro.showToast({
     icon: 'none',
     title: '注销成功',

@@ -152,20 +152,14 @@ const handleConfirm = async () => {
     collectionInfo = Taro.getStorageSync('collectionInfo')
   }
   // 5.校验活体检测结果
-  let {retCode, retMessage} = await checkCertCodeAgent({
+  await checkCertCodeAgent({
     collectionInfo,
     usedAgent: canSelfAuth.value,
     usedMode: mode.value,
     wxpvCode: verifyResult,
     certToken: certToken.value
   })
-  if (retCode){
-    return Taro.showModal({
-      title: '温馨提示',
-      content: retMessage,
-      showCancel: false
-    })
-  }
+
   let loginType = Taro.getStorageSync('loginType') || 0 // 0:小程序内部流程，用户未注册；1:第三方小程序跳转过来，无需注册
   if (!loginType){
     await register({

@@ -17,7 +17,7 @@ export function checkCerTokenAgent(data){
 }
 
 // 获取微信认证标识
-export function getUserIdKey(data){
+export function getUserIdKey(data={}){
   return request({
     url: '/getUserIdKey',
     data
