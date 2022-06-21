@@ -40,12 +40,6 @@ import QR from '@utils/qrcode.js'
 import { getCertToken } from '@api/auth'
 import { collectInfo } from '@utils/collectInfo'
 
-// 刷新二维码
-const handleRefresh = async () => {
-  let {qrcodeContent} = await preStep()
-  generateQrcode(qrcodeContent)
-}
-
 // 生成二维码前置流程
 const preStep = async () => {
   // 收集信息
@@ -63,6 +57,12 @@ const preStep = async () => {
   return tokenInfo
 }
 
+// 刷新二维码
+const handleRefresh = async () => {
+  let {qrcodeContent} = await preStep()
+  generateQrcode(qrcodeContent)
+}
+
 // 生成二维码
 const generateQrcode = (text) => {
   // 不加setTimeout，首次渲染画不出来二维码
@@ -77,7 +77,6 @@ const generateQrcode = (text) => {
 }
 
 useDidShow(async () => {
-  let {qrcodeContent} = await preStep()
-  generateQrcode(qrcodeContent)
+  handleRefresh()
 })
 </script>
