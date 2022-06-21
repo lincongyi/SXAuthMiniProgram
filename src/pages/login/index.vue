@@ -83,14 +83,9 @@ const getPhoneNumber = async (event) => {
       showCancel: false,
     })
   }
-  let {code: jsCode, encryptedData, iv} = event.detail
-  let result = await getUserPhoneNum({
-    jsCode,
-    encryptedData,
-    iv
-  })
-  console.log(result)
-  // phoneNum.value = result
+  let {code: jsCode} = event.detail
+  let {userData} = await getUserPhoneNum({ jsCode })
+  phoneNum.value = userData.phoneNum
   handleSubmit()
 }
 
@@ -121,7 +116,7 @@ const handleSubmit = async () => {
   // 2.获取certToken
   let agent = false
   let authType = 'regular'
-  result = await getCertToken({agent, mode: mode.value, authType, collectionInfo, idInfo: toRaw(userInfo)}) // 获取certToken
+  let result = await getCertToken({agent, mode: mode.value, authType, collectionInfo, idInfo: toRaw(userInfo)}) // 获取certToken
   let {tokenInfo} = result
 
   // let {certToken, qrcodeContent} = tokenInfo // qrcodeContent:用户二维码地址
@@ -171,7 +166,7 @@ const handleConfirm = async () => {
       showCancel: false
     })
   }
-  let loginType = 0 // 0:小程序内部流程，用户未注册；1:第三方小程序跳转过来，无需注册
+  let loginType = Taro.getStorageSync('loginType') || 0 // 0:小程序内部流程，用户未注册；1:第三方小程序跳转过来，无需注册
   if (!loginType){
     await register({
       aesUnionId: Taro.getStorageSync('aesUnionId'),
@@ -179,26 +174,18 @@ const handleConfirm = async () => {
       phoneNum: phoneNum.value,
       regMode: 'id',
       wxpvCode: verifyResult
-    }).then((res) => {
-      console.log(res)
+    }).then(({loginToken}) => {
+      Taro.setStorageSync('loginToken', loginToken)
     })
   }
-  // Taro.showModal({
-  //   title: '温馨提示',
-  //   content: '您的账号已绑定支付宝，下次可直接使用支付宝授权快捷登录',
-  //   showCancel: false,
-  //   success: ({confirm}) => {
-  //     // 跳转到首页
-  //     if (confirm) Taro.switchTab({ url: '/pages/index/index' })
-  //   }
-  // })
-  Taro.showToast({
-    icon: 'none',
-    title: '认证成功',
-    success: () => {
-      setTimeout(() => {
-        Taro.switchTab({url: '/pages/index/index'})
-      }, 1500)
+  const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
+  Taro.showModal({
+    title: '温馨提示',
+    content: `您的账号已绑定${ISALIPAY?'支付宝':'微信'}，下次可直接使用${ISALIPAY?'支付宝':'微信'}授权快捷登录`,
+    showCancel: false,
+    success: ({confirm}) => {
+      // 跳转到首页
+      if (confirm) Taro.switchTab({ url: '/pages/index/index' })
     }
   })
 }

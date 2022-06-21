@@ -35,7 +35,7 @@
 </template>
 
 <script setup>
-import { ref, defineAsyncComponent } from 'vue'
+import { ref } from 'vue'
 import Taro from '@tarojs/taro'
 import './index.scss'
 

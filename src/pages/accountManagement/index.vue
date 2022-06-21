@@ -124,6 +124,7 @@ const handleConfirm = async () => {
   Taro.showToast({
     icon: 'none',
     title: '注销成功',
+    mask: true,
     success: () => {
       setTimeout(() => {
         Taro.switchTab({url: '/pages/index/index'})

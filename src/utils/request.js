@@ -29,6 +29,8 @@ function request (options = {}) {
         }
         // 用户未注册
         if (r.data.retCode === 5202){
+          let {aesUnionId} = r.data.userData // 加密后的unionId
+          Taro.setStorageSync('aesUnionId', aesUnionId)
           return Taro.showModal({
             title: '温馨提示',
             content: r.data.retMessage,

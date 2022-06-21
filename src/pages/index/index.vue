@@ -88,13 +88,18 @@ const isLogin = async () => {
     } else {
       let jsCode = await TaroLogin()
       let { encryptedData, iv } = await getUserInfo()
-      login({ jsCode, encryptedData, iv, loginType: 0 }).then(({retCode, retMessage, userData}) => {
-        let {aesUnionId} = userData // 加密后的unionId
-        Taro.setStorageSync('aesUnionId', aesUnionId)
+      login({ jsCode, encryptedData, iv, loginType: 0 }).then(({loginToken, loginUser, openId}) => {
+        Taro.setStorageSync('loginToken', loginToken)
+        Taro.showToast({
+          icon: 'none',
+          title: '登录成功',
+          mask: true,
+        })
       })
     }
+  } else {
+    return true
   }
-  return true
 }
 
 // 扫码认证
@@ -118,9 +123,9 @@ const handleScanCode = async () => {
 // 个人身份二维码
 const toPersonalQrcode = async () => {
   if (await isLogin()) {
-    console.log('isLogin')
-  } else {
-    console.log('unLogin')
+    Taro.navigateTo({
+      url: '/pages/personalQrcode/index'
+    })
   }
 }
 

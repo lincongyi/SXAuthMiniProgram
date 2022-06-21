@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, defineAsyncComponent } from 'vue'
+import { ref, reactive } from 'vue'
 import Taro, { useDidShow, useRouter } from '@tarojs/taro'
 import noAuthRecordImage from '@images/no-auth-record.png'
 import './index.scss'

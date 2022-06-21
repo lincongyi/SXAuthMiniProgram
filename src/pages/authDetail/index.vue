@@ -46,7 +46,7 @@
 </template>
 
 <script setup>
-import { ref, defineAsyncComponent } from 'vue'
+import { ref } from 'vue'
 import './index.scss'
 import toBeCertifiedImage from '@images/to-be-certified.png'
 import certificationSuccessfulImage from '@images/certification-successful.png'
