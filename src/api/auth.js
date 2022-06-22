@@ -41,7 +41,7 @@ export function getUserPhoneNum(data){
 }
 
 // 认证记录
-export function authList(data){
+export function getAuthList(data){
   return request({
     url: '/authList',
     data

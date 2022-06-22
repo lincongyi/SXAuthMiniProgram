@@ -68,7 +68,7 @@ import noticeImage from '@images/notice.png'
 import scanQrcodeImage from '@images/scan-qrcode.png'
 import showQrcodeImage from '@images/show-qrcode.png'
 import { isLogin, generateUUID } from '@utils/index'
-import { authList } from '@api/auth'
+import { getAuthList } from '@api/auth'
 
 
 // 获取小程序当前环境
@@ -130,7 +130,7 @@ const loginEvent = async () => {
 }
 
 const loopGetAuthList = async() => {
-  let {data} = await authList({
+  let {data} = await getAuthList({
     pageNum: 0,
     pageSize: 0,
     flag: 1, // 0.认证记录；1.待认证
