@@ -14,7 +14,7 @@ export async function isLogin(){
     } else {
       let jsCode = await TaroLogin()
       let { encryptedData, iv } = await getUserInfo()
-      login({ jsCode, encryptedData, iv, loginType: 0 }).then(({loginToken, loginUser, openId}) => {
+      await login({ jsCode, encryptedData, iv, loginType: 0 }).then(({loginToken, loginUser, openId}) => {
         Taro.setStorageSync('loginToken', loginToken)
         Taro.setStorageSync('loginUser', loginUser)
         Taro.showToast({

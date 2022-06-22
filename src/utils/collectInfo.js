@@ -1,4 +1,4 @@
-import { getSetting, openSetting, getLocation, getNetworkType, getSystemInfo, getAccountInfoSync } from '@utils/taro'
+import { getSetting, openSetting, getLocation, getNetworkType, getSystemInfo, getAccountInfoSync, getRunScene } from '@utils/taro'
 
 /**
   * 收集信息
@@ -49,10 +49,13 @@ export async function collectInfo () {
   collectionInfo.phoneInfo.manufacturer = brand
   collectionInfo.platform = platform
   collectionInfo.appInfo.wechatVersion = version
-  const accountInfo = getAccountInfoSync()
-  collectionInfo.appInfo.versionName = accountInfo.miniProgram.version
+  try {
+    const accountInfo = getAccountInfoSync() // 支付宝小程序开发者工具（IDE）暂不支持调试此 API，请使用 真机调试 功能在真机进行调试。
+    collectionInfo.appInfo.versionName = accountInfo.miniProgram.version
+  } catch (error) {
+    console.log(error)
+  }
   return {
     collectionInfo,
-    appId: accountInfo.miniProgram.appId
   }
 }

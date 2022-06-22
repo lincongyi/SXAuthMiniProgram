@@ -39,3 +39,11 @@ export function getUserPhoneNum(data){
     data
   })
 }
+
+// 认证记录
+export function authList(data){
+  return request({
+    url: '/authList',
+    data
+  })
+}

@@ -1,23 +1,18 @@
 <template>
   <view class="container">
     <view class="user-info-box">
+      <image class="avatar" mode="widthFix" :src="avatarImage"/>
       <block v-if="!loginStatus">
-        <image class="avatar" mode="widthFix" :src="avatarImage"/>
         <view class="unlogin" @tap="handleLogin">
           登录/注册
           <nut-icon name="arrow-right" size="16" color="#fff"></nut-icon>
         </view>
       </block>
       <block v-else>
-        <view class="avatar">
-          <open-data type="userAvatarUrl"></open-data>
-        </view>
         <view class="info-wrap" @tap="toUserInfo">
           <view class="user-content">
-            <view class="name">
-              <open-data type="userNickName"></open-data>
-            </view>
-            <view class="id-number">证件号码：1234567890123</view>
+            <view class="name">{{fullName}}</view>
+            <view class="id-number">证件号码：{{idNum}}</view>
           </view>
           <nut-icon name="arrow-right" size="16" color="#fff"></nut-icon>
         </view>
@@ -43,41 +38,46 @@
 
   <!-- Copyright -->
   <copyright :isFixed="!ISALIPAY" />
-
-  <nut-dialog
-    title="温馨提示"
-    content="您尚未登录"
-    cancel-text="暂不登录"
-    ok-text="立即登录"
-    :overlay-style="{'z-index':10001}"
-    v-model:visible="dialogVisible"
-    @ok="handleLogin"
-  />
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import Taro, { useDidShow } from '@tarojs/taro'
 import './index.scss'
+import { isLogin } from '@utils/index'
 import avatarImage from '@images/avatar-default.png' // 用户默认头像
 import userCenterRecordImage from '@images/user-center-record.png'
 import userCenterSettingImage from '@images/user-center-setting.png'
 
 const env = Taro.getStorageSync('env')
 const ISALIPAY = env === 'ALIPAY'
-const loginStatus = ref(1) // 判断用户是否登录状态
-const dialogVisible = ref(false) // 控制弹出框显示隐藏
+const loginStatus = ref(false) // 判断用户是否登录状态
 
-useDidShow(() => {
-  const currentInstance = Taro.getCurrentInstance().page
-  if (Taro.getTabBar) Taro.getTabBar(currentInstance).selected = 1
-})
+const fullName = ref('') // 用户名
+const idNum = ref('') // 证件号码
 
 // 登录/注册
 const handleLogin = () => {
-  if (!loginStatus.value){
-    dialogVisible.value = true
-  }
+  Taro.showModal({
+    title: '温馨提示',
+    content: '您尚未登录',
+    confirmText: '立即登录',
+    cancelText: '暂不登录',
+    success: async (res) => {
+      if (res.confirm) {
+        await isLogin()
+        setLoginUserInfo()
+      }
+    }
+  })
+}
+
+// 根据用户登录信息填充用户资料
+const setLoginUserInfo = () => {
+  let loginUser = Taro.getStorageSync('loginUser')
+  fullName.value = loginUser.fullName
+  idNum.value = loginUser.idNum
+  loginStatus.value = true
 }
 
 // 跳转到个人信息页面
@@ -89,15 +89,31 @@ const toUserInfo = () => {
 
 // 跳转到认证记录页面
 const toAuthRequest = () => {
-  Taro.navigateTo({
-    url: '/pages/authRequest/index'
-  })
+  if (!loginStatus.value){
+    handleLogin()
+  } else {
+    Taro.navigateTo({
+      url: '/pages/authRequest/index?flag=0'
+    })
+  }
 }
 
 // 跳转到设置页面
 const toSetting = () => {
-  Taro.navigateTo({
-    url: '/pages/setting/index'
-  })
+  if (!loginStatus.value){
+    handleLogin()
+  } else {
+    Taro.navigateTo({
+      url: '/pages/setting/index'
+    })
+  }
 }
+
+useDidShow(() => {
+  const currentInstance = Taro.getCurrentInstance().page
+  if (Taro.getTabBar) Taro.getTabBar(currentInstance).selected = 1
+
+  loginStatus.value = Boolean(Taro.getStorageSync('loginToken')) || false
+  if (loginStatus.value) setLoginUserInfo()
+})
 </script>
