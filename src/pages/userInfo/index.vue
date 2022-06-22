@@ -1,12 +1,7 @@
 <template>
   <view class="container">
     <view class="user-avatar">
-      <block v-if="!ISALIPAY">
-        <open-data type="userAvatarUrl"></open-data>
-      </block>
-      <block v-else>
-
-      </block>
+      <image class="avatar" mode="widthFix" :src="avatarImage"/>
     </view>
     <view class="info-pannel">
       <view class="column">
@@ -28,7 +23,7 @@
         <view class="left-label">手机号码</view>
         <view class="right-content">
           <view class="btn-relative">
-            {{userInfo.phone}}
+            {{userInfo.phoneNum}}
             <nut-icon name="arrow-right" size="16" color="#bbb"></nut-icon>
             <button class="get-phone-number-btn" open-type="getPhoneNumber" @getphonenumber="getPhoneNumber"></button>
           </view>
@@ -59,14 +54,13 @@
 import { ref, reactive } from 'vue'
 import Taro, { useDidShow } from '@tarojs/taro'
 import './index.scss'
+import avatarImage from '@images/avatar-default.png' // 用户默认头像
 
-const env = Taro.getStorageSync('env')
-const ISALIPAY = env === 'ALIPAY'
 // 用户信息
-let userInfo = reactive({
-  fullName: 'XXX', // 姓名
-  idNum: 'YYY',
-  phone: '15800000000', // 手机号码
+let userInfo = ref({
+  fullName: '', // 姓名
+  idNum: '', // 证件号码
+  phoneNum: '', // 手机号码
   startDate: '', // 起始日期
   endDate: '', // 截止日期
   mailBox: '', // 邮箱
@@ -95,8 +89,8 @@ const getPhoneNumber = (event) => {
 // 绑定or解绑邮箱
 const toUpdateMailBox = () => {
   let url = '/pages/updateMailBox/index'
-  if (userInfo.mailBox){
-    url+=`?isUnBound=1&mailBox=${userInfo.mailBox}`
+  if (userInfo.value.mailBox){
+    url+=`?isUnBound=1&mailBox=${userInfo.value.mailBox}`
   } else {
     url+='?isUnBound=0'
   }
@@ -111,6 +105,7 @@ const toUpdateAddress = () => {
 }
 
 useDidShow(() => {
-  userInfo = {...userInfo, ...(Taro.getStorageSync('userInfo') || {})}
+  userInfo.value = {...userInfo.value, ...(Taro.getStorageSync('loginUser') || {})}
+  console.log(userInfo.value)
 })
 </script>

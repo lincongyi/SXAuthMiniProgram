@@ -38,6 +38,7 @@
 import { ref } from 'vue'
 import Taro from '@tarojs/taro'
 import './index.scss'
+import { updateYXQ } from '@api/setting'
 
 const datePickerIndex = ref(0) // 0.起始日期；1.截至日期
 const datePickerTitle = ref('') // 日期选择器标题
@@ -70,8 +71,7 @@ const confirm = ({ selectedValue }) => {
 const isPermanentChange = () => endDate.value = ''
 
 // 确定
-const handleConfirm =() => {
-
+const handleConfirm = async () => {
   if (!startDate.value){
     return Taro.showToast({
       icon: 'none',
@@ -89,20 +89,18 @@ const handleConfirm =() => {
       showCancel: false
     })
   }
-  Taro.showLoading({title: '请稍候...'})
-  setTimeout(() => {
-    let userInfo = Taro.getStorageSync('userInfo') ? JSON.parse(Taro.getStorageSync('userInfo')) : {}
-    Taro.setStorageSync('userInfo', JSON.stringify({...userInfo, ...{startDate: startDate.value, endDate: endDate.value}}))
-    Taro.hideLoading()
-    Taro.showToast({
-      mask: true,
-      title: '证件有效期添加成功',
-      success: () => {
+  await updateYXQ()
+  Taro.setStorageSync('loginUser', {...Taro.getStorageSync('loginUser'), ...{startDate: startDate.value, endDate: endDate.value}})
+  Taro.showToast({
+    title: '证件有效期添加成功',
+    mask: true,
+    success: () => {
+      setTimeout(() => {
         Taro.navigateBack({
           delta: 1
         })
-      }
-    })
-  }, 1500)
+      }, 1500)
+    }
+  })
 }
 </script>

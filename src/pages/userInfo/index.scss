@@ -9,7 +9,13 @@
   margin: 70px auto 20px;
   width: 110px;
   height: 110px;
-  border-radius: 50%;
+
+  .avatar {
+    overflow: hidden;
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+  }
 }
 
 .column {
