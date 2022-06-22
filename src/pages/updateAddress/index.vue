@@ -30,9 +30,7 @@ const handleConfirm = () => {
       title: '街道、楼牌号'
     })
   }
-  Taro.showLoading({title: '请稍候...'})
   setTimeout(() => {
-    Taro.hideLoading()
     Taro.showToast({
       mask: true,
       title: '绑定成功',

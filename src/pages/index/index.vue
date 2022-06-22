@@ -81,7 +81,7 @@ const noticeSize = ref(0) // 待完成认证个数
 const loginStatus = ref(false) // 是否登录状态
 
 let timer = null
-const loopPeriod = 1000*5 // 轮询接口5分钟
+const loopPeriod = 1000*60*5 // 轮询接口5分钟
 
 // 跳转到认证请求页面
 const toAuthRequest = () => {
@@ -96,6 +96,13 @@ const handleScanCode = async () => {
     await isLogin()
     loginStatus.value = true
     loginEvent()
+  } else {
+    Taro.scanCode({
+      onlyFromCamera: true,
+      success: (res) => {
+        console.log(res)
+      }
+    })
   }
 }
 

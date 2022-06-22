@@ -6,11 +6,11 @@
     </block>
     <block v-else>
       <view class="auth-list">
-        <view class="list-item" v-for="(item,index) in authList" :key="index">
+        <view class="list-item" v-for="(item,index) in authList" :key="index" @tap="toAuthDetail(item)">
           <view class="item-content">
-            <view class="auth-method">{{item.title}}</view>
-            <view class="auth-info">来源：{{item.sourceName}}</view>
+            <view class="auth-method">{{item.authMethod}}</view>
             <template v-if="flag">
+            <view class="auth-info">来源：{{item.sourceName}}</view>
               <view class="auth-info flex">还剩：
                 <view class="emphasize">{{item.hour}}</view>
                 小时
@@ -21,12 +21,13 @@
               </view>
             </template>
             <template v-else>
+              <view class="auth-info">{{item.authSceneStr}}</view>
               <view class="auth-info">{{item.authTime}}</view>
             </template>
           </view>
           <view class="item-btn" @tap="toConfirmAuth" v-if="flag">马上认证</view>
           <view class="auth-result" v-else>
-            <view class="auth-status success">成功</view>
+            <view :class="['auth-status', authResult[item.authResStr].class]">{{authResult[item.authResStr].text}}</view>
             <nut-icon name="right" class="arrow" size="18" color="#bbb"></nut-icon>
           </view>
         </view>
@@ -48,11 +49,11 @@ import { getAuthList } from '@api/auth'
 const flag = ref(0) // 0.认证记录；1.待认证
 const authList = ref([])
 
-// 认证类型
-const authType = [
-  { key: 'regular', value: '常规认证' },
-  { key: 'f2f', value: '个人二维码' },
-  { key: 'ScanAuth', value: '扫码认证' }
+// 认证结果:0-成功；1-失败；2-过期
+const authResult = [
+  { text: '成功', class: 'success' },
+  { text: '失败', class: 'fail' },
+  { text: '过期', class: 'expire' }
 ]
 
 // authRes:00xx
@@ -62,6 +63,24 @@ const authType = [
 // 马上认证
 const toConfirmAuth = () => {
 
+}
+
+// 认证详情
+const toAuthDetail = (item) => {
+  let {authMethod, authSceneStr, fullName, idNum, authModeStr, createTime, authTime} = item
+  let authDetail = {
+    authMethod, // 认证方式
+    authSceneStr, // 认证场景
+    fullName, // 姓名
+    idNum, // 证件号码
+    authModeStr, // 认证模式
+    createTime, // 发起时间
+    authTime, // 认证时间
+  }
+  Taro.setStorageSync('authDetail', authDetail)
+  Taro.navigateTo({
+    url: `/pages/authDetail/index?authResult=${item.authResStr}`
+  })
 }
 
 useDidShow(async () => {

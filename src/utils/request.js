@@ -14,7 +14,7 @@ function request (options = {}) {
   }
 
   return new Promise((resolve) => {
-    Taro.showLoading({title: '请稍候...'})
+    Taro.showLoading({title: '请稍候...', mask: true})
     Taro.request({
       ...baseOptions,
       success: (r) => {
