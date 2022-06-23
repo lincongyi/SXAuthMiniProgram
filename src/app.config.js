@@ -1,18 +1,19 @@
 export default defineAppConfig({
   pages: [
-    'pages/authRequest/index', // 认证请求 || 认证结果
+    'pages/mine/index', // 我的
     'pages/index/index', // 首页
     'pages/login/index', // 登录 || 注册
     'pages/userInfo/index', // 个人信息
+    'pages/authRequest/index', // 认证请求 || 认证结果
     'pages/authResult/index', // 认证结果
     'pages/authDetail/index', // 认证详情
     'pages/personalQrcode/index', // 个人身份二维码
-    'pages/mine/index', // 我的
     'pages/certificateSetting/index', // 证件有效期限
     'pages/updateMailBox/index', // 绑定邮箱 || 解绑邮箱
     'pages/updateAddress/index', // 地址
     'pages/setting/index', // 设置
     'pages/accountManagement/index', // 账号管理
+    'pages/addRequest/index', // 新增认证请求（该页面用于测试，正式线不上）
   ],
   tabBar: {
     'custom': true,

@@ -9,8 +9,17 @@ export async function isLogin(){
     // 区分支付宝和微信的登录流程
     const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
     if (ISALIPAY){
-      console.log('alipay app')
-      Taro.hideLoading()
+      let bizId = generateUUID()
+      Taro.ap.faceVerify({
+        bizId, //业务流水号，商户自行生成，需要保证唯一性，不超过64位
+        bizType: '1', //业务场景参数，‘1’代表人脸采集，请务必填写
+        success: (res) => {
+          console.log(res)
+          if (res.faceRetCode === 1000) { // 返回码1000 代表人脸采集成功
+            console.log('faceVerify success')
+          }
+        }
+      })
     } else {
       let jsCode = await TaroLogin()
       let { encryptedData, iv } = await getUserInfo()

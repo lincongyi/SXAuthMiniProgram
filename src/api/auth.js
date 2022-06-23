@@ -47,3 +47,11 @@ export function getAuthList(data){
     data
   })
 }
+
+// 新增认证记录
+export function addAuthTask(data={}){
+  return request({
+    url: '/addAuthTask',
+    data
+  })
+}

@@ -33,6 +33,13 @@
           <nut-icon name="arrow-right" size="16" color="#bbb"></nut-icon>
         </view>
       </view>
+      <view class="column" @tap="toAddRequest">
+        <image class="column-icon" mode="widthFix" :src="userCenterRecordImage" />
+        <view class="cell">
+          <view class="left-label">新增认证请求</view>
+          <nut-icon name="arrow-right" size="16" color="#bbb"></nut-icon>
+        </view>
+      </view>
     </view>
   </view>
 
@@ -105,6 +112,17 @@ const toSetting = () => {
   } else {
     Taro.navigateTo({
       url: '/pages/setting/index'
+    })
+  }
+}
+
+// 跳转到新增用户请求页面
+const toAddRequest = () => {
+  if (!loginStatus.value){
+    handleLogin()
+  } else {
+    Taro.navigateTo({
+      url: '/pages/addRequest/index'
     })
   }
 }

@@ -67,7 +67,7 @@ import banner_02 from '@images/banner-02.png'
 import noticeImage from '@images/notice.png'
 import scanQrcodeImage from '@images/scan-qrcode.png'
 import showQrcodeImage from '@images/show-qrcode.png'
-import { isLogin, generateUUID } from '@utils/index'
+import { isLogin } from '@utils/index'
 import { getAuthList } from '@api/auth'
 
 
