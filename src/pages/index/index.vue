@@ -100,7 +100,7 @@ const handleScanCode = async () => {
     Taro.scanCode({
       onlyFromCamera: true,
       success: (res) => {
-        console.log(res)
+        // console.log(res.path)
       }
     })
   }
