@@ -90,12 +90,27 @@ const toAuthRequest = () => {
   })
 }
 
+// 登录/注册
+const handleLogin = () => {
+  Taro.showModal({
+    title: '温馨提示',
+    content: '您尚未登录',
+    confirmText: '立即登录',
+    cancelText: '暂不登录',
+    success: async (res) => {
+      if (res.confirm) {
+        await isLogin()
+        loginStatus.value = true
+        loginEvent()
+      }
+    }
+  })
+}
+
 // 扫码认证
 const handleScanCode = async () => {
   if (!loginStatus.value) {
-    await isLogin()
-    loginStatus.value = true
-    loginEvent()
+    handleLogin()
   } else {
     Taro.scanCode({
       onlyFromCamera: true,
@@ -109,9 +124,7 @@ const handleScanCode = async () => {
 // 个人身份二维码
 const toPersonalQrcode = async () => {
   if (!loginStatus.value) {
-    await isLogin()
-    loginStatus.value = true
-    loginEvent()
+    handleLogin()
   } else {
     Taro.navigateTo({
       url: '/pages/personalQrcode/index'
