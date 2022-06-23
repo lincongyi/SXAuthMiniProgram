@@ -25,6 +25,7 @@
 import { ref, computed } from 'vue'
 import Taro, { useDidShow, useRouter } from '@tarojs/taro'
 import './index.scss'
+import { sendEmailIdentifyCode, unbindEmail, bindEmail } from '@api/setting'
 
 const isUnBound = ref(1) // 0.绑定邮箱，1.解绑邮箱
 const mailBox = ref('') // 邮箱
@@ -41,13 +42,18 @@ const mailBoxReg = /\w{3,}(\.\w+)*@[A-z0-9]+(\.[A-z]{2,5}){1,2}/
 const canGetCode = computed(() => mailBoxReg.test(mailBox.value))
 
 // 获取验证码
-const getCode = () => {
+const getCode = async () => {
   if (!canGetCode.value){
     return Taro.showToast({
       icon: 'none',
       title: '请输入正确的邮箱地址'
     })
   }
+
+  await sendEmailIdentifyCode({
+    action: ['BIND', 'UNBIND'][isUnBound.value],
+    email: mailBox.value
+  })
 
   Taro.showToast({
     icon: 'none',
@@ -69,7 +75,7 @@ const getCode = () => {
 }
 
 // 绑定 or 解除绑定
-const handleConfirm = () => {
+const handleConfirm = async () => {
   if (!mailBox.value){
     return Taro.showToast({
       icon: 'none',
@@ -81,27 +87,33 @@ const handleConfirm = () => {
       title: '请输入邮箱验证码'
     })
   }
-  setTimeout(() => {
-    let userInfo = Taro.getStorageSync('userInfo') ? JSON.parse(Taro.getStorageSync('userInfo')) : {}
-    Taro.setStorageSync('userInfo', JSON.stringify({...userInfo, ...{mailBox: mailBox.value}}))
-    Taro.showToast({
-      mask: true,
-      title: '绑定成功',
-      success: () => {
-        setTimeout(() => {
-          Taro.navigateBack({
-            delta: 1
-          })
-        }, 1500)
-      }
-    })
-  }, 1500)
+
+  if (!isUnBound.value){
+    await bindEmail({ identifyCode: verificationCode.value }) // 绑定
+  } else {
+    await unbindEmail({ identifyCode: verificationCode.value }) // 解绑
+    mailBox.value = ''
+  }
+
+  let loginUser = Taro.getStorageSync('loginUser')
+  Taro.setStorageSync('loginUser', {...loginUser, ...{mailBox: mailBox.value}})
+  Taro.showToast({
+    mask: true,
+    title: '绑定成功',
+    success: () => {
+      setTimeout(() => {
+        Taro.navigateBack({
+          delta: 1
+        })
+      }, 1500)
+    }
+  })
 }
 
 useDidShow(() => {
   let router = useRouter()
-  isUnBound.value = Number(router.params?.isUnBound || false)
-  if (isUnBound.value) mailBox.value = router.params.mailBox
+  isUnBound.value = Number(router.params?.isUnBound) ?? 0
+  if (isUnBound.value) mailBox.value = Taro.setStorageSync('loginUser').mailBox
   Taro.setNavigationBarTitle({
     title: ['绑定邮箱', '邮箱解绑'][isUnBound.value]
   })

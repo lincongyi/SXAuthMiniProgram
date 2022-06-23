@@ -55,6 +55,7 @@ import { reactive, computed } from 'vue'
 import Taro, { useDidShow } from '@tarojs/taro'
 import './index.scss'
 import avatarImage from '@images/avatar-default.png' // 用户默认头像
+import { updatePhoneNum } from '@api/setting'
 
 // 用户信息
 let loginUser = reactive({
@@ -74,7 +75,7 @@ const toCertificateSetting = () => {
   })
 }
 
-// 格式化日期显示
+// 格式化日期显示:YYYY.MM.DD
 const formatDate = (date) => {
   let year = date.slice(0, 4)
   let month = date.slice(4, 6)
@@ -86,8 +87,7 @@ const formatDate = (date) => {
 const period = computed(() => `${formatDate(loginUser.idStartDate)}-${formatDate(loginUser.idEndDate)}`)
 
 // 获取手机号码
-const getPhoneNumber = (event) => {
-  console.log(event.detail)
+const getPhoneNumber = async (event) => {
   if (event.detail.errMsg.indexOf('getPhoneNumber:ok') === -1) {
     return Taro.showModal({
       title: '温馨提示',
@@ -95,16 +95,15 @@ const getPhoneNumber = (event) => {
       showCancel: false,
     })
   }
+  let {code: jsCode} = event.detail
+  let result = await updatePhoneNum({ jsCode })
+  console.log(result)
 }
 
 // 绑定or解绑邮箱
 const toUpdateMailBox = () => {
-  let url = '/pages/updateMailBox/index'
-  if (loginUser.mailBox){
-    url+=`?isUnBound=1&mailBox=${loginUser.mailBox}`
-  } else {
-    url+='?isUnBound=0'
-  }
+  // isUnBound:0-绑定；1-解绑；
+  let url = `/pages/updateMailBox/index?isUnBound=${loginUser.mailBox?'1':'0'}`
   Taro.navigateTo({ url })
 }
 
