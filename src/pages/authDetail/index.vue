@@ -36,7 +36,7 @@
     </view>
     <block v-if="authResult>=3">
       <view class="btn-warp">
-        <nut-button type="primary" shape="square" block>立即认证</nut-button>
+        <nut-button type="primary" shape="square" block @tap="handleConfirm">立即认证</nut-button>
       </view>
     </block>
   </view>
@@ -73,7 +73,12 @@ const resultList = [
     resultImage: toBeCertifiedImage
   },
 ]
-const authDetail = ref({})
+const authDetail = ref({}) // 反显用户信息
+
+// 立即认证
+const handleConfirm = () => {
+  console.log(authDetail.value)
+}
 
 useDidShow(() => {
   let router = useRouter()

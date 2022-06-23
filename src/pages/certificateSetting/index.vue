@@ -3,7 +3,7 @@
     <view class="certificate-pannel">
       <view class="column">
         <view class="top-conent">起始日期</view>
-        <view :class="['selected-date', {'unselected':!startDate}]" @tap="showDatePicker(0)">{{startDate||'请选择身份证有效期起始日期'}}</view>
+        <view :class="['selected-date', {'unselected':!idStartDate}]" @tap="showDatePicker(0)">{{idStartDate||'请选择身份证有效期起始日期'}}</view>
       </view>
       <view class="column">
         <view class="top-conent">
@@ -13,7 +13,7 @@
             <nut-switch v-model="isPermanent" @change="isPermanentChange"/>
           </view>
         </view>
-        <view v-show="!isPermanent" :class="['selected-date', {'unselected':!endDate}]" @tap="showDatePicker(1)">{{endDate||'请选择身份证有效期截止日期'}}</view>
+        <view v-show="!isPermanent" :class="['selected-date', {'unselected':!idEndDate}]" @tap="showDatePicker(1)">{{idEndDate||'请选择身份证有效期截止日期'}}</view>
       </view>
     </view>
     <view class="btn-warp">
@@ -44,15 +44,15 @@ const datePickerIndex = ref(0) // 0.起始日期；1.截至日期
 const datePickerTitle = ref('') // 日期选择器标题
 const datePickerShow = ref(false) // 控制日期选择器显示隐藏
 const currentDate = ref('') // 日期选择器日期
-const startDate = ref('') // 起始日期
-const endDate = ref('') // 截至日期
+const idStartDate = ref('') // 起始日期
+const idEndDate = ref('') // 截至日期
 const minDate = ref(new Date('2000-01-01')) // 限制开始时间
 const maxDate = ref(new Date('2030-12-31')) // 限制结束时间
 const isPermanent = ref(false) // 是否长期有效
 
 // 显示日期选择器
 const showDatePicker = (index) => {
-  let target = [startDate, endDate][index].value.replaceAll('.', ',')
+  let target = [idStartDate, idEndDate][index].value.replaceAll('.', ',')
   currentDate.value = target ? new Date(target) : new Date()
 
   datePickerIndex.value = index
@@ -64,42 +64,49 @@ const showDatePicker = (index) => {
 
 // 选择日期
 const confirm = ({ selectedValue }) => {
-  ([startDate, endDate][datePickerIndex.value]).value = selectedValue.join('.')
+  ([idStartDate, idEndDate][datePickerIndex.value]).value = selectedValue.join('.')
 }
 
 // 切换是否长期有效
-const isPermanentChange = () => endDate.value = ''
+const isPermanentChange = () => {
+  idEndDate.value = isPermanent.value ? '00000000':''
+}
 
 // 确定
 const handleConfirm = async () => {
-  if (!startDate.value){
+  if (!idStartDate.value){
     return Taro.showToast({
       icon: 'none',
       title: '请选择起始日期'
     })
-  } else if (!endDate.value){
+  } else if (!idEndDate.value){
     return Taro.showToast({
       icon: 'none',
       title: '请选择截止日期'
     })
-  } else if (startDate.value===endDate.value){
+  } else if (idStartDate.value===idEndDate.value){
     return Taro.showModal({
       title: '温馨提示',
       content: '起始日期不能大于或等于截止日期',
       showCancel: false
     })
   }
-  await updateYXQ()
-  Taro.setStorageSync('loginUser', {...Taro.getStorageSync('loginUser'), ...{startDate: startDate.value, endDate: endDate.value}})
+  let result = await updateYXQ({
+    idStartDate: idStartDate.value.replaceAll('.', ''),
+    idEndDate: idEndDate.value.replaceAll('.', '')
+  })
+  Taro.setStorageSync('loginUser', {...Taro.getStorageSync('loginUser'), ...{idStartDate: idStartDate.value, idEndDate: idEndDate.value}})
+  console.log(result)
+  console.log(Taro.getStorageSync('loginUser'))
   Taro.showToast({
     title: '证件有效期添加成功',
     mask: true,
     success: () => {
-      setTimeout(() => {
-        Taro.navigateBack({
-          delta: 1
-        })
-      }, 1500)
+      // setTimeout(() => {
+      //   Taro.navigateBack({
+      //     delta: 1
+      //   })
+      // }, 1500)
     }
   })
 }

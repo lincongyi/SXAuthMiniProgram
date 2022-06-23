@@ -58,7 +58,7 @@
 </template>
 
 <script setup>
-import { ref, onBeforeUnmount } from 'vue'
+import { ref } from 'vue'
 import Taro, { useDidShow, useDidHide } from '@tarojs/taro'
 import './index.scss'
 import { getEnv } from '@utils/taro'
