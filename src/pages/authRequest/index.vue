@@ -22,7 +22,7 @@
               <view class="auth-info">{{item.authTime}}</view>
             </template>
           </view>
-          <nut-button v-if="flag" shape="square" type="primary" @tap="toConfirmAuth" :disabled="!(item.hour||item.minute||item.second)">马上认证</nut-button>
+          <nut-button v-if="flag" shape="square" type="primary" @tap.stop="toAuth(item)" :disabled="!(item.hour||item.minute||item.second)">马上认证</nut-button>
           <view class="auth-result" v-else>
             <view :class="['auth-status', authResult[item.authResStr].class]">{{authResult[item.authResStr].text}}</view>
             <nut-icon name="right" class="arrow" size="18" color="#bbb"></nut-icon>
@@ -59,13 +59,24 @@ const authResult = [
 // 第二字节：人像比对结果
 
 // 马上认证
-const toConfirmAuth = (e) => {
-  e.stopPropagation()
+const toAuth = (item) => {
+  cacheData(item)
+  Taro.navigateTo({
+    url: '/pages/authDetail/index?authResult=3'
+  })
 }
 
 // 认证详情
 const toAuthDetail = (item) => {
-  let {authMethod, authSceneStr, fullName, idNum, authModeStr, createTime, authTime} = item
+  if (flag.value) return
+  cacheData(item)
+  Taro.navigateTo({
+    url: `/pages/authDetail/index?authResult=${item.authResStr}`
+  })
+}
+
+const cacheData = (item) => {
+  let {authMethod, authSceneStr, fullName, idNum, authModeStr, createTime, authTime, sourceName, expireTime} = item
   let authDetail = {
     authMethod, // 认证方式
     authSceneStr, // 认证场景
@@ -74,11 +85,10 @@ const toAuthDetail = (item) => {
     authModeStr, // 认证模式
     createTime, // 发起时间
     authTime, // 认证时间
+    sourceName, // 认证来源
+    expireTime, // 到期时间
   }
   Taro.setStorageSync('authDetail', authDetail)
-  Taro.navigateTo({
-    url: `/pages/authDetail/index?authResult=${item.authResStr}`
-  })
 }
 
 // 计算剩余时间
@@ -110,43 +120,11 @@ useDidShow(async () => {
   Taro.setNavigationBarTitle({
     title: ['认证记录', '认证请求'][flag.value]
   })
-  // let {data} = await getAuthList({
-  //   pageNum: 0,
-  //   pageSize: 10,
-  //   flag: flag.value,
-  // })
-  let data = {
-    list: [
-      {
-        authMethod: '认证本人',
-        authMode: 66,
-        authModeStr: '实名+实人',
-        authScene: '2',
-        authSceneStr: '第三方认证',
-        authType: 'regular',
-        certToken: '972c8964-ba7a-436d-909d-3e701539e68c',
-        createTime: '2022-06-22 16:18:17',
-        expireTime: '2022-06-30 16:25:17',
-        fullName: '林聪毅',
-        idNum: '440105199203182415',
-        sourceName: '陕西公民实人认证公众号',
-      },
-      {
-        authMethod: '认证本人',
-        authMode: 66,
-        authModeStr: '实名+实人',
-        authScene: '2',
-        authSceneStr: '第三方认证',
-        authType: 'regular',
-        certToken: 'ae773fc7-4bcb-47b5-9759-2e1659ff9e7e',
-        createTime: '2022-06-22 10:25:09',
-        expireTime: '2022-06-23 10:28:30',
-        fullName: '林聪毅',
-        idNum: '440105199203182415',
-        sourceName: '陕西公民实人认证公众号',
-      }
-    ]
-  }
+  let {data} = await getAuthList({
+    pageNum: 0,
+    pageSize: 10,
+    flag: flag.value,
+  })
   if (!flag.value){
     authList.value = data.list
   } else { // 如果是认证请求，需要计算剩余时间
@@ -157,7 +135,6 @@ useDidShow(async () => {
       authList.value = calRestTime(authList.value)
     }, 1000)
   }
-  // console.log(data)
 })
 
 

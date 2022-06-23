@@ -8,11 +8,11 @@
       <!-- 待认证 start -->
       <block v-if="authResult>=3">
         <nut-cell-group>
-          <nut-cell title="认证场景" desc="认证推送"></nut-cell>
-          <nut-cell title="认证来源" desc="认证推送"></nut-cell>
-          <nut-cell title="认证模式" desc="认证推送"></nut-cell>
-          <nut-cell title="发起时间" desc="认证推送"></nut-cell>
-          <nut-cell title="到期时间" desc="认证推送"></nut-cell>
+          <nut-cell title="认证场景" :desc="authDetail.authSceneStr"></nut-cell>
+          <nut-cell title="认证来源" :desc="authDetail.sourceName"></nut-cell>
+          <nut-cell title="认证模式" :desc="authDetail.authModeStr"></nut-cell>
+          <nut-cell title="发起时间" :desc="authDetail.createTime"></nut-cell>
+          <nut-cell title="到期时间" :desc="authDetail.expireTime"></nut-cell>
         </nut-cell-group>
       </block>
       <!-- 待认证 end -->
