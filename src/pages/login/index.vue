@@ -54,7 +54,7 @@ import { checkIsSupportFacialRecognition, startFacialRecognitionVerify } from '@
 // Taro.clearStorageSync()
 // 用户录入信息
 const type = '第二代居民身份证'
-const mode = ref(66)
+const mode = ref(66) // 认证模式
 const userInfo = reactive({
   idNum: '440105199203182415',
   fullName: '林聪毅',
@@ -119,6 +119,7 @@ const handleSubmit = async () => {
   result = await checkCerTokenAgent({agent, certToken: certToken.value})
   let {authTipsInfo, authUser} = result.data
   canSelfAuth.value = result.data.canSelfAuth ?? false
+  mode.value = result.data.mode
 
   // 初始化authActionSheet的信息
   beforeAuth.value = authTipsInfo.beforeAuth

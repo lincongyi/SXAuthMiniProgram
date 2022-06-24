@@ -88,6 +88,7 @@ const resultList = [
 const authDetail = ref({}) // 反显用户信息
 
 const canSelfAuth = ref(false) // 是否代他人认证
+const mode = ref(0) // 认证模式
 const certToken = ref('') // certToken
 
 const beforeAuth = ref('') // 动作面板温馨提示内容
@@ -110,6 +111,7 @@ const handleAuth = async () => {
   let result = await checkCerTokenAgent({certToken: certToken.value})
   let {authTipsInfo, authUser} = result.data
   canSelfAuth.value = result.data.canSelfAuth ?? false
+  mode.value = result.data.mode
 
   // 初始化authActionSheet的信息
   beforeAuth.value = authTipsInfo.beforeAuth
@@ -138,7 +140,7 @@ const handleConfirm = async () => {
     usedAgent: canSelfAuth.value,
     wxpvCode: verifyResult,
     certToken: certToken.value,
-    usedMode: 66, // 注销流程66模式实人认证
+    usedMode: mode.value,
   })
   Taro.showToast({
     icon: 'none',

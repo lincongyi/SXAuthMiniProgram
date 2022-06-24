@@ -93,6 +93,7 @@ let timer = null
 const loopPeriod = 1000*60*5 // 轮询接口5分钟
 
 const canSelfAuth = ref(false) // 是否代他人认证
+const mode = ref(0) // 认证模式
 const certToken = ref('') // certToken
 
 const beforeAuth = ref('') // 动作面板温馨提示内容
@@ -138,9 +139,9 @@ const handleScanCode = async () => {
 
         // 校验certToken，并返回授权信息
         result = await checkCerTokenAgent({certToken: certToken.value})
-        console.log(result)
         let {authTipsInfo, authUser} = result.data
         canSelfAuth.value = result.data.canSelfAuth ?? false
+        mode.value = result.data.mode
 
         // 初始化authActionSheet的信息
         beforeAuth.value = authTipsInfo.beforeAuth
@@ -172,7 +173,7 @@ const handleConfirm = async () => {
     usedAgent: canSelfAuth.value,
     wxpvCode: verifyResult,
     certToken: certToken.value,
-    usedMode: 66,
+    usedMode: mode.value,
   })
 
   Taro.showToast({
