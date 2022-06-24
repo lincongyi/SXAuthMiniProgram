@@ -38,13 +38,16 @@
 
 <script setup>
 import { ref } from 'vue'
-import Taro, { useDidShow, useRouter } from '@tarojs/taro'
+import Taro, { useDidShow, useRouter, useReachBottom } from '@tarojs/taro'
 import noAuthRecordImage from '@images/no-auth-record.png'
 import './index.scss'
 import { getAuthList } from '@api/auth'
 
 const flag = ref(0) // 0.认证记录；1.待认证
-const authList = ref([])
+const authList = ref([]) // 认证数据
+const pageNum = ref(0)
+const pageSize = ref(10)
+const noMore = ref(false)
 let timer
 
 // 认证结果:0-成功；1-失败；2-过期
@@ -71,6 +74,7 @@ const toAuthDetail = (item) => {
   })
 }
 
+// 缓存跳转到认证详情所需的数据
 const cacheData = (item) => {
   let {authMode, authMethod, authSceneStr, fullName, idNum, authModeStr, createTime, authTime, sourceName, expireTime} = item
   let authDetail = {
@@ -95,7 +99,8 @@ const calRestTime = (target) => {
     let item = target[i]
     if (item.isExpired) continue // 标志了已过期的认证条目，不做计算
 
-    let expireTimestamp = (new Date(item.expireTime)).getTime()
+    let expireTime = item.expireTime.replaceAll('-', '/') // 兼容ios日期识别的bug
+    let expireTimestamp = (new Date(expireTime)).getTime()
     let restTimestamp = expireTimestamp - timestamp
     if (restTimestamp>0){
       let hour = parseInt(restTimestamp/(60*60*1000))
@@ -111,27 +116,45 @@ const calRestTime = (target) => {
   return target
 }
 
-useDidShow(async () => {
-  let router = useRouter()
-  flag.value = Number(router.params?.flag ?? 1)
-  Taro.setNavigationBarTitle({
-    title: ['认证记录', '认证请求'][flag.value]
-  })
+// 初始化页面数据
+const init = async () => {
+  if (noMore.value){
+    return Taro.showToast({
+      icon: 'none',
+      title: '没有更多了',
+    })
+  }
   let {data} = await getAuthList({
-    pageNum: 0,
-    pageSize: 10,
+    pageNum: pageNum.value,
+    pageSize: pageSize.value,
     flag: flag.value,
   })
+  if (data.size>(pageNum.value+1)*pageSize.value) pageNum.value++
+  else noMore.value = true
   if (!flag.value){
-    authList.value = data.list
+    authList.value = [...authList.value, ...data.list]
   } else { // 如果是认证请求，需要计算剩余时间
-    authList.value = calRestTime(data.list)
+    authList.value = [...authList.value, ...calRestTime(data.list)]
     clearInterval(timer)
     timer = null
     timer = setInterval(() => {
       authList.value = calRestTime(authList.value)
     }, 1000)
   }
+}
+
+useDidShow(() => {
+  let router = useRouter()
+  flag.value = Number(router.params?.flag ?? 1)
+  Taro.setNavigationBarTitle({
+    title: ['认证记录', '认证请求'][flag.value]
+  })
+
+  init()
+})
+
+useReachBottom(() => {
+  init()
 })
 
 

@@ -145,6 +145,7 @@ const handleConfirm = async () => {
     title: '认证成功',
     mask: true,
     success: () => {
+      Taro.removeStorageSync('authDetail')
       setTimeout(() => {
         Taro.navigateTo({url: `/pages/authResult/index?mode=${authDetail.value.authMode}&data=${data}`})
       }, 1500)
@@ -157,6 +158,5 @@ useDidShow(() => {
   authResult.value = Number(router.params.authResult)
 
   authDetail.value = Taro.getStorageSync('authDetail')
-  Taro.removeStorageSync('authDetail')
 })
 </script>

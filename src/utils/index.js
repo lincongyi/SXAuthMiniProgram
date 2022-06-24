@@ -18,6 +18,7 @@ export async function isLogin(){
           if (res.faceRetCode === 1000) { // 返回码1000 代表人脸采集成功
             console.log('faceVerify success')
           }
+          return false
         }
       })
     } else {
