@@ -17,7 +17,8 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { reactive, toRaw } from 'vue'
+import Taro from '@tarojs/taro'
 import './index.scss'
 import { addAuthTask } from '@api/auth'
 
@@ -28,8 +29,16 @@ const userInfo = reactive({
 
 // 新增认证请求任务
 const handleConfirm = async () => {
-  console.log(userInfo)
-  let result = await addAuthTask()
-  console.log(result)
+  await addAuthTask(toRaw(userInfo))
+  Taro.showToast({
+    icon: 'none',
+    title: '新增请求成功',
+    mask: true,
+    success: () => {
+      setTimeout(() => {
+        Taro.navigateBack({ delta: 1 })
+      }, 1500)
+    }
+  })
 }
 </script>

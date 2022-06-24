@@ -30,26 +30,19 @@
   <view id="qrcode"></view>
 </template>
 <script setup>
-import Taro, {useDidShow} from '@tarojs/taro'
+import { useDidShow } from '@tarojs/taro'
 import './index.scss'
 import avatarDefault from '@images/avatar-default.png'
 import refresh from '@images/refresh.png'
 import personalQrcodeLogo from '@images/personal-qrcode-logo.png'
 import QR from '@utils/qrcode.js'
 import { getCertToken } from '@api/auth'
-import { collectInfo } from '@utils/collectInfo'
+import { handleCollectInfo } from '@utils/collectInfo'
 
 // 生成二维码前置流程
 const preStep = async () => {
   // 收集信息
-  let collectionInfo
-  if (!Taro.getStorageSync('collectionInfo')){
-    let result = await collectInfo()
-    collectionInfo = result.collectionInfo
-    Taro.setStorageSync('collectionInfo', collectionInfo)
-  } else {
-    collectionInfo = Taro.getStorageSync('collectionInfo')
-  }
+  let collectionInfo = await handleCollectInfo()
   // 获取certToken
   let authType='regular'
   let {tokenInfo} = await getCertToken({authType, collectionInfo}) // 获取certToken

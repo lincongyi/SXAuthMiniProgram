@@ -69,7 +69,7 @@ const confirm = ({ selectedValue }) => {
 
 // 切换是否长期有效
 const isPermanentChange = () => {
-  idEndDate.value = isPermanent.value ? '00000000':''
+  idEndDate.value = isPermanent.value ? '00000000':'' // 长期有效传8个0
 }
 
 // 确定
@@ -91,22 +91,18 @@ const handleConfirm = async () => {
       showCancel: false
     })
   }
-  let result = await updateYXQ({
+  await updateYXQ({
     idStartDate: idStartDate.value.replaceAll('.', ''),
     idEndDate: idEndDate.value.replaceAll('.', '')
   })
   Taro.setStorageSync('loginUser', {...Taro.getStorageSync('loginUser'), ...{idStartDate: idStartDate.value, idEndDate: idEndDate.value}})
-  console.log(result)
-  console.log(Taro.getStorageSync('loginUser'))
   Taro.showToast({
     title: '证件有效期添加成功',
     mask: true,
     success: () => {
-      // setTimeout(() => {
-      //   Taro.navigateBack({
-      //     delta: 1
-      //   })
-      // }, 1500)
+      setTimeout(() => {
+        Taro.navigateBack({ delta: 1 })
+      }, 1500)
     }
   })
 }

@@ -31,8 +31,8 @@
       </view>
       <view class="column">
         <view class="left-label">邮箱</view>
-        <view :class="['right-content',{'unbound':!loginUser.mailBox}]" @tap="toUpdateMailBox">
-          {{loginUser.mailBox||'未绑定'}}
+        <view :class="['right-content',{'unbound':!loginUser.email}]" @tap="toUpdateMailBox">
+          {{loginUser.email||'未绑定'}}
           <nut-icon name="arrow-right" size="16" color="#bbb"></nut-icon>
         </view>
       </view>
@@ -64,7 +64,7 @@ let loginUser = reactive({
   phoneNum: '', // 手机号码
   idStartDate: '', // 起始日期
   idEndDate: '', // 截止日期
-  mailBox: '', // 邮箱
+  email: '', // 邮箱
   address: '' // 地址
 })
 
@@ -96,14 +96,16 @@ const getPhoneNumber = async (event) => {
     })
   }
   let {code: jsCode} = event.detail
-  let result = await updatePhoneNum({ jsCode })
-  console.log(result)
+  let {data: phoneNum} = await updatePhoneNum({ jsCode })
+  loginUser.phoneNum = phoneNum
+  let loginUserStorage = Taro.getStorageSync('loginUser')
+  Taro.setStorageSync({...loginUserStorage, ...{phoneNum}})
 }
 
 // 绑定or解绑邮箱
 const toUpdateMailBox = () => {
   // isUnBound:0-绑定；1-解绑；
-  let url = `/pages/updateMailBox/index?isUnBound=${loginUser.mailBox?'1':'0'}`
+  let url = `/pages/updateMailBox/index?isUnBound=${loginUser.email?'1':'0'}`
   Taro.navigateTo({ url })
 }
 

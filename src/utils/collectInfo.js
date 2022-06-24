@@ -1,9 +1,10 @@
+import Taro from '@tarojs/taro'
 import { getSetting, openSetting, getLocation, getNetworkType, getSystemInfo, getAccountInfoSync, getRunScene } from '@utils/taro'
 
 /**
   * 收集信息
  */
-export async function collectInfo () {
+async function collectInfo () {
   let collectionInfo = {
     appInfo: {
       appName: '陕西公民实人认证',
@@ -58,4 +59,21 @@ export async function collectInfo () {
   return {
     collectionInfo,
   }
+}
+
+/**
+  * 收集信息（封装一下）
+ */
+export async function handleCollectInfo(isCache=true){
+  Taro.showLoading({title: '请稍候...'})
+  let collectionInfo
+  if (!Taro.getStorageSync('collectionInfo')){
+    let result = await collectInfo()
+    collectionInfo = result.collectionInfo
+    if (isCache) Taro.setStorageSync('collectionInfo', collectionInfo)
+  } else {
+    collectionInfo = Taro.getStorageSync('collectionInfo')
+  }
+  Taro.hideLoading()
+  return collectionInfo
 }

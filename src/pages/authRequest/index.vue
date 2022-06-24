@@ -54,10 +54,6 @@ const authResult = [
   { text: '过期', class: 'expire' }
 ]
 
-// authRes:00xx
-// 第一字节：姓名，身份号码，有效期等文本信息比对结果
-// 第二字节：人像比对结果
-
 // 马上认证
 const toAuth = (item) => {
   cacheData(item)
@@ -76,8 +72,9 @@ const toAuthDetail = (item) => {
 }
 
 const cacheData = (item) => {
-  let {authMethod, authSceneStr, fullName, idNum, authModeStr, createTime, authTime, sourceName, expireTime} = item
+  let {authMode, authMethod, authSceneStr, fullName, idNum, authModeStr, createTime, authTime, sourceName, expireTime} = item
   let authDetail = {
+    authMode, // 认证模式
     authMethod, // 认证方式
     authSceneStr, // 认证场景
     fullName, // 姓名

@@ -13,7 +13,7 @@
       </template>
     </nut-input>
     <view class="btn-warp">
-      <nut-button type="primary" shape="square" block @tap="handleConfirm" :class="{'disabled':btnDisabled}">{{confirmBtnTxt}}</nut-button>
+      <nut-button type="primary" shape="square" block @tap="handleConfirm" :class="{'disabled':btnDisabled || verificationCode.length!==6}">{{confirmBtnTxt}}</nut-button>
     </view>
   </view>
 
@@ -89,7 +89,7 @@ const handleConfirm = async () => {
   }
 
   if (!isUnBound.value){
-    await bindEmail({ identifyCode: verificationCode.value }) // 绑定
+    await bindEmail({ email: mailBox.value, identifyCode: verificationCode.value }) // 绑定
   } else {
     await unbindEmail({ identifyCode: verificationCode.value }) // 解绑
     mailBox.value = ''
@@ -102,9 +102,7 @@ const handleConfirm = async () => {
     title: '绑定成功',
     success: () => {
       setTimeout(() => {
-        Taro.navigateBack({
-          delta: 1
-        })
+        Taro.navigateBack({ delta: 1 })
       }, 1500)
     }
   })

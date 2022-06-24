@@ -35,8 +35,7 @@
     :protocolName="protocolName"
     :protocolUrl="protocolUrl"
     @onConfirm="handleConfirm"
-  >
-  </authActionSheet>
+  />
 
   <!-- Copyright -->
   <copyright />
@@ -47,7 +46,7 @@ import { ref, reactive, toRefs, toRaw, computed, defineAsyncComponent } from 'vu
 import Taro from '@tarojs/taro'
 import loginImage from '@images/logo.png'
 import './index.scss'
-import { collectInfo } from '@utils/collectInfo'
+import { handleCollectInfo } from '@utils/collectInfo'
 import { getCertToken, checkCerTokenAgent, getUserIdKey, checkCertCodeAgent, getUserPhoneNum } from '@api/auth'
 import { register } from '@api/login'
 import { checkIsSupportFacialRecognition, startFacialRecognitionVerify } from '@utils/taro'
@@ -103,30 +102,25 @@ const handleSubmit = async () => {
       title: '请输入证件号码'
     })
   }
+  Taro.showLoading({title: '请稍候...'})
   // 调起人脸认证前的校验流程
   //  1.收集信息
-  let collectionInfo
-  if (!Taro.getStorageSync('collectionInfo')){
-    let result = await collectInfo()
-    collectionInfo = result.collectionInfo
-    Taro.setStorageSync('collectionInfo', collectionInfo)
-  } else {
-    collectionInfo = Taro.getStorageSync('collectionInfo')
-  }
+  let collectionInfo = await handleCollectInfo()
+
   // 2.获取certToken
   let agent = false
   let authType = 'regular'
   let result = await getCertToken({agent, mode: mode.value, authType, collectionInfo, idInfo: toRaw(userInfo)}) // 获取certToken
   let {tokenInfo} = result
-
   // let {certToken, qrcodeContent} = tokenInfo // qrcodeContent:用户二维码地址
   certToken.value = tokenInfo.certToken
 
   // 3.校验certToken，并返回授权信息
   result = await checkCerTokenAgent({agent, certToken: certToken.value})
   let {authTipsInfo, authUser} = result.data
-  canSelfAuth.value = result.data.canSelfAuth
+  canSelfAuth.value = result.data.canSelfAuth ?? false
 
+  // 初始化authActionSheet的信息
   beforeAuth.value = authTipsInfo.beforeAuth
   beforeProtocol.value = authTipsInfo.beforeProtocol
   let protocol = authTipsInfo.protocolList[0]
@@ -144,13 +138,7 @@ const handleConfirm = async () => {
   let verifyResult = await startFacialRecognitionVerify(userInfo.fullName, userInfo.idNum, userIdKey)
 
   // 如果从第三方小程序跳转过来，就要重新收集信息
-  let collectionInfo
-  if (!Taro.getStorageSync('collectionInfo')){
-    let result = await collectInfo()
-    collectionInfo = result.collectionInfo
-  } else {
-    collectionInfo = Taro.getStorageSync('collectionInfo')
-  }
+  let collectionInfo = await handleCollectInfo()
   // 5.校验活体检测结果
   await checkCertCodeAgent({
     collectionInfo,

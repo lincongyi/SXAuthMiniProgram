@@ -12,13 +12,14 @@
 import { ref, computed } from 'vue'
 import './index.scss'
 import Taro from '@tarojs/taro'
+import { updateAddress } from '@api/setting'
 
 const city = ref('') // 省市区县、乡镇等
 const street = ref('') // 街道、楼牌号等
 const btnDisabled = computed(() => !city.value || !street.value)
 
 // 保存
-const handleConfirm = () => {
+const handleConfirm = async () => {
   if (!city.value){
     return Taro.showToast({
       icon: 'none',
@@ -30,18 +31,17 @@ const handleConfirm = () => {
       title: '街道、楼牌号'
     })
   }
-  setTimeout(() => {
-    Taro.showToast({
-      mask: true,
-      title: '绑定成功',
-      success: () => {
-        setTimeout(() => {
-          Taro.navigateBack({
-            delta: 1
-          })
-        }, 1500)
-      }
-    })
-  }, 1500)
+  await updateAddress({ address: `${city.value}${street.value}` })
+  let loginUser = Taro.getStorageSync('loginUser')
+  Taro.setStorageSync('loginUser', {...loginUser, ...{address: `${city.value}${street.value}`}})
+  Taro.showToast({
+    mask: true,
+    title: '绑定成功',
+    success: () => {
+      setTimeout(() => {
+        Taro.navigateBack({ delta: 1 })
+      }, 1500)
+    }
+  })
 }
 </script>

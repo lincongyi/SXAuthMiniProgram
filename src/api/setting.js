@@ -49,3 +49,13 @@ export function updateYXQ(data){
     data
   })
 }
+
+/**
+  * 更新地址
+ */
+export function updateAddress(data){
+  return request({
+    url: '/updateAddress',
+    data
+  })
+}
