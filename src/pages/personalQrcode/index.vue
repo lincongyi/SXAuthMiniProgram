@@ -5,8 +5,8 @@
       <view class="user-info">
         <img class="avatar" :src="avatarDefault" />
         <view class="user-content">
-          <view class="name">张三</view>
-          <view class="id-number">123123123123</view>
+          <view class="name">{{loginUser.fullName}}</view>
+          <view class="id-number">{{loginUser.idNum}}</view>
         </view>
       </view>
       <view class="qrcode-box">
@@ -30,7 +30,8 @@
   <view id="qrcode"></view>
 </template>
 <script setup>
-import { useDidShow } from '@tarojs/taro'
+import { ref } from 'vue'
+import Taro, { useDidShow } from '@tarojs/taro'
 import './index.scss'
 import avatarDefault from '@images/avatar-default.png'
 import refresh from '@images/refresh.png'
@@ -38,6 +39,8 @@ import personalQrcodeLogo from '@images/personal-qrcode-logo.png'
 import QR from '@utils/qrcode.js'
 import { getCertToken } from '@api/auth'
 import { handleCollectInfo } from '@utils/collectInfo'
+
+const loginUser = ref({}) // 用户信息
 
 // 生成二维码前置流程
 const preStep = async () => {
@@ -69,6 +72,7 @@ const generateQrcode = (text) => {
 }
 
 useDidShow(async () => {
+  loginUser.value = Taro.getStorageSync('loginUser')
   handleRefresh()
 })
 </script>

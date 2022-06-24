@@ -14,11 +14,10 @@ export async function isLogin(){
         bizId, //业务流水号，商户自行生成，需要保证唯一性，不超过64位
         bizType: '1', //业务场景参数，‘1’代表人脸采集，请务必填写
         success: (res) => {
-          console.log(res)
-          if (res.faceRetCode === 1000) { // 返回码1000 代表人脸采集成功
-            console.log('faceVerify success')
+          if (res.faceRetCode === '1000') { // 返回码1000 代表人脸采集成功
+            console.log('bizId', bizId)
+            console.log('zimId', res.zimId)
           }
-          return false
         }
       })
     } else {

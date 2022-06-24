@@ -45,6 +45,15 @@
     </view>
   </view>
 
+  <authActionSheet
+    ref="authActionSheetComponent"
+    :beforeAuth="beforeAuth"
+    :beforeProtocol="beforeProtocol"
+    :protocolName="protocolName"
+    :protocolUrl="protocolUrl"
+    @onConfirm="handleConfirm"
+  />
+
   <block v-if="!loginStatus">
     <view :class="['login-tips',{'is-fixed':!ISALIPAY}]">
       <text>登录后体验更多功能</text>
@@ -58,18 +67,18 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, defineAsyncComponent } from 'vue'
 import Taro, { useDidShow, useDidHide } from '@tarojs/taro'
 import './index.scss'
-import { getEnv } from '@utils/taro'
+import { isLogin } from '@utils/index'
+import { handleCollectInfo } from '@utils/collectInfo'
+import { getAuthList, checkCerTokenAgent, getUserIdKey, checkCertCodeAgent } from '@api/auth'
+import { getEnv, checkIsSupportFacialRecognition, startFacialRecognitionVerify } from '@utils/taro'
 import banner_01 from '@images/banner-01.png'
 import banner_02 from '@images/banner-02.png'
 import noticeImage from '@images/notice.png'
 import scanQrcodeImage from '@images/scan-qrcode.png'
 import showQrcodeImage from '@images/show-qrcode.png'
-import { isLogin } from '@utils/index'
-import { getAuthList } from '@api/auth'
-
 
 // 获取小程序当前环境
 const env = getEnv()
@@ -82,6 +91,16 @@ const loginStatus = ref(false) // 是否登录状态
 
 let timer = null
 const loopPeriod = 1000*60*5 // 轮询接口5分钟
+
+const canSelfAuth = ref(false) // 是否代他人认证
+const certToken = ref('') // certToken
+
+const beforeAuth = ref('') // 动作面板温馨提示内容
+const beforeProtocol = ref('') // 同意协议提示内容
+const protocolName = ref('') // 《用户服务协议》
+const protocolUrl = ref('') // 《用户服务协议》url
+const authActionSheet = defineAsyncComponent(() => import('@components/authActionSheet/index.vue')) // 授权弹窗
+const authActionSheetComponent = ref(null)
 
 // 跳转到认证请求页面
 const toAuthRequest = () => {
@@ -114,11 +133,53 @@ const handleScanCode = async () => {
   } else {
     Taro.scanCode({
       onlyFromCamera: true,
-      success: (res) => {
-        // console.log(res.path)
+      success: async ({result}) => {
+        certToken.value = result.slice(result.indexOf('=')+1)
+
+        // 校验certToken，并返回授权信息
+        result = await checkCerTokenAgent({certToken: certToken.value})
+        console.log(result)
+        let {authTipsInfo, authUser} = result.data
+        canSelfAuth.value = result.data.canSelfAuth ?? false
+
+        // 初始化authActionSheet的信息
+        beforeAuth.value = authTipsInfo.beforeAuth
+        beforeProtocol.value = authTipsInfo.beforeProtocol
+        let protocol = authTipsInfo.protocolList[0]
+        protocolName.value = protocol.name
+        protocolUrl.value = protocol.url
+        authActionSheetComponent.value.actionSheetVisible = true
       }
     })
   }
+}
+
+// 确认授权 开始人脸识别
+const handleConfirm = async () => {
+  let {userIdKey} = await getUserIdKey()
+  authActionSheetComponent.value.actionSheetVisible = false
+  await checkIsSupportFacialRecognition() // 检测设备是否支持活体检测
+
+  // 4.活体检测
+  let loginUser = Taro.getStorageSync('loginUser')
+  let verifyResult = await startFacialRecognitionVerify(loginUser.fullName, loginUser.idNum, userIdKey)
+
+  // collectionInfo尝试从storage里面取
+  let collectionInfo = await handleCollectInfo()
+  // 5.校验活体检测结果
+  await checkCertCodeAgent({
+    collectionInfo,
+    usedAgent: canSelfAuth.value,
+    wxpvCode: verifyResult,
+    certToken: certToken.value,
+    usedMode: 66,
+  })
+
+  Taro.showToast({
+    icon: 'none',
+    title: '校验成功',
+    mask: true
+  })
 }
 
 // 个人身份二维码
