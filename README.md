@@ -1,8 +1,8 @@
 ## AppId
 
-### wxba14eaf2d4b819a9(weapp)
+### weapp:wxba14eaf2d4b819a9
 
-### 2021003128635520(alipay)
+### alipay:2021003128635520
 
 ## AppName
 

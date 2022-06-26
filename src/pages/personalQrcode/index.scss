@@ -59,8 +59,14 @@
       text-align: center;
 
       .qrcode-canvas {
-        z-index: 1;
-        margin: 0 auto;
+        position: absolute;
+        top: -1000px;
+        left: -1000px;
+      }
+
+      .qrcode-image {
+        width: 460px;
+        height: 460px;
       }
 
       .personal-qrcode-logo {

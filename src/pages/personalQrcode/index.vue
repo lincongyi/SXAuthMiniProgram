@@ -11,7 +11,9 @@
       </view>
       <view class="qrcode-box">
         <view class="qrcode-image-wrap">
+          <!-- 小程序的canvas层级太高，会遮住logo， 只能等待canvas渲染完成后再生成图片去替换-->
           <canvas class="qrcode-canvas" canvas-id="canvas" id="canvas" width="230" height="230" style="width: 230px; height: 230px;"/>
+          <img class="qrcode-image" :src="qrcodeImage">
           <img class="personal-qrcode-logo" :src="personalQrcodeLogo" />
         </view>
         <view class="refresh-wrap">
@@ -41,6 +43,7 @@ import { getCertToken } from '@api/auth'
 import { handleCollectInfo } from '@utils/collectInfo'
 
 const loginUser = ref({}) // 用户信息
+const qrcodeImage = ref('')
 
 // 生成二维码前置流程
 const preStep = async () => {
@@ -67,6 +70,14 @@ const generateQrcode = (text) => {
       height: 230,
       canvasId: 'canvas',
       text,
+    })
+    Taro.canvasToTempFilePath({
+      width: 230,
+      height: 230,
+      canvasId: 'canvas',
+      success: (res) => {
+        qrcodeImage.value = res.tempFilePath
+      }
     })
   })
 }
