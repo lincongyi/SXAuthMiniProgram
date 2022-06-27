@@ -68,8 +68,7 @@ const getCode = async () => {
       getCodeBtnTxt.value = '获取验证码'
       currentTime.value = period
       isDisabled.value = false
-      clearInterval(timer)
-      timer = null
+      if (timer) clearInterval(timer)
     }
   }, 1000)
 }

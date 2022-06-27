@@ -100,14 +100,7 @@ const authActionSheetComponent = ref(null)
 
 // 立即认证
 const handleAuth = async () => {
-  // 1.收集信息
-  let collectionInfo = await handleCollectInfo(false)
-  // 2.获取certToken
-  let authType='regular'
-  let {tokenInfo} = await getCertToken({authType, collectionInfo}) // 获取certToken
-  certToken.value = tokenInfo.certToken
-
-  // 3.校验certToken，并返回授权信息
+  // 1.校验certToken，并返回授权信息（certToken从上一个认证请求的跳过来的url中拿到）
   let result = await checkCerTokenAgent({certToken: certToken.value})
   let {authTipsInfo, authUser} = result.data
   canSelfAuth.value = result.data.canSelfAuth ?? false
@@ -158,6 +151,7 @@ const handleConfirm = async () => {
 useDidShow(() => {
   let router = useRouter()
   authResult.value = Number(router.params.authResult)
+  certToken.value = router.params.certToken ?? ''
 
   authDetail.value = Taro.getStorageSync('authDetail')
 })

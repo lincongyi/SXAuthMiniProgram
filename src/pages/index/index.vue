@@ -202,8 +202,7 @@ const loginNow = async() => {
 
 // 轮询接口获取认证记录 start
 const loginEvent = async () => {
-  clearInterval(timer)
-  timer = null
+  if (timer) clearInterval(timer)
   await loopGetAuthList()
   timer = setInterval(() => {
     loopGetAuthList()
@@ -229,7 +228,6 @@ useDidShow(async () => {
 })
 
 useDidHide(() => {
-  clearInterval(timer)
-  timer = null
+  if (timer) clearInterval(timer)
 })
 </script>

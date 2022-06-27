@@ -43,7 +43,7 @@
 </template>
 <script setup>
 import { ref, reactive, toRefs, toRaw, computed, defineAsyncComponent } from 'vue'
-import Taro from '@tarojs/taro'
+import Taro, { useDidShow } from '@tarojs/taro'
 import loginImage from '@images/logo.png'
 import './index.scss'
 import { handleCollectInfo } from '@utils/collectInfo'
@@ -51,13 +51,12 @@ import { getCertToken, checkCerTokenAgent, getUserIdKey, checkCertCodeAgent, get
 import { register } from '@api/login'
 import { checkIsSupportFacialRecognition, startFacialRecognitionVerify } from '@utils/taro'
 
-// Taro.clearStorageSync()
 // 用户录入信息
 const type = '第二代居民身份证'
 const mode = ref(66) // 认证模式
 const userInfo = reactive({
-  idNum: '440105199203182415',
-  fullName: '林聪毅',
+  idNum: '',
+  fullName: '',
 })
 const btnDisabled = computed(() => !userInfo.fullName || !userInfo.idNum)
 
@@ -102,21 +101,21 @@ const handleSubmit = async () => {
       title: '请输入证件号码'
     })
   }
-  Taro.showLoading({title: '请稍候...'})
   // 调起人脸认证前的校验流程
-  //  1.收集信息
-  let collectionInfo = await handleCollectInfo()
-
-  // 2.获取certToken
   let agent = false
-  let authType = 'regular'
-  let result = await getCertToken({agent, mode: mode.value, authType, collectionInfo, idInfo: toRaw(userInfo)}) // 获取certToken
-  let {tokenInfo} = result
-  // let {certToken, qrcodeContent} = tokenInfo // qrcodeContent:用户二维码地址
-  certToken.value = tokenInfo.certToken
+  if (!certToken.value){
+    //  1.收集信息
+    let collectionInfo = await handleCollectInfo()
+
+    // 2.获取certToken
+    let authType = 'regular'
+    let {tokenInfo} = await getCertToken({agent, mode: mode.value, authType, collectionInfo, idInfo: toRaw(userInfo)}) // 获取certToken
+    // let {certToken, qrcodeContent} = tokenInfo // qrcodeContent:用户二维码地址
+    certToken.value = tokenInfo.certToken
+  }
 
   // 3.校验certToken，并返回授权信息
-  result = await checkCerTokenAgent({agent, certToken: certToken.value})
+  let result = await checkCerTokenAgent({agent, certToken: certToken.value})
   let {authTipsInfo, authUser} = result.data
   canSelfAuth.value = result.data.canSelfAuth ?? false
   mode.value = result.data.mode
@@ -157,13 +156,14 @@ const handleConfirm = async () => {
       phoneNum: phoneNum.value,
       regMode: 'id',
       wxpvCode: verifyResult
-    }).then(({loginToken}) => {
+    }).then(({loginToken, loginUser}) => {
       Taro.setStorageSync('loginToken', loginToken)
+      Taro.setStorageSync('loginUser', loginUser)
     })
   }
   const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
   Taro.showModal({
-    title: '温馨提示',
+    title: '注册成功',
     content: `您的账号已绑定${ISALIPAY?'支付宝':'微信'}，下次可直接使用${ISALIPAY?'支付宝':'微信'}授权快捷登录`,
     showCancel: false,
     success: ({confirm}) => {
@@ -172,4 +172,8 @@ const handleConfirm = async () => {
     }
   })
 }
+useDidShow(() => {
+  // 获取第三方小程序跳转时带过来的certToken
+  certToken.value = Taro.getStorageSync('certToken') || ''
+})
 </script>

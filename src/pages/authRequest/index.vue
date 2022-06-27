@@ -37,7 +37,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, toRaw } from 'vue'
 import Taro, { useDidShow, useRouter, useReachBottom } from '@tarojs/taro'
 import noAuthRecordImage from '@images/no-auth-record.png'
 import './index.scss'
@@ -61,7 +61,7 @@ const authResult = [
 const toAuth = (item) => {
   cacheData(item)
   Taro.navigateTo({
-    url: '/pages/authDetail/index?authResult=3'
+    url: `/pages/authDetail/index?authResult=3&certToken=${item.certToken}`
   })
 }
 
@@ -76,7 +76,7 @@ const toAuthDetail = (item) => {
 
 // 缓存跳转到认证详情所需的数据
 const cacheData = (item) => {
-  let {authMode, authMethod, authSceneStr, fullName, idNum, authModeStr, createTime, authTime, sourceName, expireTime} = item
+  let {authMode, authMethod, authSceneStr, fullName, idNum, authModeStr, createTime, authTime, sourceName, expireTime} = toRaw(item)
   let authDetail = {
     authMode, // 认证模式
     authMethod, // 认证方式
@@ -135,8 +135,7 @@ const init = async () => {
     authList.value = [...authList.value, ...data.list]
   } else { // 如果是认证请求，需要计算剩余时间
     authList.value = [...authList.value, ...calRestTime(data.list)]
-    clearInterval(timer)
-    timer = null
+    if (timer) clearInterval(timer)
     timer = setInterval(() => {
       authList.value = calRestTime(authList.value)
     }, 1000)
