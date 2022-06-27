@@ -13,6 +13,7 @@ export default defineAppConfig({
     'pages/updateAddress/index', // 地址
     'pages/setting/index', // 设置
     'pages/accountManagement/index', // 账号管理
+    'pages/webView/index', // 网页承载器
     'pages/addRequest/index', // 新增认证请求（该页面用于测试，正式线不上）
   ],
   tabBar: {

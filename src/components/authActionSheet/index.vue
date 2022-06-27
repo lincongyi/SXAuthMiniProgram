@@ -17,7 +17,7 @@
 
       <view class="protocol">
         <text>查看</text>
-        <text v-html="protocolName" class="protocol-link" @tap="toProtocol"></text>
+        <text v-html="protocolName" class="protocol-link" @tap="toProtocol(protocolUrl)"></text>
       </view>
 
       <nut-button type="primary" shape="square" block @tap="onConfirm">确认授权</nut-button>
@@ -53,8 +53,8 @@ defineExpose({
 })
 const isChecked = ref(false)
 // 查看用户服务协议
-const toProtocol = () => {
-
+const toProtocol = (url) => {
+  Taro.navigateTo({ url: `/pages/webView/index?url=${url}` })
 }
 // 取消授权
 const onClose = () => {

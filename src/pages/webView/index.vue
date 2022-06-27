@@ -1,19 +1,15 @@
 <template>
-  <view class="webView">
-    <text>{{ msg }}</text>
-  </view>
+  <web-view :src='url' @message="handleMessage" />
 </template>
 
-<script>
+<script setup>
 import { ref } from 'vue'
-import './index.scss'
+import { useDidShow, useRouter } from '@tarojs/taro'
 
-export default {
-  setup () {
-    const msg = ref('Hello world')
-    return {
-      msg
-    }
-  }
-}
+const url = ref('')
+
+useDidShow(() => {
+  let router = useRouter()
+  url.value = router.params?.url ?? ''
+})
 </script>
