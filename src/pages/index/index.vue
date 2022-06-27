@@ -135,6 +135,7 @@ const handleScanCode = async () => {
     Taro.scanCode({
       onlyFromCamera: true,
       success: async ({result}) => {
+        // 从返回的url中截取出certToken
         certToken.value = result.slice(result.indexOf('=')+1)
 
         // 校验certToken，并返回授权信息
@@ -188,9 +189,7 @@ const toPersonalQrcode = async () => {
   if (!loginStatus.value) {
     handleLogin()
   } else {
-    Taro.navigateTo({
-      url: '/pages/personalQrcode/index'
-    })
+    Taro.navigateTo({ url: '/pages/personalQrcode/index' })
   }
 }
 

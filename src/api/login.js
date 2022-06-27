@@ -1,11 +1,14 @@
 import request from '@utils/request'
+import Taro from '@tarojs/taro'
+const env = Taro.getEnv() || 'ALIPAY'
+const ISALIPAY = env === 'ALIPAY'
 
 /**
   * 登录
  */
 export function login(data){
   return request({
-    url: '/login',
+    url: `${ISALIPAY?'/alipay':''}/login`,
     data
   })
 }
@@ -15,7 +18,7 @@ export function login(data){
  */
 export function register(data){
   return request({
-    url: '/register',
+    url: `${ISALIPAY?'/alipay':''}/register`,
     data
   })
 }
@@ -35,7 +38,7 @@ export function logout(data={}){
  */
 export function logoff(data){
   return request({
-    url: '/logoff',
+    url: `${ISALIPAY?'/alipay':''}/logoff`,
     data
   })
 }

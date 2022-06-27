@@ -83,7 +83,7 @@ const toAuthRequest = () => {
 
 useDidShow(() => {
   let router = useRouter()
-  let {mode, data} = router.params.authMode
+  let {mode, data} = router.params
   authMode.value = Number(mode)
   authData.value = data
 
