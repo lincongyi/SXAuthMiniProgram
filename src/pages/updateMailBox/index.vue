@@ -95,7 +95,7 @@ const handleConfirm = async () => {
   }
 
   let loginUser = Taro.getStorageSync('loginUser')
-  Taro.setStorageSync('loginUser', {...loginUser, ...{mailBox: mailBox.value}})
+  Taro.setStorageSync('loginUser', {...loginUser, ...{email: mailBox.value}})
   Taro.showToast({
     mask: true,
     title: '绑定成功',
