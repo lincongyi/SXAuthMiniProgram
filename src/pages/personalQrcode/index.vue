@@ -50,7 +50,7 @@ const preStep = async () => {
   // 收集信息
   let collectionInfo = await handleCollectInfo()
   // 获取certToken
-  let authType='f2f'
+  let authType='QrcodeRegular'
   let {tokenInfo} = await getCertToken({authType, collectionInfo}) // 获取certToken
   return tokenInfo
 }
@@ -63,25 +63,22 @@ const handleRefresh = async () => {
 
 // 生成二维码
 const generateQrcode = (text) => {
-  // 不加setTimeout，首次渲染画不出来二维码
-  setTimeout(() => {
-    QR({
-      width: 230,
-      height: 230,
-      canvasId: 'canvas',
-      text,
-    })
-    setTimeout(() => { // 兼容安卓手机canvas draw报错的问题
-      Taro.canvasToTempFilePath({
-        width: 230,
-        height: 230,
-        canvasId: 'canvas',
-        success: (res) => {
-          qrcodeImage.value = res.tempFilePath
-        }
-      })
-    })
+  QR({
+    width: 230,
+    height: 230,
+    canvasId: 'canvas',
+    text,
   })
+  setTimeout(() => { // 兼容安卓手机canvas draw报错的问题
+    Taro.canvasToTempFilePath({
+      destWidth: 230,
+      destHeight: 230,
+      canvasId: 'canvas',
+      success: (res) => {
+        qrcodeImage.value = res.tempFilePath
+      }
+    })
+  }, 100)
 }
 
 useDidShow(async () => {

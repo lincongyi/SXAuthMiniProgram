@@ -70,7 +70,7 @@ const deleteAccount = () => {
 
 // 确认授权 开始人脸识别
 const handleConfirm = async () => {
-  let {userIdKey} = await getUserIdKey()
+  let {userIdKey} = await getUserIdKey({certToken: certToken.value})
   authActionSheetComponent.value.actionSheetVisible = false
   await checkIsSupportFacialRecognition() // 检测设备是否支持活体检测
 

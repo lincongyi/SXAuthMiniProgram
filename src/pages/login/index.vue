@@ -132,7 +132,7 @@ const handleSubmit = async () => {
 }
 
 const handleCheckCertToken = async () => {
-  let result = await checkCerTokenAgent({ certToken: certToken.value})
+  let result = await checkCerTokenAgent({ certToken: certToken.value })
   let {authTipsInfo, authUser} = result.data
   canSelfAuth.value = result.data.canSelfAuth ?? false
   mode.value = result.data.mode
@@ -186,27 +186,27 @@ const handleConfirm = async () => {
       Taro.setStorageSync('loginToken', loginToken)
       Taro.setStorageSync('loginUser', loginUser)
     })
-    if (!Taro.getStorageSync('loginType')){ // 小程序内部运行
-      const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
-      Taro.showModal({
-        title: '注册成功',
-        content: `您的账号已绑定${ISALIPAY?'支付宝':'微信'}，下次可直接使用${ISALIPAY?'支付宝':'微信'}授权快捷登录`,
-        showCancel: false,
-        success: ({confirm}) => {
-          // 跳转到首页
-          if (confirm) Taro.switchTab({ url: '/pages/index/index' })
-        }
-      })
-    } else { // 第三方小程序跳转
-      Taro.showModal({
-        title: '注册成功',
-        content: '返回第三方小程序',
-        showCancel: false,
-        success: ({confirm}) => {
-          if (confirm) Taro.navigateBackMiniProgram({ extraData: {} })
-        }
-      })
-    }
+  }
+  if (!Taro.getStorageSync('loginType')){ // 小程序内部运行
+    const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
+    Taro.showModal({
+      title: '注册成功',
+      content: `您的账号已绑定${ISALIPAY?'支付宝':'微信'}，下次可直接使用${ISALIPAY?'支付宝':'微信'}授权快捷登录`,
+      showCancel: false,
+      success: ({confirm}) => {
+        // 跳转到首页
+        if (confirm) Taro.switchTab({ url: '/pages/index/index' })
+      }
+    })
+  } else { // 第三方小程序跳转
+    Taro.showModal({
+      title: '注册成功',
+      content: '返回第三方小程序',
+      showCancel: false,
+      success: ({confirm}) => {
+        if (confirm) Taro.navigateBackMiniProgram({ extraData: {} })
+      }
+    })
   }
 }
 useDidShow(async () => {
