@@ -50,7 +50,7 @@ const preStep = async () => {
   // 收集信息
   let collectionInfo = await handleCollectInfo()
   // 获取certToken
-  let authType='regular'
+  let authType='f2f'
   let {tokenInfo} = await getCertToken({authType, collectionInfo}) // 获取certToken
   return tokenInfo
 }
@@ -71,13 +71,15 @@ const generateQrcode = (text) => {
       canvasId: 'canvas',
       text,
     })
-    Taro.canvasToTempFilePath({
-      width: 230,
-      height: 230,
-      canvasId: 'canvas',
-      success: (res) => {
-        qrcodeImage.value = res.tempFilePath
-      }
+    setTimeout(() => { // 兼容安卓手机canvas draw报错的问题
+      Taro.canvasToTempFilePath({
+        width: 230,
+        height: 230,
+        canvasId: 'canvas',
+        success: (res) => {
+          qrcodeImage.value = res.tempFilePath
+        }
+      })
     })
   })
 }

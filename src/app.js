@@ -14,10 +14,13 @@ const App = createApp({
     // 版本更新
     handleUpdate()
   },
-  onShow(options){
+  async onShow(options){
+    let {extraData} = options.referrerInfo
     // 判断是否从第三方小程序跳转
-    let certToken = options?.referrerInfo?.extraData?.certToken
-    if (certToken) Taro.setStorageSync('certToken', certToken)
+    if (extraData){
+      Taro.setStorageSync('certToken', extraData.certToken)
+      Taro.setStorageSync('loginType', 1) // 0.小程序内部运行，1.第三方小程序跳转过来
+    }
   }
 })
 

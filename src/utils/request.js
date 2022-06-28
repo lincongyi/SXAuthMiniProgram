@@ -30,15 +30,19 @@ function request (options = {}) {
         if (r.data.retCode === 5202){
           let {aesUnionId} = r.data.userData // 加密后的unionId
           Taro.setStorageSync('aesUnionId', aesUnionId)
-          return Taro.showModal({
-            title: '温馨提示',
-            content: r.data.retMessage,
-            showCancel: false,
-            success: ({confirm}) => {
-              // 跳转到登录 || 注册页面
-              if (confirm) Taro.navigateTo({ url: '/pages/login/index' })
-            }
-          })
+          if (!Taro.getStorageSync('loginType')){ // 小程序内部允许，显示提示弹窗
+            return Taro.showModal({
+              title: '温馨提示',
+              content: r.data.retMessage,
+              showCancel: false,
+              success: ({confirm}) => {
+                // 跳转到登录 || 注册页面
+                if (confirm) Taro.navigateTo({ url: '/pages/login/index' })
+              }
+            })
+          }
+          // 第三方小程序跳转，不做任何处理
+          resolve()
         } else if (r.data.retCode){
           return Taro.showModal({
             title: '温馨提示',

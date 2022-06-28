@@ -84,7 +84,9 @@ const formatDate = (date) => {
 }
 
 // 证件有效期
-const period = computed(() => `${formatDate(loginUser.idStartDate)}-${formatDate(loginUser.idEndDate)}`)
+const period = computed(() => {
+  return (!loginUser.idStartDate&&!loginUser.idEndDate) ? '' : `${formatDate(loginUser.idStartDate)}-${formatDate(loginUser.idEndDate)}`
+})
 
 // 获取手机号码
 const getPhoneNumber = async (event) => {
