@@ -252,8 +252,12 @@ export function startFacialRecognitionVerify(name, idCardNumber, userIdKey){
       success: ({verifyResult}) => {
         resolve(verifyResult)
       },
-      fail: (e) => {
-        console.log(e)
+      fail: () => {
+        Taro.showToast({
+          icon: 'none',
+          title: '取消认证',
+          mask: true
+        })
       }
     })
   })
