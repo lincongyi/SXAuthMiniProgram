@@ -247,6 +247,11 @@ export function startFacialRecognitionVerify(name, idCardNumber, userIdKey){
           title: '取消认证',
           mask: true
         })
+        setTimeout(() => {
+          let loginType = Taro.getStorageSync('loginType') ?? 0
+          if (loginType) Taro.navigateBackMiniProgram({ extraData: {} })
+          else Taro.switchTab({ url: '/pages/index/index' })
+        }, 1500)
       }
     })
   })
