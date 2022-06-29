@@ -136,7 +136,6 @@ const handleCheckCertToken = async () => {
   let {authTipsInfo, authUser} = result.data
   canSelfAuth.value = result.data.canSelfAuth ?? false
   mode.value = result.data.mode
-  S
   // 如果是第三方跳转过来的，反显用户信息
   if (Taro.getStorageSync('loginType')){
     userInfo.idNum = authUser?.idNum
