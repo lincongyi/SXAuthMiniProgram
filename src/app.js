@@ -15,7 +15,7 @@ const App = createApp({
     handleUpdate()
   },
   async onShow(options){
-    let {extraData} = options.referrerInfo
+    let extraData = options.referrerInfo?.extraData // 兼容支付宝options默认没有referrerInfo字段
     // 判断是否从第三方小程序跳转
     if (extraData){
       Taro.setStorageSync('certToken', extraData.certToken)
