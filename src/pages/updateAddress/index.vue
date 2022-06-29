@@ -23,12 +23,12 @@ const handleConfirm = async () => {
   if (!city.value){
     return Taro.showToast({
       icon: 'none',
-      title: '省市区县、乡镇'
+      title: '请输入省市区县、乡镇'
     })
   } else if (!street.value) {
     return Taro.showToast({
       icon: 'none',
-      title: '街道、楼牌号'
+      title: '请输入街道、楼牌号'
     })
   }
   await updateAddress({ address: `${city.value}${street.value}` })
