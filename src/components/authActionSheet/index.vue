@@ -2,7 +2,6 @@
   <nut-actionsheet
     title="温馨提示"
     v-model:visible="actionSheetVisible"
-    @close="onClose"
   >
     <view class="action-sheet-content">
       <view class="html-parse" v-html="beforeAuth"></view>
@@ -58,6 +57,7 @@ const toProtocol = (url) => {
 }
 // 取消授权
 const onClose = () => {
+  isChecked.value = false
   Taro.showToast({
     icon: 'none',
     title: '取消授权',

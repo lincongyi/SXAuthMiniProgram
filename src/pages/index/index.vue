@@ -103,11 +103,11 @@ const protocolUrl = ref('') // 《用户服务协议》url
 const authActionSheet = defineAsyncComponent(() => import('@components/authActionSheet/index.vue')) // 授权弹窗
 const authActionSheetComponent = ref(null)
 
-// 跳转到认证请求页面
-const toAuthRequest = () => {
-  Taro.navigateTo({
-    url: '/pages/authRequest/index?flag=1'
-  })
+// 立即登录
+const loginNow = async() => {
+  await isLogin()
+  loginStatus.value = true
+  loginEvent()
 }
 
 // 登录/注册
@@ -117,13 +117,18 @@ const handleLogin = () => {
     content: '您尚未登录',
     confirmText: '立即登录',
     cancelText: '暂不登录',
-    success: async (res) => {
+    success: (res) => {
       if (res.confirm) {
-        await isLogin()
-        loginStatus.value = true
-        loginEvent()
+        loginNow()
       }
     }
+  })
+}
+
+// 跳转到认证请求页面
+const toAuthRequest = () => {
+  Taro.navigateTo({
+    url: '/pages/authRequest/index?flag=1'
   })
 }
 
@@ -191,13 +196,6 @@ const toPersonalQrcode = async () => {
   } else {
     Taro.navigateTo({ url: '/pages/personalQrcode/index' })
   }
-}
-
-// 立即登录
-const loginNow = async() => {
-  await isLogin()
-  loginStatus.value = true
-  loginEvent()
 }
 
 // 轮询接口获取认证记录 start

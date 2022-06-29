@@ -90,27 +90,16 @@ export function getOpenUserInfo(){
   * 获取授权码 -> 支付宝小程序
  */
 export function getAuthCode(){
-  Taro.getAuthCode({
-    scopes: 'auth_user',
-    success: (res) => {
-      console.log(res)
-    },
-  })
-
-}
-
-/**
-  * 检查登录态是否过期
- */
-export function checkSession(){
-  Taro.checkSession({
-    success: () => {
-      //session_key 未过期，并且在本生命周期一直有效
-    },
-    fail: () => {
-      // session_key 已经失效，需要重新执行登录流程
-      TaroLogin() //重新登录
-    }
+  return new Promise((resolve, reject) => {
+    Taro.ap.getAuthCode({
+      scopes: 'auth_user',
+      success: ({authCode}) => {
+        resolve(authCode)
+      },
+      fail: (error) => {
+        reject(error)
+      }
+    })
   })
 }
 
