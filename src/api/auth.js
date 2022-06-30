@@ -1,4 +1,7 @@
 import request from '@utils/request'
+import Taro from '@tarojs/taro'
+const env = Taro.getEnv() || 'ALIPAY'
+const ISALIPAY = env === 'ALIPAY'
 
 // 个人二维码（接入服务认证凭证）
 export function getCertToken(data){
@@ -35,7 +38,7 @@ export function checkCertCodeAgent(data){
 // 获取手机号码
 export function getUserPhoneNum(data){
   return request({
-    url: '/getUserPhoneNum',
+    url: `${ISALIPAY?'/alipay':''}/getUserPhoneNum`,
     data
   })
 }

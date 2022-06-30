@@ -20,7 +20,8 @@
 
     <view class="btn-warp">
       <nut-button type="primary" shape="square" block @tap="handleSubmit" :class="{'disabled':btnDisabled}">下一步</nut-button>
-      <button class="get-phone-number-btn" open-type="getPhoneNumber" @getphonenumber="getPhoneNumber" v-show="!btnDisabled"></button>
+      <!-- <button class="get-phone-number-btn" open-type="getPhoneNumber" @getphonenumber="getPhoneNumber" v-show="!btnDisabled"></button> -->
+      <button class="get-phone-number-btn" open-type="getAuthorize" @getauthorize="getPhoneNumber" scope='phoneNumber' v-show="!btnDisabled"></button>
     </view>
 
     <view class="tips-textarea">
@@ -53,8 +54,9 @@ import './index.scss'
 import { handleCollectInfo } from '@utils/collectInfo'
 import { getCertToken, checkCerTokenAgent, getUserIdKey, checkCertCodeAgent, getUserPhoneNum } from '@api/auth'
 import { register } from '@api/login'
-import { checkIsSupportFacialRecognition, startFacialRecognitionVerify } from '@utils/taro'
+import { checkIsSupportFacialRecognition, startFacialRecognitionVerify, alipayGetPhoneNumber } from '@utils/taro'
 import { isLogin } from '@utils/index'
+import { alipayAuth } from '@utils/alipayAuth'
 
 // 用户录入信息
 const type = '第二代居民身份证'
@@ -88,14 +90,21 @@ const toProtocol = () => {
 
 // 下一步（先获取手机号码，再走流程）
 const getPhoneNumber = async (event) => {
-  if (event.detail.errMsg.indexOf('getPhoneNumber:ok') === -1) {
-    return Taro.showModal({
-      title: '温馨提示',
-      content: '获取手机号失败，请重试',
-      showCancel: false,
-    })
+  let jsCode
+  const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
+  if (ISALIPAY){
+    jsCode = await alipayGetPhoneNumber()
+    console.log(jsCode)
+  } else {
+    if (event.detail.errMsg.indexOf('getPhoneNumber:ok') === -1) {
+      return Taro.showModal({
+        title: '温馨提示',
+        content: '获取手机号失败，请重试',
+        showCancel: false,
+      })
+    }
+    jsCode = event.detail.code
   }
-  let {code: jsCode} = event.detail
   let {userData} = await getUserPhoneNum({ jsCode })
   phoneNum.value = userData.phoneNum
   handleSubmit()
@@ -156,9 +165,17 @@ const handleCheckCertToken = async () => {
 const handleConfirm = async () => {
   let {userIdKey} = await getUserIdKey({...toRaw(userInfo), certToken: certToken.value})
   authActionSheetComponent.value.actionSheetVisible = false
-  await checkIsSupportFacialRecognition() // 检测设备是否支持活体检测
+
   // 4.活体检测
-  let verifyResult = await startFacialRecognitionVerify(userInfo.fullName, userInfo.idNum, userIdKey)
+  const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
+  let verifyResult
+  if (ISALIPAY){
+    let result = await alipayAuth()
+    console.log(result)
+  } else {
+    await checkIsSupportFacialRecognition() // 检测设备是否支持活体检测
+    verifyResult = await startFacialRecognitionVerify(userInfo.fullName, userInfo.idNum, userIdKey)
+  }
 
   // 如果从第三方小程序跳转过来，就要重新收集信息
   let collectionInfo = await handleCollectInfo()

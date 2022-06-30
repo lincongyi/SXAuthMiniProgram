@@ -72,9 +72,9 @@ const deleteAccount = () => {
 const handleConfirm = async () => {
   let {userIdKey} = await getUserIdKey({certToken: certToken.value})
   authActionSheetComponent.value.actionSheetVisible = false
-  await checkIsSupportFacialRecognition() // 检测设备是否支持活体检测
 
   // 4.活体检测
+  await checkIsSupportFacialRecognition() // 检测设备是否支持活体检测
   let loginUser = Taro.getStorageSync('loginUser')
   let verifyResult = await startFacialRecognitionVerify(loginUser.fullName, loginUser.idNum, userIdKey)
 

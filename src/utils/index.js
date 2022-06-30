@@ -13,7 +13,7 @@ export async function isLogin(){
       let authCode = await getAuthCode()
       data = {
         authCode,
-        scopes: 'auth_user'
+        scopes: 'auth_base'
       }
     } else {
       let jsCode = await TaroLogin()

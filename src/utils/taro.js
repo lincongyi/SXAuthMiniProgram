@@ -256,3 +256,16 @@ export function startFacialRecognitionVerify(name, idCardNumber, userIdKey){
     })
   })
 }
+
+/**
+  * 获取手机号码 -> 支付宝小程序
+ */
+export function alipayGetPhoneNumber(){
+  return new Promise((resolve) => {
+    Taro.getPhoneNumber({
+      success: (res) => {
+        resolve(res.response)
+      }
+    })
+  })
+}

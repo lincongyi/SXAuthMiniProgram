@@ -28,13 +28,18 @@ function request (options = {}) {
         }
         // 用户未注册
         if (r.data.retCode === 5202){
-          let {aesUnionId} = r.data.userData // 加密后的unionId
-          Taro.setStorageSync('aesUnionId', aesUnionId)
+          const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
+          if (ISALIPAY){
+            let {aesUserId} = r.data.userData // 加密后的userId
+            Taro.setStorageSync('aesUserId', aesUserId)
+          } else {
+            let {aesUnionId} = r.data.userData // 加密后的unionId
+            Taro.setStorageSync('aesUnionId', aesUnionId)
+          }
           if (!Taro.getStorageSync('loginType')){ // 小程序内部允许，显示提示弹窗
             return Taro.showModal({
               title: '温馨提示',
               content: r.data.retMessage,
-              showCancel: false,
               success: ({confirm}) => {
                 // 跳转到登录 || 注册页面
                 if (confirm) Taro.navigateTo({ url: '/pages/login/index' })
@@ -54,11 +59,17 @@ function request (options = {}) {
         resolve(r.data)
       },
       fail(err) {
-        if (err.errMsg.indexOf('timeout') !== -1 || err.errMsg.indexOf('请求超时') !== -1) {
+        if (err.status===404){
+          return Taro.showModal({
+            title: '温馨提示',
+            content: '404',
+            showCancel: false,
+          })
+        } else if (err.errMsg.indexOf('timeout') !== -1 || err.errMsg.indexOf('请求超时') !== -1) {
           reject({
             data: {
               retCode: -1,
-              retMessage: '请求超时,请稍后重试',
+              retMessage: '请求超时，请稍后重试',
             },
           })
         } else if (err.errMsg === 'request:fail url not in domain list'){
@@ -71,7 +82,7 @@ function request (options = {}) {
           reject({
             data: {
               retCode: -100500,
-              retMessage: '网络错误,请检查设备网络状态',
+              retMessage: '网络错误，请检查设备网络状态',
             },
           })
         }
