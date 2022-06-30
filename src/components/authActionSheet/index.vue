@@ -26,10 +26,10 @@
 
 </template>
 <script setup>
-import { ref } from 'vue'
+import {ref} from 'vue'
 import Taro from '@tarojs/taro'
 import './index.scss'
-const props = defineProps({
+defineProps({
   beforeAuth: {
     type: String,
     value: ''
@@ -54,7 +54,7 @@ defineExpose({
 const isChecked = ref(false)
 // 查看用户服务协议
 const toProtocol = (url) => {
-  Taro.navigateTo({ url: `/pages/webView/index?url=${url}` })
+  Taro.navigateTo({url: `/pages/webView/index?url=${url}`})
 }
 // 取消授权
 const onClose = () => {
@@ -65,8 +65,8 @@ const onClose = () => {
     success: ({confirm}) => {
       if (confirm){
         let loginType = Taro.getStorageSync('loginType') ?? 0
-        if (loginType) Taro.navigateBackMiniProgram({ extraData: {} })
-        else Taro.switchTab({ url: '/pages/index/index' })
+        if (loginType) Taro.navigateBackMiniProgram({extraData: {}})
+        else Taro.switchTab({url: '/pages/index/index'})
       } else {
         actionSheetVisible.value = true
       }

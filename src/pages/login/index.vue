@@ -58,7 +58,7 @@ import Taro, {useDidShow} from '@tarojs/taro'
 import loginImage from '@images/logo.png'
 import './index.scss'
 import {handleCollectInfo} from '@utils/collectInfo'
-import {getCertToken, checkCerTokenAgent, getUserIdKey, checkCertCodeAgent, getUserPhoneNum} from '@api/auth'
+import {getCertToken, checkCerTokenAgent, getUserIdKey, checkCertCodeAgent, getCertifyResult, getUserPhoneNum} from '@api/auth'
 import {register} from '@api/login'
 import {checkIsSupportFacialRecognition, startFacialRecognitionVerify, alipayGetPhoneNumber} from '@utils/taro'
 import {isLogin} from '@utils/index'
@@ -174,11 +174,10 @@ const handleConfirm = async () => {
   authActionSheetComponent.value.actionSheetVisible = false
 
   // 4.活体检测（16，64模式无需走活检流程）
-  let verifyResult = ''
+  let verifyResult
   if (![16, 64].includes(mode.value)){
     if (ISALIPAY){
-      let result = await alipayAuth()
-      console.log(result)
+      verifyResult = await alipayAuth()
     } else {
       await checkIsSupportFacialRecognition() // 检测设备是否支持活体检测
       verifyResult = await startFacialRecognitionVerify(userInfo.fullName, userInfo.idNum, userIdKey)
@@ -188,13 +187,23 @@ const handleConfirm = async () => {
   // 如果从第三方小程序跳转过来，就要重新收集信息
   let collectionInfo = await handleCollectInfo()
   // 5.校验活体检测结果
-  await checkCertCodeAgent({
-    collectionInfo,
-    usedAgent: canSelfAuth.value,
-    usedMode: mode.value,
-    wxpvCode: verifyResult,
-    certToken: certToken.value
-  })
+  if (ISALIPAY){
+    await getCertifyResult({
+      ...verifyResult,
+      collectionInfo,
+      usedAgent: canSelfAuth.value,
+      usedMode: mode.value,
+      certToken: certToken.value
+    })
+  } else {
+    await checkCertCodeAgent({
+      collectionInfo,
+      usedAgent: canSelfAuth.value,
+      usedMode: mode.value,
+      wxpvCode: verifyResult,
+      certToken: certToken.value
+    })
+  }
 
   // 未注册
   if (!Taro.getStorageSync('loginToken')){

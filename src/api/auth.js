@@ -27,10 +27,18 @@ export function getUserIdKey(data={}){
   })
 }
 
-// 小程序刷脸通过后调用
+// 刷脸通过后调用 -> 微信小程序
 export function checkCertCodeAgent(data){
   return request({
     url: '/checkCertCodeAgent',
+    data
+  })
+}
+
+// 刷脸通过后调用 -> 支付宝小程序
+export function getCertifyResult(data){
+  return request({
+    url: '/alipay/getCertifyResult',
     data
   })
 }

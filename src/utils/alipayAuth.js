@@ -1,7 +1,7 @@
 import Taro from '@tarojs/taro'
 export function alipayAuth(){
   let bizId = generateUUID()
-  new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     Taro.ap.faceVerify({
       bizId, //业务流水号，商户自行生成，需要保证唯一性，不超过64位
       bizType: '1', //业务场景参数，‘1’代表人脸采集，请务必填写
