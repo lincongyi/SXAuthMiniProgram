@@ -36,23 +36,23 @@ import './index.scss'
 defineProps({
   beforeAuth: {
     type: String,
-    value: ''
+    default: ''
   },
   beforeProtocol: {
     type: String,
-    value: ''
+    default: ''
   },
   protocolName: {
     type: String,
-    value: ''
+    default: ''
   },
   protocolUrl: {
     type: String,
-    value: ''
+    default: ''
   },
   mode: {
-    type: String,
-    value: ''
+    type: [Number, String],
+    default: 0
   }
 })
 const actionSheetVisible = ref(false) // 控制动作面板显示隐藏

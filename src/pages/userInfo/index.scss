@@ -28,6 +28,7 @@
   border-bottom: 1px solid $border-color;
 
   .left-label {
+    min-width: 200px;
     color: $secondary-font-color;
   }
 
@@ -37,6 +38,7 @@
     align-items: center;
     color: $primary-font-color;
     flex: 1;
+    word-break: break-all;
 
     &.unfilled {
       color: $primary-color;

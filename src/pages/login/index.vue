@@ -207,14 +207,19 @@ const handleConfirm = async () => {
 
   // 未注册
   if (!Taro.getStorageSync('loginToken')){
-    await register({
-      aesUnionId: Taro.getStorageSync('aesUnionId'),
-      ...toRaw(userInfo),
+    let data = {
       phoneNum: phoneNum.value,
       regMode: 'id',
-      wxpvCode: verifyResult,
       certToken: certToken.value
-    }).then(({loginToken, loginUser}) => {
+    }
+    if (ISALIPAY){
+      data.aesUserId = Taro.getStorageSync('aesUserId')
+      data = {...data, ...verifyResult}
+    } else {
+      data.aesUnionId = Taro.getStorageSync('aesUnionId'),
+      data.wxpvCode = verifyResult
+    }
+    await register().then(({loginToken, loginUser}) => {
       Taro.setStorageSync('loginToken', loginToken)
       Taro.setStorageSync('loginUser', loginUser)
     })

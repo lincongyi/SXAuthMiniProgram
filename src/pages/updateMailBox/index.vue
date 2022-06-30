@@ -110,7 +110,7 @@ const handleConfirm = async () => {
 useDidShow(() => {
   let router = useRouter()
   isUnBound.value = Number(router.params?.isUnBound) ?? 0
-  if (isUnBound.value) mailBox.value = Taro.setStorageSync('loginUser').mailBox
+  if (isUnBound.value) mailBox.value = Taro.getStorageSync('loginUser').email
   Taro.setNavigationBarTitle({
     title: ['绑定邮箱', '邮箱解绑'][isUnBound.value]
   })
