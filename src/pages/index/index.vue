@@ -73,7 +73,7 @@ import Taro, {useDidShow, useDidHide} from '@tarojs/taro'
 import './index.scss'
 import {isLogin} from '@utils/index'
 import {handleCollectInfo} from '@utils/collectInfo'
-import {getAuthList, checkCerTokenAgent, getUserIdKey, checkCertCodeAgent} from '@api/auth'
+import {getAuthList, checkCerTokenAgent, getUserIdKey, getCertifyResult, checkCertCodeAgent} from '@api/auth'
 import {checkIsSupportFacialRecognition, startFacialRecognitionVerify} from '@utils/taro'
 import {alipayAuth} from '@utils/alipayAuth'
 import banner_01 from '@images/banner-01.png'
@@ -171,8 +171,7 @@ const handleConfirm = async () => {
   let verifyResult = ''
   if (![16, 64].includes(Number(mode.value))){
     if (ISALIPAY){
-      let result = await alipayAuth()
-      console.log(result)
+      verifyResult = await alipayAuth()
     } else {
       await checkIsSupportFacialRecognition() // 检测设备是否支持活体检测
       let loginUser = Taro.getStorageSync('loginUser')
@@ -183,14 +182,23 @@ const handleConfirm = async () => {
   // collectionInfo尝试从storage里面取
   let collectionInfo = await handleCollectInfo()
   // 5.校验活体检测结果
-  await checkCertCodeAgent({
-    collectionInfo,
-    usedAgent: canSelfAuth.value,
-    wxpvCode: verifyResult,
-    certToken: certToken.value,
-    usedMode: mode.value,
-  })
-
+  if (ISALIPAY){
+    await getCertifyResult({
+      ...verifyResult,
+      collectionInfo,
+      usedAgent: canSelfAuth.value,
+      usedMode: mode.value,
+      certToken: certToken.value
+    })
+  } else {
+    await checkCertCodeAgent({
+      collectionInfo,
+      usedAgent: canSelfAuth.value,
+      usedMode: mode.value,
+      wxpvCode: verifyResult,
+      certToken: certToken.value
+    })
+  }
   Taro.showToast({
     icon: 'none',
     title: '校验成功',

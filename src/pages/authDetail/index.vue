@@ -60,7 +60,7 @@ import {ref, defineAsyncComponent} from 'vue'
 import './index.scss'
 import Taro, {useDidShow, useRouter} from '@tarojs/taro'
 import {handleCollectInfo} from '@utils/collectInfo'
-import {checkCerTokenAgent, getUserIdKey, checkCertCodeAgent} from '@api/auth'
+import {checkCerTokenAgent, getUserIdKey, getCertifyResult, checkCertCodeAgent} from '@api/auth'
 import {checkIsSupportFacialRecognition, startFacialRecognitionVerify} from '@utils/taro'
 import {alipayAuth} from '@utils/alipayAuth'
 import toBeCertifiedImage from '@images/to-be-certified.png'
@@ -127,25 +127,36 @@ const handleConfirm = async () => {
   let verifyResult = ''
   if (![16, 64].includes(Number(mode.value))){
     if (ISALIPAY){
-      let result = await alipayAuth()
-      console.log(result)
+      verifyResult = await alipayAuth()
     } else {
       await checkIsSupportFacialRecognition() // 检测设备是否支持活体检测
       let loginUser = Taro.getStorageSync('loginUser')
       verifyResult = await startFacialRecognitionVerify(loginUser.fullName, loginUser.idNum, userIdKey)
     }
   }
+  console.log(`verifyResult:${JSON.stringify(verifyResult)}`)
 
   // collectionInfo尝试从storage里面取
   let collectionInfo = await handleCollectInfo()
   // 5.校验活体检测结果
-  let {data} = await checkCertCodeAgent({
-    collectionInfo,
-    usedAgent: canSelfAuth.value,
-    wxpvCode: verifyResult,
-    certToken: certToken.value,
-    usedMode: mode.value,
-  })
+  let result
+  if (ISALIPAY){
+    result = await getCertifyResult({
+      ...verifyResult,
+      collectionInfo,
+      usedAgent: canSelfAuth.value,
+      usedMode: mode.value,
+      certToken: certToken.value
+    })
+  } else {
+    result = await checkCertCodeAgent({
+      collectionInfo,
+      usedAgent: canSelfAuth.value,
+      usedMode: mode.value,
+      wxpvCode: verifyResult,
+      certToken: certToken.value
+    })
+  }
   Taro.showToast({
     icon: 'none',
     title: '认证成功',
@@ -153,8 +164,8 @@ const handleConfirm = async () => {
     success: () => {
       Taro.removeStorageSync('authDetail')
       setTimeout(() => {
-        Taro.navigateTo({url: `/pages/authResult/index?mode=${authDetail.value.authMode}&data=${data}`})
-      }, 1500)
+        Taro.navigateTo({url: `/pages/authResult/index?mode=${authDetail.value.authMode}&data=${result.data}`})
+      }, 1000)
     }
   })
 }
