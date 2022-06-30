@@ -26,14 +26,17 @@ export async function isLogin(){
         loginType
       }
     }
-    await login(data).then(({loginToken, loginUser}) => {
-      Taro.setStorageSync('loginToken', loginToken)
-      Taro.setStorageSync('loginUser', loginUser)
-      Taro.showToast({
-        icon: 'none',
-        title: '登录成功',
-        mask: true,
-      })
+    let {loginToken, loginUser, userData} = await login(data)
+
+    if (ISALIPAY) Taro.setStorageSync('aesUserId', userData.aesUserId) // 加密后的userId
+    else Taro.setStorageSync('aesUnionId', userData.aesUnionId) // 加密后的unionId
+
+    Taro.setStorageSync('loginToken', loginToken)
+    Taro.setStorageSync('loginUser', loginUser)
+    Taro.showToast({
+      icon: 'none',
+      title: '登录成功',
+      mask: true,
     })
   } else {
     return true

@@ -56,8 +56,7 @@ import avatarImage from '@images/avatar-default.png' // 用户默认头像
 import userCenterRecordImage from '@images/user-center-record.png'
 import userCenterSettingImage from '@images/user-center-setting.png'
 
-const env = Taro.getStorageSync('env')
-const ISALIPAY = env === 'ALIPAY'
+const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
 const loginStatus = ref(false) // 判断用户是否登录状态
 
 const fullName = ref('') // 用户名

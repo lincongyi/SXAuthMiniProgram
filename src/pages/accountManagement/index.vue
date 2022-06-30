@@ -37,6 +37,7 @@ const protocolName = ref('') // 《用户服务协议》
 const protocolUrl = ref('') // 《用户服务协议》url
 const authActionSheet = defineAsyncComponent(() => import('@components/authActionSheet/index.vue')) // 授权弹窗
 const authActionSheetComponent = ref(null)
+const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
 
 const deleteAccount = () => {
   Taro.showModal({
@@ -73,10 +74,18 @@ const handleConfirm = async () => {
   let {userIdKey} = await getUserIdKey({certToken: certToken.value})
   authActionSheetComponent.value.actionSheetVisible = false
 
-  // 4.活体检测
-  await checkIsSupportFacialRecognition() // 检测设备是否支持活体检测
-  let loginUser = Taro.getStorageSync('loginUser')
-  let verifyResult = await startFacialRecognitionVerify(loginUser.fullName, loginUser.idNum, userIdKey)
+  // 4.活体检测（16，64模式无需走活检流程）
+  let verifyResult = ''
+  if (![16, 64].includes(mode.value)){
+    if (ISALIPAY){
+      let result = await alipayAuth()
+      console.log(result)
+    } else {
+      await checkIsSupportFacialRecognition() // 检测设备是否支持活体检测
+      let loginUser = Taro.getStorageSync('loginUser')
+      verifyResult = await startFacialRecognitionVerify(loginUser.fullName, loginUser.idNum, userIdKey)
+    }
+  }
 
   // collectionInfo尝试从storage里面取
   let collectionInfo = await handleCollectInfo()

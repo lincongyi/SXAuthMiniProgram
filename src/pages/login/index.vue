@@ -83,8 +83,8 @@ const certToken = ref('') // certToken
 
 const beforeAuth = ref('') // 动作面板温馨提示内容
 const beforeProtocol = ref('') // 同意协议提示内容
-const protocolName = ref('') // 《用户服务协议》
-const protocolUrl = ref('') // 《用户服务协议》url
+const protocolName = ref('') // 用户服务协议
+const protocolUrl = ref('') // 用户服务协议url
 const authActionSheet = defineAsyncComponent(() => import('@components/authActionSheet/index.vue')) // 授权弹窗
 const authActionSheetComponent = ref(null)
 const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
@@ -98,7 +98,7 @@ const toProtocol = () => {
 // 下一步（先获取手机号码，再走流程）
 const getPhoneNumber = async (event) => {
   let jsCode
-  if (ISALIPAY.value){
+  if (ISALIPAY){
     jsCode = await alipayGetPhoneNumber()
     console.log(jsCode)
   } else {
@@ -173,14 +173,16 @@ const handleConfirm = async () => {
   let {userIdKey} = await getUserIdKey({...toRaw(userInfo), certToken: certToken.value})
   authActionSheetComponent.value.actionSheetVisible = false
 
-  // 4.活体检测
-  let verifyResult
-  if (ISALIPAY.value){
-    let result = await alipayAuth()
-    console.log(result)
-  } else {
-    await checkIsSupportFacialRecognition() // 检测设备是否支持活体检测
-    verifyResult = await startFacialRecognitionVerify(userInfo.fullName, userInfo.idNum, userIdKey)
+  // 4.活体检测（16，64模式无需走活检流程）
+  let verifyResult = ''
+  if (![16, 64].includes(mode.value)){
+    if (ISALIPAY){
+      let result = await alipayAuth()
+      console.log(result)
+    } else {
+      await checkIsSupportFacialRecognition() // 检测设备是否支持活体检测
+      verifyResult = await startFacialRecognitionVerify(userInfo.fullName, userInfo.idNum, userIdKey)
+    }
   }
 
   // 如果从第三方小程序跳转过来，就要重新收集信息
@@ -211,7 +213,7 @@ const handleConfirm = async () => {
   if (!Taro.getStorageSync('loginType')){ // 小程序内部运行
     Taro.showModal({
       title: '注册成功',
-      content: `您的账号已绑定${ISALIPAY.value?'支付宝':'微信'}，下次可直接使用${ISALIPAY.value?'支付宝':'微信'}授权快捷登录`,
+      content: `您的账号已绑定${ISALIPAY?'支付宝':'微信'}，下次可直接使用${ISALIPAY?'支付宝':'微信'}授权快捷登录`,
       showCancel: false,
       success: ({confirm}) => {
         // 跳转到首页
@@ -220,7 +222,7 @@ const handleConfirm = async () => {
     })
   } else { // 第三方小程序跳转
     Taro.showModal({
-      title: '注册成功',
+      title: '认证成功',
       content: '返回第三方小程序',
       showCancel: false,
       success: ({confirm}) => {

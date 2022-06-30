@@ -13,10 +13,6 @@ export function getEnv(){
  */
 export function handleUpdate(){
   const updateManager = Taro.getUpdateManager()
-  updateManager.onCheckForUpdate(function (res) {
-    // 请求完新版本信息的回调
-    console.log(res.hasUpdate)
-  })
   updateManager.onUpdateReady(function () {
     Taro.confirm({
       title: '更新提示',
