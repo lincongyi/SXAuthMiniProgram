@@ -27,7 +27,7 @@ function request (options = {}) {
           })
         }
         // 用户未注册
-        if (r.data.retCode === 5202){
+        if ([5202, 5203].includes(r.data.retCode)){
           const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
           if (ISALIPAY){
             let {aesUserId} = r.data.userData // 加密后的userId

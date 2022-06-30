@@ -44,6 +44,7 @@ import {handleCollectInfo} from '@utils/collectInfo'
 
 const loginUser = ref({}) // 用户信息
 const qrcodeImage = ref('')
+const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
 
 // 生成二维码前置流程
 const preStep = async () => {
@@ -63,22 +64,24 @@ const handleRefresh = async () => {
 
 // 生成二维码
 const generateQrcode = (text) => {
-  QR({
-    width: 230,
-    height: 230,
-    canvasId: 'canvas',
-    text,
-  })
-  setTimeout(() => { // 兼容安卓手机canvas draw报错的问题
-    Taro.canvasToTempFilePath({
-      destWidth: 230,
-      destHeight: 230,
+  setTimeout(() => {
+    QR({
+      width: 230,
+      height: 230,
       canvasId: 'canvas',
-      success: (res) => {
-        qrcodeImage.value = res.tempFilePath
-      }
+      text,
     })
-  }, 100)
+    setTimeout(() => { // 兼容安卓手机canvas draw报错的问题
+      Taro.canvasToTempFilePath({
+        destWidth: 230,
+        destHeight: 230,
+        canvasId: 'canvas',
+        success: (res) => {
+          qrcodeImage.value = ISALIPAY ? res.apFilePath : res.tempFilePath
+        }
+      })
+    }, 500)
+  })
 }
 
 useDidShow(async () => {

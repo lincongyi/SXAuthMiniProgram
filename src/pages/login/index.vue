@@ -111,7 +111,8 @@ const getPhoneNumber = async (event) => {
     }
     jsCode = event.detail.code
   }
-  let {userData} = await getUserPhoneNum({jsCode})
+  // let {userData} = await getUserPhoneNum({jsCode})
+  let {userData} = await getUserPhoneNum({jsCode, idNum: userInfo.idNum})
   phoneNum.value = userData.phoneNum
   handleSubmit()
 }

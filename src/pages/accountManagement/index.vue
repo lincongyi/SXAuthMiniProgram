@@ -25,9 +25,10 @@ import {ref, defineAsyncComponent} from 'vue'
 import Taro from '@tarojs/taro'
 import './index.scss'
 import {handleCollectInfo} from '@utils/collectInfo'
-import {getCertToken, checkCerTokenAgent, getUserIdKey, checkCertCodeAgent} from '@api/auth'
+import {getCertToken, checkCerTokenAgent, getUserIdKey, getCertifyResult, checkCertCodeAgent} from '@api/auth'
 import {logoff} from '@api/login'
 import {checkIsSupportFacialRecognition, startFacialRecognitionVerify} from '@utils/taro'
+import {alipayAuth} from '@utils/alipayAuth'
 
 const canSelfAuth = ref(false) // 是否代他人认证
 const certToken = ref('') // certToken
@@ -80,8 +81,7 @@ const handleConfirm = async () => {
   let verifyResult = ''
   if (![16, 64].includes(Number(mode.value))){
     if (ISALIPAY){
-      let result = await alipayAuth()
-      console.log(result)
+      verifyResult = await alipayAuth()
     } else {
       await checkIsSupportFacialRecognition() // 检测设备是否支持活体检测
       let loginUser = Taro.getStorageSync('loginUser')
@@ -92,18 +92,33 @@ const handleConfirm = async () => {
   // collectionInfo尝试从storage里面取
   let collectionInfo = await handleCollectInfo()
   // 5.校验活体检测结果
-  await checkCertCodeAgent({
-    collectionInfo,
-    usedAgent: canSelfAuth.value,
-    wxpvCode: verifyResult,
-    certToken: certToken.value,
-    usedMode: mode.value,
-  })
+  if (ISALIPAY){
+    await getCertifyResult({
+      ...verifyResult,
+      collectionInfo,
+      usedAgent: canSelfAuth.value,
+      usedMode: mode.value,
+      certToken: certToken.value
+    })
+  } else {
+    await checkCertCodeAgent({
+      collectionInfo,
+      usedAgent: canSelfAuth.value,
+      usedMode: mode.value,
+      wxpvCode: verifyResult,
+      certToken: certToken.value
+    })
+  }
 
-  await logoff({
-    certToken: certToken.value,
-    wxpvCode: verifyResult
-  }).then(() => {
+  let data = {
+    certToken: certToken.value
+  }
+  if (ISALIPAY){
+    data = {...data, ...verifyResult}
+  } else {
+    data.wxpvCode = verifyResult
+  }
+  await logoff({data}).then(() => {
     Taro.removeStorageSync('loginToken') // 注销账户，移除loginToken
   })
   Taro.showToast({
