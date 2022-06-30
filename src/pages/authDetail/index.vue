@@ -47,6 +47,7 @@
     :beforeProtocol="beforeProtocol"
     :protocolName="protocolName"
     :protocolUrl="protocolUrl"
+    :mode="mode"
     @onConfirm="handleConfirm"
   />
 
@@ -123,7 +124,7 @@ const handleConfirm = async () => {
 
   // 4.活体检测（16，64模式无需走活检流程）
   let verifyResult = ''
-  if (![16, 64].includes(mode.value)){
+  if (![16, 64].includes(Number(mode.value))){
     if (ISALIPAY){
       let result = await alipayAuth()
       console.log(result)

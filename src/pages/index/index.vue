@@ -51,6 +51,7 @@
     :beforeProtocol="beforeProtocol"
     :protocolName="protocolName"
     :protocolUrl="protocolUrl"
+    :mode="mode"
     @onConfirm="handleConfirm"
   />
 
@@ -73,7 +74,7 @@ import './index.scss'
 import {isLogin} from '@utils/index'
 import {handleCollectInfo} from '@utils/collectInfo'
 import {getAuthList, checkCerTokenAgent, getUserIdKey, checkCertCodeAgent} from '@api/auth'
-import {getEnv, checkIsSupportFacialRecognition, startFacialRecognitionVerify} from '@utils/taro'
+import {checkIsSupportFacialRecognition, startFacialRecognitionVerify} from '@utils/taro'
 import banner_01 from '@images/banner-01.png'
 import banner_02 from '@images/banner-02.png'
 import noticeImage from '@images/notice.png'
@@ -167,7 +168,7 @@ const handleConfirm = async () => {
 
   // 4.活体检测（16，64模式无需走活检流程）
   let verifyResult = ''
-  if (![16, 64].includes(mode.value)){
+  if (![16, 64].includes(Number(mode.value))){
     if (ISALIPAY){
       let result = await alipayAuth()
       console.log(result)

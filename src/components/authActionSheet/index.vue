@@ -6,7 +6,11 @@
   >
     <view class="action-sheet-content">
       <view class="html-parse" v-html="beforeAuth"></view>
-      <view class="tips">本次认证需要通过人脸识别验证身份信息</view>
+
+      <block v-if="![16,64].includes(Number(mode))">
+        <view class="tips">本次认证需要通过人脸识别验证身份信息</view>
+      </block>
+
       <view class="agreement"></view>
 
       <view class="agreement-protocol">
@@ -43,6 +47,10 @@ defineProps({
     value: ''
   },
   protocolUrl: {
+    type: String,
+    value: ''
+  },
+  mode: {
     type: String,
     value: ''
   }

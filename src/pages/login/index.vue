@@ -45,6 +45,7 @@
     :beforeProtocol="beforeProtocol"
     :protocolName="protocolName"
     :protocolUrl="protocolUrl"
+    :mode="mode"
     @onConfirm="handleConfirm"
   />
 
@@ -100,7 +101,6 @@ const getPhoneNumber = async (event) => {
   let jsCode
   if (ISALIPAY){
     jsCode = await alipayGetPhoneNumber()
-    console.log(jsCode)
   } else {
     if (event.detail.errMsg.indexOf('getPhoneNumber:ok') === -1) {
       return Taro.showModal({
@@ -175,7 +175,7 @@ const handleConfirm = async () => {
 
   // 4.活体检测（16，64模式无需走活检流程）
   let verifyResult
-  if (![16, 64].includes(mode.value)){
+  if (![16, 64].includes(Number(mode.value))){
     if (ISALIPAY){
       verifyResult = await alipayAuth()
     } else {

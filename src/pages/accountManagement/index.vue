@@ -15,6 +15,7 @@
     :beforeProtocol="beforeProtocol"
     :protocolName="protocolName"
     :protocolUrl="protocolUrl"
+    :mode="mode"
     @onConfirm="handleConfirm"
   />
 </template>
@@ -35,6 +36,7 @@ const beforeAuth = ref('') // 动作面板温馨提示内容
 const beforeProtocol = ref('') // 同意协议提示内容
 const protocolName = ref('') // 《用户服务协议》
 const protocolUrl = ref('') // 《用户服务协议》url
+const mode = ref(66) // 注销流程66模式实人认证
 const authActionSheet = defineAsyncComponent(() => import('@components/authActionSheet/index.vue')) // 授权弹窗
 const authActionSheetComponent = ref(null)
 const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
@@ -76,7 +78,7 @@ const handleConfirm = async () => {
 
   // 4.活体检测（16，64模式无需走活检流程）
   let verifyResult = ''
-  if (![16, 64].includes(mode.value)){
+  if (![16, 64].includes(Number(mode.value))){
     if (ISALIPAY){
       let result = await alipayAuth()
       console.log(result)
@@ -95,7 +97,7 @@ const handleConfirm = async () => {
     usedAgent: canSelfAuth.value,
     wxpvCode: verifyResult,
     certToken: certToken.value,
-    usedMode: 66, // 注销流程66模式实人认证
+    usedMode: mode.value,
   })
 
   await logoff({
