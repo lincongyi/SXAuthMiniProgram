@@ -52,7 +52,7 @@ const isPermanent = ref(false) // 是否长期有效
 
 // 显示日期选择器
 const showDatePicker = (index) => {
-  let target = [idStartDate, idEndDate][index].value.replaceAll('.', ',')
+  let target = [idStartDate, idEndDate][index].value.replace(/\./g, ',')
   currentDate.value = target ? new Date(target) : new Date()
 
   datePickerIndex.value = index
@@ -92,8 +92,8 @@ const handleConfirm = async () => {
     })
   }
   await updateYXQ({
-    idStartDate: idStartDate.value.replaceAll('.', ''),
-    idEndDate: idEndDate.value.replaceAll('.', '')
+    idStartDate: idStartDate.value.replace(/\./g, ''),
+    idEndDate: idEndDate.value.replace(/\./g, '')
   })
   Taro.setStorageSync('loginUser', {...Taro.getStorageSync('loginUser'), ...{idStartDate: idStartDate.value, idEndDate: idEndDate.value}})
   Taro.showToast({
