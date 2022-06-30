@@ -37,11 +37,11 @@
 </template>
 
 <script setup>
-import { ref, toRaw } from 'vue'
-import Taro, { useDidShow, useRouter, useReachBottom } from '@tarojs/taro'
+import {ref, toRaw} from 'vue'
+import Taro, {useDidShow, useRouter, useReachBottom} from '@tarojs/taro'
 import noAuthRecordImage from '@images/no-auth-record.png'
 import './index.scss'
-import { getAuthList } from '@api/auth'
+import {getAuthList} from '@api/auth'
 
 const flag = ref(0) // 0.认证记录；1.待认证
 const authList = ref([]) // 认证数据
@@ -52,9 +52,9 @@ let timer
 
 // 认证结果:0-成功；1-失败；2-过期
 const authResult = [
-  { text: '成功', class: 'success' },
-  { text: '失败', class: 'fail' },
-  { text: '过期', class: 'expire' }
+  {text: '成功', class: 'success'},
+  {text: '失败', class: 'fail'},
+  {text: '过期', class: 'expire'}
 ]
 
 // 马上认证

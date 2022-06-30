@@ -51,11 +51,11 @@
 </template>
 
 <script setup>
-import { reactive, computed } from 'vue'
-import Taro, { useDidShow } from '@tarojs/taro'
+import {reactive, computed} from 'vue'
+import Taro, {useDidShow} from '@tarojs/taro'
 import './index.scss'
 import avatarImage from '@images/avatar-default.png' // 用户默认头像
-import { updatePhoneNum } from '@api/setting'
+import {updatePhoneNum} from '@api/setting'
 
 // 用户信息
 let loginUser = reactive({
@@ -98,7 +98,7 @@ const getPhoneNumber = async (event) => {
     })
   }
   let {code: jsCode} = event.detail
-  let {data: phoneNum} = await updatePhoneNum({ jsCode })
+  let {data: phoneNum} = await updatePhoneNum({jsCode})
   loginUser.phoneNum = phoneNum
   let loginUserStorage = Taro.getStorageSync('loginUser')
   Taro.setStorageSync({...loginUserStorage, ...{phoneNum}})
@@ -108,7 +108,7 @@ const getPhoneNumber = async (event) => {
 const toUpdateMailBox = () => {
   // isUnBound:0-绑定；1-解绑；
   let url = `/pages/updateMailBox/index?isUnBound=${loginUser.email?'1':'0'}`
-  Taro.navigateTo({ url })
+  Taro.navigateTo({url})
 }
 
 // 跳转到填写地址页面

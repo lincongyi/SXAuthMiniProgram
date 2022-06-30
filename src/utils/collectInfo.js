@@ -1,5 +1,5 @@
 import Taro from '@tarojs/taro'
-import { getSetting, openSetting, getLocation, getNetworkType, getSystemInfo, getAccountInfoSync, getRunScene } from '@utils/taro'
+import {getSetting, openSetting, getLocation, getNetworkType, getSystemInfo, getAccountInfoSync} from '@utils/taro'
 
 /**
   * 收集信息
@@ -39,7 +39,7 @@ async function collectInfo () {
   if (authSetting['scope.userLocation']===false){
     await openSetting() // 打开允许使用位置信息设置
   }
-  let { latitude, longitude } = await getLocation()
+  let {latitude, longitude} = await getLocation()
   collectionInfo.latestLocation = `${longitude},${latitude}`
   collectionInfo.locationBean = {longitude, latitude}
   let networkType = await getNetworkType()

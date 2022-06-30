@@ -32,15 +32,15 @@
   <view id="qrcode"></view>
 </template>
 <script setup>
-import { ref } from 'vue'
-import Taro, { useDidShow } from '@tarojs/taro'
+import {ref} from 'vue'
+import Taro, {useDidShow} from '@tarojs/taro'
 import './index.scss'
 import avatarDefault from '@images/avatar-default.png'
 import refresh from '@images/refresh.png'
 import personalQrcodeLogo from '@images/personal-qrcode-logo.png'
 import QR from '@utils/qrcode.js'
-import { getCertToken } from '@api/auth'
-import { handleCollectInfo } from '@utils/collectInfo'
+import {getCertToken} from '@api/auth'
+import {handleCollectInfo} from '@utils/collectInfo'
 
 const loginUser = ref({}) // 用户信息
 const qrcodeImage = ref('')

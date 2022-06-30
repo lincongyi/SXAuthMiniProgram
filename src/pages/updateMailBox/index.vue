@@ -22,10 +22,10 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import Taro, { useDidShow, useRouter } from '@tarojs/taro'
+import {ref, computed} from 'vue'
+import Taro, {useDidShow, useRouter} from '@tarojs/taro'
 import './index.scss'
-import { sendEmailIdentifyCode, unbindEmail, bindEmail } from '@api/setting'
+import {sendEmailIdentifyCode, unbindEmail, bindEmail} from '@api/setting'
 
 const isUnBound = ref(1) // 0.绑定邮箱，1.解绑邮箱
 const mailBox = ref('') // 邮箱
@@ -88,9 +88,9 @@ const handleConfirm = async () => {
   }
 
   if (!isUnBound.value){
-    await bindEmail({ email: mailBox.value, identifyCode: verificationCode.value }) // 绑定
+    await bindEmail({email: mailBox.value, identifyCode: verificationCode.value}) // 绑定
   } else {
-    await unbindEmail({ identifyCode: verificationCode.value }) // 解绑
+    await unbindEmail({identifyCode: verificationCode.value}) // 解绑
     mailBox.value = ''
   }
 
@@ -101,7 +101,7 @@ const handleConfirm = async () => {
     title: '绑定成功',
     success: () => {
       setTimeout(() => {
-        Taro.navigateBack({ delta: 1 })
+        Taro.navigateBack({delta: 1})
       }, 1500)
     }
   })

@@ -40,11 +40,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, toRaw } from 'vue'
+import {ref, reactive, toRaw} from 'vue'
 import Taro from '@tarojs/taro'
 import './index.scss'
-import { addAuthTask } from '@api/auth'
-import { formatDate } from '@utils/index'
+import {addAuthTask} from '@api/auth'
+import {formatDate} from '@utils/index'
 
 const userInfo = reactive({
   fullName: '',
@@ -87,7 +87,7 @@ const handleConfirm = async () => {
     mask: true,
     success: () => {
       setTimeout(() => {
-        Taro.navigateBack({ delta: 1 })
+        Taro.navigateBack({delta: 1})
       }, 1500)
     }
   })

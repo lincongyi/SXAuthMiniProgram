@@ -35,10 +35,10 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import {ref} from 'vue'
 import Taro from '@tarojs/taro'
 import './index.scss'
-import { updateYXQ } from '@api/setting'
+import {updateYXQ} from '@api/setting'
 
 const datePickerIndex = ref(0) // 0.起始日期；1.截至日期
 const datePickerTitle = ref('') // 日期选择器标题
@@ -63,7 +63,7 @@ const showDatePicker = (index) => {
 }
 
 // 选择日期
-const confirm = ({ selectedValue }) => {
+const confirm = ({selectedValue}) => {
   ([idStartDate, idEndDate][datePickerIndex.value]).value = selectedValue.join('.')
 }
 
@@ -101,7 +101,7 @@ const handleConfirm = async () => {
     mask: true,
     success: () => {
       setTimeout(() => {
-        Taro.navigateBack({ delta: 1 })
+        Taro.navigateBack({delta: 1})
       }, 1500)
     }
   })

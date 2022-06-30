@@ -55,12 +55,12 @@
 </template>
 
 <script setup>
-import { ref, defineAsyncComponent } from 'vue'
+import {ref, defineAsyncComponent} from 'vue'
 import './index.scss'
-import Taro, { useDidShow, useRouter } from '@tarojs/taro'
-import { handleCollectInfo } from '@utils/collectInfo'
-import { getCertToken, checkCerTokenAgent, getUserIdKey, checkCertCodeAgent } from '@api/auth'
-import { checkIsSupportFacialRecognition, startFacialRecognitionVerify } from '@utils/taro'
+import Taro, {useDidShow, useRouter} from '@tarojs/taro'
+import {handleCollectInfo} from '@utils/collectInfo'
+import {checkCerTokenAgent, getUserIdKey, checkCertCodeAgent} from '@api/auth'
+import {checkIsSupportFacialRecognition, startFacialRecognitionVerify} from '@utils/taro'
 import toBeCertifiedImage from '@images/to-be-certified.png'
 import certificationSuccessfulImage from '@images/certification-successful.png'
 import certificationFailedImage from '@images/certification-failed.png'
@@ -102,7 +102,7 @@ const authActionSheetComponent = ref(null)
 const handleAuth = async () => {
   // 1.校验certToken，并返回授权信息（certToken从上一个认证请求的跳过来的url中拿到）
   let result = await checkCerTokenAgent({certToken: certToken.value})
-  let {authTipsInfo, authUser} = result.data
+  let {authTipsInfo} = result.data
   canSelfAuth.value = result.data.canSelfAuth ?? false
   mode.value = result.data.mode
 

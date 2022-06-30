@@ -20,8 +20,14 @@
 
     <view class="btn-warp">
       <nut-button type="primary" shape="square" block @tap="handleSubmit" :class="{'disabled':btnDisabled}">下一步</nut-button>
-      <!-- <button class="get-phone-number-btn" open-type="getPhoneNumber" @getphonenumber="getPhoneNumber" v-show="!btnDisabled"></button> -->
-      <button class="get-phone-number-btn" open-type="getAuthorize" @getauthorize="getPhoneNumber" scope='phoneNumber' v-show="!btnDisabled"></button>
+      <block v-if="ISALIPAY">
+        <button class="get-phone-number-btn" open-type="getAuthorize" @getauthorize="getPhoneNumber" scope='phoneNumber' v-show="!btnDisabled"></button>
+      </block>
+      <block v-else>
+        <button class="get-phone-number-btn" open-type="getPhoneNumber" @getphonenumber="getPhoneNumber" v-show="!btnDisabled"></button>
+      </block>
+
+
     </view>
 
     <view class="tips-textarea">
@@ -47,16 +53,16 @@
 
 </template>
 <script setup>
-import { ref, reactive, toRaw, computed, defineAsyncComponent } from 'vue'
-import Taro, { useDidShow } from '@tarojs/taro'
+import {ref, reactive, toRaw, computed, defineAsyncComponent} from 'vue'
+import Taro, {useDidShow} from '@tarojs/taro'
 import loginImage from '@images/logo.png'
 import './index.scss'
-import { handleCollectInfo } from '@utils/collectInfo'
-import { getCertToken, checkCerTokenAgent, getUserIdKey, checkCertCodeAgent, getUserPhoneNum } from '@api/auth'
-import { register } from '@api/login'
-import { checkIsSupportFacialRecognition, startFacialRecognitionVerify, alipayGetPhoneNumber } from '@utils/taro'
-import { isLogin } from '@utils/index'
-import { alipayAuth } from '@utils/alipayAuth'
+import {handleCollectInfo} from '@utils/collectInfo'
+import {getCertToken, checkCerTokenAgent, getUserIdKey, checkCertCodeAgent, getUserPhoneNum} from '@api/auth'
+import {register} from '@api/login'
+import {checkIsSupportFacialRecognition, startFacialRecognitionVerify, alipayGetPhoneNumber} from '@utils/taro'
+import {isLogin} from '@utils/index'
+import {alipayAuth} from '@utils/alipayAuth'
 
 // 用户录入信息
 const type = '第二代居民身份证'
@@ -81,18 +87,18 @@ const protocolName = ref('') // 《用户服务协议》
 const protocolUrl = ref('') // 《用户服务协议》url
 const authActionSheet = defineAsyncComponent(() => import('@components/authActionSheet/index.vue')) // 授权弹窗
 const authActionSheetComponent = ref(null)
+const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
 
 // 查看用户服务协议（暂时写死）
 const toProtocol = () => {
   let url = 'http://gat.shaanxi.gov.cn/auth/shanxiauthagreement/sxauthuseragreement.html'
-  Taro.navigateTo({ url: `/pages/webView/index?url=${url}` })
+  Taro.navigateTo({url: `/pages/webView/index?url=${url}`})
 }
 
 // 下一步（先获取手机号码，再走流程）
 const getPhoneNumber = async (event) => {
   let jsCode
-  const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
-  if (ISALIPAY){
+  if (ISALIPAY.value){
     jsCode = await alipayGetPhoneNumber()
     console.log(jsCode)
   } else {
@@ -105,7 +111,7 @@ const getPhoneNumber = async (event) => {
     }
     jsCode = event.detail.code
   }
-  let {userData} = await getUserPhoneNum({ jsCode })
+  let {userData} = await getUserPhoneNum({jsCode})
   phoneNum.value = userData.phoneNum
   handleSubmit()
 }
@@ -131,7 +137,7 @@ const handleSubmit = async () => {
 
     // 2.获取certToken
     let authType = 'regular'
-    let {tokenInfo} = await getCertToken({ mode: mode.value, authType, collectionInfo, idInfo: toRaw(userInfo)}) // 获取certToken
+    let {tokenInfo} = await getCertToken({mode: mode.value, authType, collectionInfo, idInfo: toRaw(userInfo)}) // 获取certToken
     certToken.value = tokenInfo.certToken
 
     // 3.校验certToken，并返回授权信息
@@ -141,14 +147,15 @@ const handleSubmit = async () => {
 }
 
 const handleCheckCertToken = async () => {
-  let result = await checkCerTokenAgent({ certToken: certToken.value })
+  let result = await checkCerTokenAgent({certToken: certToken.value})
   let {authTipsInfo, authUser} = result.data
   canSelfAuth.value = result.data.canSelfAuth ?? false
   mode.value = result.data.mode
   // 如果是第三方跳转过来的，反显用户信息
   if (Taro.getStorageSync('loginType')){
-    userInfo.idNum = authUser?.idNum
-    userInfo.fullName = authUser?.fullName
+    for (let key in authUser){
+      userInfo[key] = authUser[key]
+    }
     // 如果用户在第三方小程序已录入个人信息，就设置输入框不可编辑
     if (userInfo.idNum&&userInfo.fullName) canEdit.value = false
   }
@@ -167,9 +174,8 @@ const handleConfirm = async () => {
   authActionSheetComponent.value.actionSheetVisible = false
 
   // 4.活体检测
-  const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
   let verifyResult
-  if (ISALIPAY){
+  if (ISALIPAY.value){
     let result = await alipayAuth()
     console.log(result)
   } else {
@@ -203,14 +209,13 @@ const handleConfirm = async () => {
     })
   }
   if (!Taro.getStorageSync('loginType')){ // 小程序内部运行
-    const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
     Taro.showModal({
       title: '注册成功',
-      content: `您的账号已绑定${ISALIPAY?'支付宝':'微信'}，下次可直接使用${ISALIPAY?'支付宝':'微信'}授权快捷登录`,
+      content: `您的账号已绑定${ISALIPAY.value?'支付宝':'微信'}，下次可直接使用${ISALIPAY.value?'支付宝':'微信'}授权快捷登录`,
       showCancel: false,
       success: ({confirm}) => {
         // 跳转到首页
-        if (confirm) Taro.switchTab({ url: '/pages/index/index' })
+        if (confirm) Taro.switchTab({url: '/pages/index/index'})
       }
     })
   } else { // 第三方小程序跳转
@@ -219,7 +224,7 @@ const handleConfirm = async () => {
       content: '返回第三方小程序',
       showCancel: false,
       success: ({confirm}) => {
-        if (confirm) Taro.navigateBackMiniProgram({ extraData: {} })
+        if (confirm) Taro.navigateBackMiniProgram({extraData: {}})
       }
     })
   }

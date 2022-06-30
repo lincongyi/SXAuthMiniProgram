@@ -20,7 +20,7 @@
 <script setup>
 import Taro from '@tarojs/taro'
 import './index.scss'
-import { logout } from '@api/login'
+import {logout} from '@api/login'
 
 // 账号管理
 const toAccountManagement = () => {

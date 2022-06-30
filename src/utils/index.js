@@ -1,6 +1,6 @@
 import Taro from '@tarojs/taro'
-import { TaroLogin, getUserInfo, getAuthCode} from '@utils/taro'
-import { login } from '@api/login'
+import {TaroLogin, getUserInfo, getAuthCode} from '@utils/taro'
+import {login} from '@api/login'
 
 // 判断用户未登录 -> 登录 or 注册 || 已登录
 export async function isLogin(){
@@ -17,7 +17,7 @@ export async function isLogin(){
       }
     } else {
       let jsCode = await TaroLogin()
-      let { encryptedData, iv } = await getUserInfo()
+      let {encryptedData, iv} = await getUserInfo()
       let loginType = Taro.getStorageSync('loginType') ?? 0
       data = {
         jsCode,

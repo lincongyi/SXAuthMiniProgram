@@ -17,8 +17,8 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import Taro, { useDidShow, useRouter } from '@tarojs/taro'
+import {ref, computed} from 'vue'
+import Taro, {useDidShow, useRouter} from '@tarojs/taro'
 import './index.scss'
 import certificationSuccessfulImage from '@images/certification-successful.png'
 import certificationFailedImage from '@images/certification-failed.png'
@@ -52,8 +52,8 @@ const authData = ref('') // 认证结果
 const authResultStep = computed(() => {
   // 认证结果：0-失败；1-成功；2-未校验
   let result = [
-    { key: '实名校验', value: 2 },
-    { key: '人像比对', value: 2 }
+    {key: '实名校验', value: 2},
+    {key: '人像比对', value: 2}
   ]
   if (authMode.value){
     let {type} = modeList.find((item) => item.mode.includes(authMode.value))

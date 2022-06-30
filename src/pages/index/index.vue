@@ -67,13 +67,13 @@
 </template>
 
 <script setup>
-import { ref, defineAsyncComponent } from 'vue'
-import Taro, { useDidShow, useDidHide } from '@tarojs/taro'
+import {ref, defineAsyncComponent} from 'vue'
+import Taro, {useDidShow, useDidHide} from '@tarojs/taro'
 import './index.scss'
-import { isLogin } from '@utils/index'
-import { handleCollectInfo } from '@utils/collectInfo'
-import { getAuthList, checkCerTokenAgent, getUserIdKey, checkCertCodeAgent } from '@api/auth'
-import { getEnv, checkIsSupportFacialRecognition, startFacialRecognitionVerify } from '@utils/taro'
+import {isLogin} from '@utils/index'
+import {handleCollectInfo} from '@utils/collectInfo'
+import {getAuthList, checkCerTokenAgent, getUserIdKey, checkCertCodeAgent} from '@api/auth'
+import {getEnv, checkIsSupportFacialRecognition, startFacialRecognitionVerify} from '@utils/taro'
 import banner_01 from '@images/banner-01.png'
 import banner_02 from '@images/banner-02.png'
 import noticeImage from '@images/notice.png'
@@ -145,7 +145,7 @@ const handleScanCode = async () => {
 
         // 校验certToken，并返回授权信息
         result = await checkCerTokenAgent({certToken: certToken.value})
-        let {authTipsInfo, authUser} = result.data
+        let {authTipsInfo} = result.data
         canSelfAuth.value = result.data.canSelfAuth ?? false
         mode.value = result.data.mode
 
@@ -194,7 +194,7 @@ const toPersonalQrcode = async () => {
   if (!loginStatus.value) {
     handleLogin()
   } else {
-    Taro.navigateTo({ url: '/pages/personalQrcode/index' })
+    Taro.navigateTo({url: '/pages/personalQrcode/index'})
   }
 }
 

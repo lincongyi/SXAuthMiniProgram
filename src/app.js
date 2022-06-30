@@ -1,13 +1,13 @@
-import { createApp } from 'vue'
+import {createApp} from 'vue'
 import Taro from '@tarojs/taro'
-import { handleUpdate } from '@utils/taro'
+import {handleUpdate} from '@utils/taro'
 import './app.scss'
 import '@styles/theme.scss'
 import copyright from '@components/copyright/index.vue'
-import { Button, Icon, Dialog, Popup, OverLay, Input, Cell, CellGroup, Divider, DatePicker, Picker, Switch, Swiper, SwiperItem, ActionSheet, Checkbox } from '@nutui/nutui-taro'
+import {Button, Icon, Dialog, Popup, OverLay, Input, Cell, CellGroup, Divider, DatePicker, Picker, Switch, Swiper, SwiperItem, ActionSheet, Checkbox} from '@nutui/nutui-taro'
 
 const App = createApp({
-  async onLaunch (options) {
+  async onLaunch () {
     // 清理本地数据缓存
     Taro.clearStorageSync()
 

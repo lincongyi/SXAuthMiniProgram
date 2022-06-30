@@ -15,7 +15,7 @@ export function handleUpdate(){
   const updateManager = Taro.getUpdateManager()
   updateManager.onCheckForUpdate(function (res) {
     // 请求完新版本信息的回调
-    // console.log(res.hasUpdate)
+    console.log(res.hasUpdate)
   })
   updateManager.onUpdateReady(function () {
     Taro.confirm({
@@ -249,8 +249,8 @@ export function startFacialRecognitionVerify(name, idCardNumber, userIdKey){
         })
         setTimeout(() => {
           let loginType = Taro.getStorageSync('loginType') ?? 0
-          if (loginType) Taro.navigateBackMiniProgram({ extraData: {} })
-          else Taro.switchTab({ url: '/pages/index/index' })
+          if (loginType) Taro.navigateBackMiniProgram({extraData: {}})
+          else Taro.switchTab({url: '/pages/index/index'})
         }, 1500)
       }
     })

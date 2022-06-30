@@ -3,8 +3,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useDidShow, useRouter } from '@tarojs/taro'
+import {ref} from 'vue'
+import {useDidShow, useRouter} from '@tarojs/taro'
 
 const url = ref('')
 

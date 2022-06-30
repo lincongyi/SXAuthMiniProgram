@@ -2,7 +2,7 @@ import Taro from '@tarojs/taro'
 const BASE_URL = 'http://gat.shaanxi.gov.cn/auth/sxfama'
 
 function request (options = {}) {
-  const { url, data, method='post' } = options
+  const {url, data, method='post'} = options
   const baseOptions = {
     url: `${BASE_URL}${url}`,
     data,
@@ -42,7 +42,7 @@ function request (options = {}) {
               content: r.data.retMessage,
               success: ({confirm}) => {
                 // 跳转到登录 || 注册页面
-                if (confirm) Taro.navigateTo({ url: '/pages/login/index' })
+                if (confirm) Taro.navigateTo({url: '/pages/login/index'})
               }
             })
           }

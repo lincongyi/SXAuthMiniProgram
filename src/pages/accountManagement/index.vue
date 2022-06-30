@@ -20,13 +20,13 @@
 </template>
 
 <script setup>
-import { ref, defineAsyncComponent } from 'vue'
+import {ref, defineAsyncComponent} from 'vue'
 import Taro from '@tarojs/taro'
 import './index.scss'
-import { handleCollectInfo } from '@utils/collectInfo'
-import { getCertToken, checkCerTokenAgent, getUserIdKey, checkCertCodeAgent } from '@api/auth'
-import { logoff } from '@api/login'
-import { checkIsSupportFacialRecognition, startFacialRecognitionVerify } from '@utils/taro'
+import {handleCollectInfo} from '@utils/collectInfo'
+import {getCertToken, checkCerTokenAgent, getUserIdKey, checkCertCodeAgent} from '@api/auth'
+import {logoff} from '@api/login'
+import {checkIsSupportFacialRecognition, startFacialRecognitionVerify} from '@utils/taro'
 
 const canSelfAuth = ref(false) // 是否代他人认证
 const certToken = ref('') // certToken
@@ -53,7 +53,7 @@ const deleteAccount = () => {
 
         // 3.校验certToken，并返回授权信息
         let result = await checkCerTokenAgent({certToken: certToken.value})
-        let {authTipsInfo, authUser} = result.data
+        let {authTipsInfo} = result.data
         canSelfAuth.value = result.data.canSelfAuth ?? false
 
         // 初始化authActionSheet的信息

@@ -48,10 +48,10 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import Taro, { useDidShow } from '@tarojs/taro'
+import {ref} from 'vue'
+import Taro, {useDidShow} from '@tarojs/taro'
 import './index.scss'
-import { isLogin } from '@utils/index'
+import {isLogin} from '@utils/index'
 import avatarImage from '@images/avatar-default.png' // 用户默认头像
 import userCenterRecordImage from '@images/user-center-record.png'
 import userCenterSettingImage from '@images/user-center-setting.png'
@@ -70,8 +70,8 @@ const handleLogin = () => {
     content: '您尚未登录',
     confirmText: '立即登录',
     cancelText: '暂不登录',
-    success: async (res) => {
-      if (res.confirm) {
+    success: async ({confirm}) => {
+      if (confirm) {
         await isLogin()
         setLoginUserInfo()
       }
