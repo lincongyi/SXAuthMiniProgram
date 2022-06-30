@@ -98,7 +98,7 @@ const handleConfirm = async () => {
   Taro.setStorageSync('loginUser', {...loginUser, ...{email: mailBox.value}})
   Taro.showToast({
     mask: true,
-    title: '绑定成功',
+    title: `已${confirmBtnTxt.value}邮箱`,
     success: () => {
       setTimeout(() => {
         Taro.navigateBack({delta: 1})
