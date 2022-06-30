@@ -214,12 +214,14 @@ const handleConfirm = async () => {
     }
     if (ISALIPAY){
       data.aesUserId = Taro.getStorageSync('aesUserId')
+      console.log(data)
       data = {...data, ...verifyResult}
+      console.log(data)
     } else {
       data.aesUnionId = Taro.getStorageSync('aesUnionId'),
       data.wxpvCode = verifyResult
     }
-    await register().then(({loginToken, loginUser}) => {
+    await register(data).then(({loginToken, loginUser}) => {
       Taro.setStorageSync('loginToken', loginToken)
       Taro.setStorageSync('loginUser', loginUser)
     })
@@ -229,9 +231,9 @@ const handleConfirm = async () => {
       title: '注册成功',
       content: `您的账号已绑定${ISALIPAY?'支付宝':'微信'}，下次可直接使用${ISALIPAY?'支付宝':'微信'}授权快捷登录`,
       showCancel: false,
-      success: ({confirm}) => {
+      success: () => {
         // 跳转到首页
-        if (confirm) Taro.switchTab({url: '/pages/index/index'})
+        Taro.switchTab({url: '/pages/index/index'})
       }
     })
   } else { // 第三方小程序跳转
