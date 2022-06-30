@@ -214,9 +214,7 @@ const handleConfirm = async () => {
     }
     if (ISALIPAY){
       data.aesUserId = Taro.getStorageSync('aesUserId')
-      console.log(data)
       data = {...data, ...verifyResult}
-      console.log(data)
     } else {
       data.aesUnionId = Taro.getStorageSync('aesUnionId'),
       data.wxpvCode = verifyResult
