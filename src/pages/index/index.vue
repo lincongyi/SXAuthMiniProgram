@@ -182,8 +182,9 @@ const handleConfirm = async () => {
   // collectionInfo尝试从storage里面取
   let collectionInfo = await handleCollectInfo()
   // 5.校验活体检测结果
+  let result
   if (ISALIPAY){
-    await getCertifyResult({
+    result = await getCertifyResult({
       ...verifyResult,
       collectionInfo,
       usedAgent: canSelfAuth.value,
@@ -191,7 +192,7 @@ const handleConfirm = async () => {
       certToken: certToken.value
     })
   } else {
-    await checkCertCodeAgent({
+    result = await checkCertCodeAgent({
       collectionInfo,
       usedAgent: canSelfAuth.value,
       usedMode: mode.value,
@@ -204,6 +205,9 @@ const handleConfirm = async () => {
     title: '校验成功',
     mask: true
   })
+  setTimeout(() => {
+    Taro.navigateTo({url: `/pages/authResult/index?mode=${mode.value}&data=${result.data}`})
+  }, 1000)
 }
 
 // 个人身份二维码

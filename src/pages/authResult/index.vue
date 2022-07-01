@@ -86,6 +86,5 @@ useDidShow(() => {
   let {mode, data} = router.params
   authMode.value = Number(mode)
   authData.value = data
-
 })
 </script>

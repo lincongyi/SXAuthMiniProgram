@@ -240,8 +240,8 @@ const handleConfirm = async () => {
       title: '认证成功',
       content: '返回第三方小程序',
       showCancel: false,
-      success: ({confirm}) => {
-        if (confirm) Taro.navigateBackMiniProgram({extraData: {}})
+      success: () => {
+        Taro.navigateBackMiniProgram({extraData: {}})
       }
     })
   }

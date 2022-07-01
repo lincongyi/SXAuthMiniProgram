@@ -129,7 +129,7 @@ const init = async () => {
     pageSize: pageSize.value,
     flag: flag.value,
   })
-  if (data.size>(pageNum.value+1)*pageSize.value) pageNum.value++
+  if (data.size>=pageSize.value) pageNum.value++
   else noMore.value = true
   if (!flag.value){
     authList.value = [...authList.value, ...data.list]
