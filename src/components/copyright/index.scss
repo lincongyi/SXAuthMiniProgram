@@ -1,8 +1,9 @@
 .copyright {
-  position: absolute;
+  position: fixed;
   bottom: 0;
   left: 0;
   z-index: 1;
+  display: block;
   padding-bottom: 30px;
   width: 100%;
   text-align: center;
@@ -15,5 +16,11 @@
   .image-item {
     width: 200px;
     height: 48px;
+  }
+}
+
+@media (max-height: 600px) {
+  .copyright {
+    display: none !important;
   }
 }

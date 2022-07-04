@@ -118,7 +118,7 @@ const handleConfirm = async () => {
   } else {
     data.wxpvCode = verifyResult
   }
-  await logoff({data}).then(() => {
+  await logoff(data).then(() => {
     Taro.removeStorageSync('loginToken') // 注销账户，移除loginToken
   })
   Taro.showToast({

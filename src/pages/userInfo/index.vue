@@ -25,7 +25,12 @@
           <view class="btn-relative">
             {{loginUser.phoneNum}}
             <nut-icon name="arrow-right" size="16" color="#bbb"></nut-icon>
-            <button class="get-phone-number-btn" open-type="getPhoneNumber" @getphonenumber="getPhoneNumber"></button>
+            <block v-if="ISALIPAY">
+              <button class="get-phone-number-btn alipay" open-type="getAuthorize" @getauthorize="getPhoneNumber" scope='phoneNumber'></button>
+            </block>
+            <block v-else>
+              <button class="get-phone-number-btn" open-type="getPhoneNumber" @getphonenumber="getPhoneNumber"></button>
+            </block>
           </view>
         </view>
       </view>
@@ -56,6 +61,8 @@ import Taro, {useDidShow} from '@tarojs/taro'
 import './index.scss'
 import avatarImage from '@images/avatar-default.png' // 用户默认头像
 import {updatePhoneNum} from '@api/setting'
+import {alipayGetPhoneNumber} from '@utils/taro'
+const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
 
 // 用户信息
 let loginUser = reactive({
@@ -90,14 +97,19 @@ const period = computed(() => {
 
 // 获取手机号码
 const getPhoneNumber = async (event) => {
-  if (event.detail.errMsg.indexOf('getPhoneNumber:ok') === -1) {
-    return Taro.showModal({
-      title: '温馨提示',
-      content: '获取手机号失败，请重试',
-      showCancel: false,
-    })
+  let jsCode
+  if (ISALIPAY){
+    jsCode = await alipayGetPhoneNumber()
+  } else {
+    if (event.detail.errMsg.indexOf('getPhoneNumber:ok') === -1) {
+      return Taro.showModal({
+        title: '温馨提示',
+        content: '获取手机号失败，请重试',
+        showCancel: false,
+      })
+    }
+    jsCode = event.detail.code
   }
-  let {code: jsCode} = event.detail
   let {data: phoneNum} = await updatePhoneNum({jsCode})
   loginUser.phoneNum = phoneNum
   let loginUserStorage = Taro.getStorageSync('loginUser')
