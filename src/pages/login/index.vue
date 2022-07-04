@@ -137,7 +137,7 @@ const handleSubmit = async () => {
     let collectionInfo = await handleCollectInfo()
 
     // 2.获取certToken
-    let authType = 'regular'
+    let authType = 'InsideRegular'
     let {tokenInfo} = await getCertToken({mode: mode.value, authType, collectionInfo, idInfo: toRaw(userInfo)}) // 获取certToken
     certToken.value = tokenInfo.certToken
 

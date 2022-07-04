@@ -84,6 +84,7 @@ const toCertificateSetting = () => {
 
 // 格式化日期显示:YYYY.MM.DD
 const formatDate = (date) => {
+  date = date.replace(/\./g, '')
   let year = date.slice(0, 4)
   let month = date.slice(4, 6)
   let day = date.slice(6)

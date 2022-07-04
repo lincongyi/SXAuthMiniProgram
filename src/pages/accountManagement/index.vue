@@ -51,7 +51,7 @@ const deleteAccount = () => {
         // 1.收集信息
         let collectionInfo = await handleCollectInfo(false)
         // 2.获取certToken
-        let authType='regular'
+        let authType='InsideRegular'
         let {tokenInfo} = await getCertToken({authType, collectionInfo}) // 获取certToken
         certToken.value = tokenInfo.certToken
 

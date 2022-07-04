@@ -69,20 +69,6 @@ export function getUserInfo(){
 }
 
 /**
-  * 可获取支付宝会员的基础信息 -> 支付宝小程序
- */
-export function getOpenUserInfo(){
-  Taro.getOpenUserInfo({
-    success: (res) => {
-      console.log(res)
-    },
-    fail: (error) => {
-      console.log(error)
-    }
-  })
-}
-
-/**
   * 获取授权码 -> 支付宝小程序
  */
 export function getAuthCode(){
