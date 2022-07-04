@@ -43,6 +43,7 @@ const canGetCode = computed(() => mailBoxReg.test(mailBox.value))
 
 // 获取验证码
 const getCode = async () => {
+  if (isDisabled.value) return
   if (!canGetCode.value){
     return Taro.showToast({
       icon: 'none',

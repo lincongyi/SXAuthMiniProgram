@@ -58,13 +58,19 @@ const showDatePicker = (index) => {
   datePickerIndex.value = index
   datePickerTitle.value = ['起始日期', '截至日期'][index]
   minDate.value = [new Date('2000-01-01'), new Date()][index]
-  maxDate.value = [new Date(), new Date('2030-12-31')][index]
+  maxDate.value = [new Date(), maxDate.value][index]
   datePickerShow.value = true
 }
 
 // 选择日期
 const confirm = ({selectedValue}) => {
   ([idStartDate, idEndDate][datePickerIndex.value]).value = selectedValue.join('.')
+  if (!datePickerIndex.value){ // 设置的是起始日期的话，截止日期最大年度单位+20
+    let date = new Date()
+    let year = date.getFullYear()+20
+    maxDate.value = new Date(`${year}-12-31`)
+  }
+
 }
 
 // 切换是否长期有效

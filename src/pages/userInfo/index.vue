@@ -114,7 +114,7 @@ const getPhoneNumber = async (event) => {
   let {data: phoneNum} = await updatePhoneNum({jsCode})
   loginUser.phoneNum = phoneNum
   let loginUserStorage = Taro.getStorageSync('loginUser')
-  Taro.setStorageSync({...loginUserStorage, ...{phoneNum}})
+  Taro.setStorageSync('loginUser', {...loginUserStorage, ...{phoneNum}})
 }
 
 // 绑定or解绑邮箱

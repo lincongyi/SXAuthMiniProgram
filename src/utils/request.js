@@ -1,6 +1,6 @@
 import Taro from '@tarojs/taro'
-// const BASE_URL = 'http://gat.shaanxi.gov.cn/auth/sxfama'
-const BASE_URL = 'https://sfrz.shxga.gov.cn/auth/sxfama'
+const BASE_URL = 'http://gat.shaanxi.gov.cn/auth/sxfama'
+// const BASE_URL = 'https://sfrz.shxga.gov.cn/auth/sxfama'
 
 function request (options = {}) {
   const {url, data, method='post'} = options
