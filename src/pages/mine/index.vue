@@ -132,5 +132,7 @@ useDidShow(() => {
 
   loginStatus.value = Boolean(Taro.getStorageSync('loginToken')) || false
   if (loginStatus.value) setLoginUserInfo()
+
+  Taro.setStorageSync('loginType', 0)
 })
 </script>

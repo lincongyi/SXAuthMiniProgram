@@ -62,7 +62,7 @@ import {handleCollectInfo} from '@utils/collectInfo'
 import {getCertToken, checkCerTokenAgent, getUserIdKey, checkCertCodeAgent, getCertifyResult, getUserPhoneNum} from '@api/auth'
 import {register} from '@api/login'
 import {checkIsSupportFacialRecognition, startFacialRecognitionVerify, alipayGetPhoneNumber} from '@utils/taro'
-import {isLogin} from '@utils/index'
+import {isLogin, idcardRex} from '@utils/index'
 import {alipayAuth} from '@utils/alipayAuth'
 
 // 用户录入信息
@@ -98,6 +98,25 @@ const toProtocol = () => {
 
 // 下一步（先获取手机号码，再走流程）
 const getPhoneNumber = async (event) => {
+  // 校验用户信息
+  let {fullName, idNum} = toRaw(userInfo)
+  if (!fullName){
+    return Taro.showToast({
+      icon: 'none',
+      title: '请输入姓名'
+    })
+  } else if (!idNum){
+    return Taro.showToast({
+      icon: 'none',
+      title: '请输入证件号码'
+    })
+  } else if (!idcardRex.test(idNum)){
+    return Taro.showToast({
+      icon: 'none',
+      title: '身份号码格式有误'
+    })
+  }
+
   let jsCode
   if (ISALIPAY){
     jsCode = await alipayGetPhoneNumber()
@@ -130,18 +149,6 @@ const onAuthError = (e) => {
 }
 
 const handleSubmit = async () => {
-  let {fullName, idNum} = toRaw(userInfo)
-  if (!fullName){
-    return Taro.showToast({
-      icon: 'none',
-      title: '请输入姓名'
-    })
-  } else if (!idNum){
-    return Taro.showToast({
-      icon: 'none',
-      title: '请输入证件号码'
-    })
-  }
   // 调起人脸认证前的校验流程
   // 第三方小程序跳转，无需再次获取校验certToken
   if (!Taro.getStorageSync('loginType')){

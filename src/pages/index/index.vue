@@ -246,7 +246,6 @@ useDidShow(async () => {
   if (loginStatus.value) loginEvent()
 
   Taro.setStorageSync('loginType', 0)
-
 })
 
 useDidHide(() => {

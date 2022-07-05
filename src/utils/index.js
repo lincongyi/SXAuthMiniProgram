@@ -56,3 +56,8 @@ export function formatDate(timestamp) {
   var day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate()
   return year + '.' + month + '.' + day
 }
+
+/**
+  * 身份号码正则
+ */
+export const idcardRex = /^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$|^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X)$/
