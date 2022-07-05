@@ -21,7 +21,7 @@
     <view class="btn-warp">
       <nut-button type="primary" shape="square" block @tap="handleSubmit" :class="{'disabled':btnDisabled}">下一步</nut-button>
       <block v-if="ISALIPAY">
-        <button class="get-phone-number-btn" open-type="getAuthorize" @getauthorize="getPhoneNumber" scope='phoneNumber' v-show="!btnDisabled"></button>
+        <button class="get-phone-number-btn" open-type="getAuthorize" @getauthorize="getPhoneNumber" @error="onAuthError" scope="phoneNumber" v-show="!btnDisabled"></button>
       </block>
       <block v-else>
         <button class="get-phone-number-btn" open-type="getPhoneNumber" @getphonenumber="getPhoneNumber" v-show="!btnDisabled"></button>
@@ -34,7 +34,7 @@
       <view class="normal">未注册用户登录时将完成注册，登录即代表</view>
       <view class="normal">
         您已同意
-        <view class="emphasize" @tap="toProtocol()">《用户服务协议》</view>
+        <view class="emphasize" @tap="toProtocol">《用户服务协议》</view>
       </view>
     </view>
   </view>
@@ -92,7 +92,7 @@ const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
 
 // 查看用户服务协议（暂时写死）
 const toProtocol = () => {
-  let url = 'http://gat.shaanxi.gov.cn/auth/shanxiauthagreement/sxauthuseragreement.html'
+  let url = 'https://sfrz.shxga.gov.cn/shanxiauthagreement/sxauthuseragreement.html'
   Taro.navigateTo({url: `/pages/webView/index?url=${url}`})
 }
 
@@ -111,10 +111,23 @@ const getPhoneNumber = async (event) => {
     }
     jsCode = event.detail.code
   }
+
   // let {userData} = await getUserPhoneNum({jsCode})
   let {userData} = await getUserPhoneNum({jsCode, idNum: userInfo.idNum})
   phoneNum.value = userData.phoneNum
   handleSubmit()
+}
+const onAuthError = (e) => {
+  if (e.detail.errorMessage === '用户取消授权'){
+    Taro.showModal({
+      title: '温馨提示',
+      content: '根据公安部门规定，实人认证需报备用户联系方式，以便后续业务办理',
+      showCancel: false,
+      success: () => {
+        Taro.navigateBack({delta: 1})
+      }
+    })
+  }
 }
 
 const handleSubmit = async () => {

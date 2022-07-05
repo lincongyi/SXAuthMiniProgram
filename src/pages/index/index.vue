@@ -202,7 +202,7 @@ const handleConfirm = async () => {
   }
   Taro.showToast({
     icon: 'none',
-    title: '校验成功',
+    title: '认证成功',
     mask: true
   })
   setTimeout(() => {
