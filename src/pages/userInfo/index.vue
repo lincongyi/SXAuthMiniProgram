@@ -61,7 +61,6 @@ import Taro, {useDidShow} from '@tarojs/taro'
 import './index.scss'
 import avatarImage from '@images/avatar-default.png' // 用户默认头像
 import {updatePhoneNum} from '@api/setting'
-import {alipayGetPhoneNumber} from '@utils/taro'
 const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
 
 // 用户信息
@@ -100,7 +99,7 @@ const period = computed(() => {
 const getPhoneNumber = async (event) => {
   let jsCode
   if (ISALIPAY){
-    jsCode = await alipayGetPhoneNumber()
+    return
   } else {
     if (event.detail.errMsg.indexOf('getPhoneNumber:ok') === -1) {
       return Taro.showModal({

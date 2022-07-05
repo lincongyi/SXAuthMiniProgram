@@ -112,8 +112,7 @@ const getPhoneNumber = async (event) => {
     jsCode = event.detail.code
   }
 
-  // let {userData} = await getUserPhoneNum({jsCode})
-  let {userData} = await getUserPhoneNum({jsCode, idNum: userInfo.idNum})
+  let {userData} = await getUserPhoneNum({jsCode})
   phoneNum.value = userData.phoneNum
   handleSubmit()
 }
@@ -254,7 +253,11 @@ const handleConfirm = async () => {
       content: '返回第三方小程序',
       showCancel: false,
       success: () => {
-        Taro.navigateBackMiniProgram({extraData: {}})
+        if (Number(Taro.getStorageSync('loginType'))===1){
+          Taro.navigateBackMiniProgram({extraData: {}})
+        } else {
+          // Taro.ap.navigateToAlipayPage()
+        }
       }
     })
   }

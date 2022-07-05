@@ -18,11 +18,17 @@ const App = createApp({
     handleUpdate()
   },
   async onShow(options){
-    let extraData = options.referrerInfo?.extraData // 兼容支付宝options默认没有referrerInfo字段
     // 判断是否从第三方小程序跳转
+    let extraData = options.referrerInfo?.extraData // 兼容支付宝options默认没有referrerInfo字段
     if (extraData){
       Taro.setStorageSync('certToken', extraData.certToken)
       Taro.setStorageSync('loginType', 1) // 0.小程序内部运行，1.第三方小程序跳转过来
+    }
+    // 判断是否从外部h5跳转
+    let certToken = options.query?.certToken
+    if (certToken){
+      Taro.setStorageSync('certToken', certToken)
+      Taro.setStorageSync('loginType', 2)
     }
   }
 })
