@@ -55,11 +55,12 @@ const getCode = async () => {
     action: ['BIND', 'UNBIND'][isUnBound.value],
     email: mailBox.value
   })
-
-  Taro.showToast({
-    icon: 'none',
-    title: '邮箱验证码已发送'
-  })
+  setTimeout(() => { // 兼容输入框失焦，键盘隐藏过程中导致toast闪的bug
+    Taro.showToast({
+      icon: 'none',
+      title: '邮箱验证码已发送'
+    })
+  }, 500)
   isDisabled.value = true
   getCodeBtnTxt.value = `${currentTime.value}s后重发`
 
@@ -97,13 +98,14 @@ const handleConfirm = async () => {
 
   let loginUser = Taro.getStorageSync('loginUser')
   Taro.setStorageSync('loginUser', {...loginUser, ...{email: mailBox.value}})
+
   Taro.showToast({
     mask: true,
     title: `已${confirmBtnTxt.value}邮箱`,
     success: () => {
       setTimeout(() => {
         Taro.navigateBack({delta: 1})
-      }, 1500)
+      }, 1000)
     }
   })
 }

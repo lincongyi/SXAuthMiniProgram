@@ -108,7 +108,7 @@ const handleConfirm = async () => {
     success: () => {
       setTimeout(() => {
         Taro.navigateBack({delta: 1})
-      }, 1500)
+      }, 1000)
     }
   })
 }

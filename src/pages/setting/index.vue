@@ -52,7 +52,7 @@ const handleLogout = () => {
           success: () => {
             setTimeout(() => {
               Taro.switchTab({url: '/pages/index/index'})
-            }, 1500)
+            }, 1000)
           }
         })
       }

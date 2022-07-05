@@ -34,14 +34,16 @@ const handleConfirm = async () => {
   await updateAddress({address: `${city.value}${street.value}`})
   let loginUser = Taro.getStorageSync('loginUser')
   Taro.setStorageSync('loginUser', {...loginUser, ...{address: `${city.value}${street.value}`}})
-  Taro.showToast({
-    mask: true,
-    title: '绑定成功',
-    success: () => {
-      setTimeout(() => {
-        Taro.navigateBack({delta: 1})
-      }, 1500)
-    }
-  })
+  setTimeout(() => { // 兼容输入框失焦，键盘隐藏过程中导致toast闪的bug
+    Taro.showToast({
+      mask: true,
+      title: '绑定成功',
+      success: () => {
+        setTimeout(() => {
+          Taro.navigateBack({delta: 1})
+        }, 1000)
+      }
+    })
+  }, 500)
 }
 </script>
