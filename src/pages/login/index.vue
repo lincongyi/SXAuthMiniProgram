@@ -208,32 +208,23 @@ const handleConfirm = async () => {
   let collectionInfo = await handleCollectInfo()
   // 5.校验活体检测结果
   if (ISALIPAY){
-    let {retCode, retMessage} = await getCertifyResult({
+    await getCertifyResult({
       ...verifyResult,
       collectionInfo,
       usedAgent: canSelfAuth.value,
       usedMode: mode.value,
       certToken: certToken.value,
       idInfo: toRaw(userInfo)
-    })
-    // 支付宝判断身份信息不匹配，直接返回，因为每次只能验证1次
-    if (retCode===4101){
-      Taro.showModal({
-        title: '温馨提示',
-        content: retMessage,
-        showCancel: false,
-        success: () => {
-          if (!Taro.getStorageSync('loginType')){ // 小程序内部运行
-            Taro.switchTab({url: '/pages/index/index'})
-          } else if (Number(Taro.getStorageSync('loginType'))===1){ // 第三方跳转
-            Taro.navigateBackMiniProgram({extraData: {}})
-          } else {
-
-          }
-        }
-      })
+    }).catch(() => {
+      if (!Taro.getStorageSync('loginType')){ // 小程序内部运行
+        Taro.switchTab({url: '/pages/index/index'})
+      } else if (Number(Taro.getStorageSync('loginType'))===1){ // 第三方跳转
+        Taro.navigateBackMiniProgram({extraData: {}})
+      } else {
+        // Taro.ap.navigateToAlipayPage()
+      }
       return false
-    }
+    })
   } else {
     await checkCertCodeAgent({
       collectionInfo,

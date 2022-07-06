@@ -120,7 +120,6 @@ const handleAuth = async () => {
 
 // 确认授权 开始人脸识别
 const handleConfirm = async () => {
-  let {userIdKey} = await getUserIdKey({certToken: certToken.value})
   authActionSheetComponent.value.actionSheetVisible = false
 
   // 4.活体检测（16，64模式无需走活检流程）
@@ -129,6 +128,7 @@ const handleConfirm = async () => {
     if (ISALIPAY){
       verifyResult = await alipayAuth()
     } else {
+      let {userIdKey} = await getUserIdKey({certToken: certToken.value})
       await checkIsSupportFacialRecognition() // 检测设备是否支持活体检测
       let loginUser = Taro.getStorageSync('loginUser')
       verifyResult = await startFacialRecognitionVerify(loginUser.fullName, loginUser.idNum, userIdKey)

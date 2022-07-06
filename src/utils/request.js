@@ -49,13 +49,14 @@ function request (options = {}) {
           }
           // 第三方小程序跳转，不做任何处理
           resolve()
-        } else if (r.data.retCode === 4101){ // 针对支付宝活检，鉴定身份信息不匹配的情况
-          resolve(r.data)
         } else if (r.data.retCode){
           return Taro.showModal({
             title: '温馨提示',
             content: r.data.retMessage,
             showCancel: false,
+            success: () => {
+              reject()
+            }
           })
         }
         //网络请求成功 返回数据

@@ -24,11 +24,8 @@
         <view class="right-content">
           <view class="btn-relative">
             {{loginUser.phoneNum}}
-            <nut-icon name="arrow-right" size="16" color="#bbb"></nut-icon>
-            <block v-if="ISALIPAY">
-              <button class="get-phone-number-btn alipay" open-type="getAuthorize" @getauthorize="getPhoneNumber" scope='phoneNumber'></button>
-            </block>
-            <block v-else>
+            <block v-if="!ISALIPAY">
+              <nut-icon name="arrow-right" size="16" color="#bbb"></nut-icon>
               <button class="get-phone-number-btn" open-type="getPhoneNumber" @getphonenumber="getPhoneNumber"></button>
             </block>
           </view>

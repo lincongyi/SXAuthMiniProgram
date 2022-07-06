@@ -130,7 +130,7 @@ useDidShow(() => {
   const currentInstance = Taro.getCurrentInstance().page
   if (Taro.getTabBar) Taro.getTabBar(currentInstance).selected = 1
 
-  loginStatus.value = Boolean(Taro.getStorageSync('loginToken')) || false
+  loginStatus.value = Taro.getStorageSync('loginToken') ? true : false
   if (loginStatus.value) setLoginUserInfo()
 
   Taro.setStorageSync('loginType', 0)

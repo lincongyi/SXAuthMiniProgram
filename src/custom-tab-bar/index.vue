@@ -30,7 +30,7 @@ const selected = ref(0)
 const color = '#000000'
 const selectedColor = '#0A7AEE'
 const switchTab = (url) => {
-  Taro.switchTab({ url })
+  Taro.switchTab({url})
 }
 
 </script>
