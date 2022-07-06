@@ -8,17 +8,18 @@ export async function isLogin(){
   if (!Taro.getStorageSync('loginToken')){
     // 区分支付宝和微信的登录流程
     const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
+    let loginType = Taro.getStorageSync('loginType') ?? 0
     let data = {}
     if (ISALIPAY){
       let authCode = await getAuthCode()
       data = {
         authCode,
-        scopes: 'auth_base'
+        scopes: 'auth_base',
+        loginType
       }
     } else {
       let jsCode = await TaroLogin()
       let {encryptedData, iv} = await getUserInfo()
-      let loginType = Taro.getStorageSync('loginType') ?? 0
       data = {
         jsCode,
         encryptedData,

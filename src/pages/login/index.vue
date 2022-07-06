@@ -110,7 +110,7 @@ const getPhoneNumber = async (event) => {
       icon: 'none',
       title: '请输入证件号码'
     })
-  } else if (!idcardRex.test(idNum)){
+  } else if (!idNum.includes('*')&&!idcardRex.test(idNum)){
     return Taro.showToast({
       icon: 'none',
       title: '身份号码格式有误'
@@ -225,25 +225,27 @@ const handleConfirm = async () => {
     })
   }
 
-  // 未注册
-  if (!Taro.getStorageSync('loginToken')){
-    let data = {
-      phoneNum: phoneNum.value,
-      regMode: 'id',
-      certToken: certToken.value
-    }
-    if (ISALIPAY){
-      data.aesUserId = Taro.getStorageSync('aesUserId')
-      data = {...data, ...verifyResult}
-    } else {
-      data.aesUnionId = Taro.getStorageSync('aesUnionId'),
-      data.wxpvCode = verifyResult
-    }
-    await register(data).then(({loginToken, loginUser}) => {
-      Taro.setStorageSync('loginToken', loginToken)
-      Taro.setStorageSync('loginUser', loginUser)
-    })
+  let data = {
+    phoneNum: phoneNum.value,
+    regMode: 'id',
+    certToken: certToken.value,
+    loginType: Taro.getStorageSync('loginType') ?? 0
   }
+  // 未注册
+  if (ISALIPAY){
+    data = {...data, ...verifyResult}
+  } else {
+    data.wxpvCode = verifyResult
+  }
+  if (!Taro.getStorageSync('loginToken')){
+    data.aesUserId = Taro.getStorageSync('aesUserId')
+  } else {
+    data.aesUnionId = Taro.getStorageSync('aesUnionId')
+  }
+  await register(data).then(({loginToken, loginUser}) => {
+    Taro.setStorageSync('loginToken', loginToken)
+    Taro.setStorageSync('loginUser', loginUser)
+  })
   if (!Taro.getStorageSync('loginType')){ // 小程序内部运行
     Taro.showModal({
       title: '注册成功',
