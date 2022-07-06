@@ -36,11 +36,14 @@ export async function isLogin(){
       if (ISALIPAY) Taro.setStorageSync('aesUserId', userData.aesUserId) // 加密后的userId
       else Taro.setStorageSync('aesUnionId', userData.aesUnionId) // 加密后的unionId
     }
-    Taro.showToast({
-      icon: 'none',
-      title: '登录成功',
-      mask: true,
-    })
+
+    if (!Taro.getStorageSync('loginType')){
+      Taro.showToast({
+        icon: 'none',
+        title: '登录成功',
+        mask: true,
+      })
+    }
   } else {
     return true
   }

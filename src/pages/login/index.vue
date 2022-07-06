@@ -190,7 +190,6 @@ const handleCheckCertToken = async () => {
 
 // 确认授权 开始人脸识别
 const handleConfirm = async () => {
-  let {userIdKey} = await getUserIdKey({...toRaw(userInfo), certToken: certToken.value})
   authActionSheetComponent.value.actionSheetVisible = false
 
   // 4.活体检测（16，64模式无需走活检流程）
@@ -199,6 +198,7 @@ const handleConfirm = async () => {
     if (ISALIPAY){
       verifyResult = await alipayAuth()
     } else {
+      let {userIdKey} = await getUserIdKey({...toRaw(userInfo), certToken: certToken.value})
       await checkIsSupportFacialRecognition() // 检测设备是否支持活体检测
       verifyResult = await startFacialRecognitionVerify(userInfo.fullName, userInfo.idNum, userIdKey)
     }
@@ -208,20 +208,40 @@ const handleConfirm = async () => {
   let collectionInfo = await handleCollectInfo()
   // 5.校验活体检测结果
   if (ISALIPAY){
-    await getCertifyResult({
+    let {retCode, retMessage} = await getCertifyResult({
       ...verifyResult,
       collectionInfo,
       usedAgent: canSelfAuth.value,
       usedMode: mode.value,
-      certToken: certToken.value
+      certToken: certToken.value,
+      idInfo: toRaw(userInfo)
     })
+    // 支付宝判断身份信息不匹配，直接返回，因为每次只能验证1次
+    if (retCode===4101){
+      Taro.showModal({
+        title: '温馨提示',
+        content: retMessage,
+        showCancel: false,
+        success: () => {
+          if (!Taro.getStorageSync('loginType')){ // 小程序内部运行
+            Taro.switchTab({url: '/pages/index/index'})
+          } else if (Number(Taro.getStorageSync('loginType'))===1){ // 第三方跳转
+            Taro.navigateBackMiniProgram({extraData: {}})
+          } else {
+
+          }
+        }
+      })
+      return false
+    }
   } else {
     await checkCertCodeAgent({
       collectionInfo,
       usedAgent: canSelfAuth.value,
       usedMode: mode.value,
       wxpvCode: verifyResult,
-      certToken: certToken.value
+      certToken: certToken.value,
+      idInfo: toRaw(userInfo)
     })
   }
 
@@ -231,12 +251,12 @@ const handleConfirm = async () => {
     certToken: certToken.value,
     loginType: Taro.getStorageSync('loginType') ?? 0
   }
-  // 未注册
   if (ISALIPAY){
     data = {...data, ...verifyResult}
   } else {
     data.wxpvCode = verifyResult
   }
+  // 未注册
   if (!Taro.getStorageSync('loginToken')){
     data.aesUserId = Taro.getStorageSync('aesUserId')
   } else {
@@ -246,6 +266,7 @@ const handleConfirm = async () => {
     Taro.setStorageSync('loginToken', loginToken)
     Taro.setStorageSync('loginUser', loginUser)
   })
+
   if (!Taro.getStorageSync('loginType')){ // 小程序内部运行
     Taro.showModal({
       title: '注册成功',
