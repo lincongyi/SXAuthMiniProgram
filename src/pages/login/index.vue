@@ -215,15 +215,14 @@ const handleConfirm = async () => {
       usedMode: mode.value,
       certToken: certToken.value,
       idInfo: toRaw(userInfo)
-    }).catch(() => {
+    }).catch(({data}) => {
       if (!Taro.getStorageSync('loginType')){ // 小程序内部运行
-        Taro.switchTab({url: '/pages/index/index'})
+        Taro.navigateTo({url: `/pages/authResult/index?mode=${mode.value}&data=${data}`})
       } else if (Number(Taro.getStorageSync('loginType'))===1){ // 第三方跳转
         Taro.navigateBackMiniProgram({extraData: {}})
       } else {
         // Taro.ap.navigateToAlipayPage()
       }
-      return false
     })
   } else {
     await checkCertCodeAgent({
