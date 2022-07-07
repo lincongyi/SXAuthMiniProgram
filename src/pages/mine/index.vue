@@ -72,6 +72,7 @@ const handleLogin = () => {
     success: async ({confirm}) => {
       if (confirm) {
         await isLogin()
+        loginStatus.value = true
         setLoginUserInfo()
       }
     }
@@ -83,7 +84,6 @@ const setLoginUserInfo = () => {
   let loginUser = Taro.getStorageSync('loginUser')
   fullName.value = loginUser.fullName
   idNum.value = loginUser.idNum
-  loginStatus.value = true
 }
 
 // 跳转到个人信息页面

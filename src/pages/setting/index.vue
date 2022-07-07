@@ -50,9 +50,7 @@ const handleLogout = () => {
           title: '已退出登录',
           mask: true,
           success: () => {
-            setTimeout(() => {
-              Taro.switchTab({url: '/pages/index/index'})
-            }, 1000)
+            Taro.switchTab({url: '/pages/index/index'})
           }
         })
       }

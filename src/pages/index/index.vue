@@ -190,6 +190,8 @@ const handleConfirm = async () => {
       usedAgent: canSelfAuth.value,
       usedMode: mode.value,
       certToken: certToken.value
+    }).catch(({data}) => {
+      Taro.navigateTo({url: `/pages/authResult/index?mode=${mode.value}&data=${data}`})
     })
   } else {
     result = await checkCertCodeAgent({
@@ -200,14 +202,18 @@ const handleConfirm = async () => {
       certToken: certToken.value
     })
   }
-  Taro.showToast({
-    icon: 'none',
-    title: '认证成功',
-    mask: true
-  })
-  setTimeout(() => {
-    Taro.navigateTo({url: `/pages/authResult/index?mode=${mode.value}&data=${result.data}`})
-  }, 1000)
+  if (result.keys().length){
+    Taro.showToast({
+      icon: 'none',
+      title: '认证成功',
+      mask: true,
+      success: () => {
+        setTimeout(() => {
+          Taro.navigateTo({url: `/pages/authResult/index?mode=${mode.value}&data=${result.data}`})
+        }, 1000)
+      }
+    })
+  }
 }
 
 // 个人身份二维码
