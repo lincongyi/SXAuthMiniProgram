@@ -249,6 +249,7 @@ const handleConfirm = async () => {
     data.wxpvCode = verifyResult
     data.aesUnionId = Taro.getStorageSync('aesUnionId')
   }
+
   await register(data).then(({loginToken, loginUser}) => {
     Taro.setStorageSync('loginToken', loginToken)
     Taro.setStorageSync('loginUser', loginUser)

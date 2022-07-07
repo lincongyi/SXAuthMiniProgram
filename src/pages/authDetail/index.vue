@@ -134,7 +134,6 @@ const handleConfirm = async () => {
       verifyResult = await startFacialRecognitionVerify(loginUser.fullName, loginUser.idNum, userIdKey)
     }
   }
-  console.log(`verifyResult:${JSON.stringify(verifyResult)}`)
 
   // collectionInfo尝试从storage里面取
   let collectionInfo = await handleCollectInfo()
@@ -147,6 +146,9 @@ const handleConfirm = async () => {
       usedAgent: canSelfAuth.value,
       usedMode: mode.value,
       certToken: certToken.value
+    }).catch(({data}) => {
+      Taro.navigateTo({url: `/pages/authResult/index?mode=${authDetail.value.authMode}&data=${data}`})
+      return false
     })
   } else {
     result = await checkCertCodeAgent({

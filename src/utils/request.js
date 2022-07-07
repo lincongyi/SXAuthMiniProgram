@@ -55,7 +55,7 @@ function request (options = {}) {
             content: r.data.retMessage,
             showCancel: false,
             success: () => {
-              reject()
+              reject(r.data)
             }
           })
         }
@@ -95,7 +95,7 @@ function request (options = {}) {
       complete(e) {
         Taro.hideLoading()
         console.log({
-          url,
+          baseOptions,
           options,
           result: e,
         })
