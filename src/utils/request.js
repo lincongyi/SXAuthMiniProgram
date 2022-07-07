@@ -63,6 +63,7 @@ function request (options = {}) {
         resolve(r.data)
       },
       fail(err) {
+        Taro.hideLoading()
         if (err.status===404){
           return Taro.showModal({
             title: '温馨提示',

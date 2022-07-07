@@ -244,13 +244,9 @@ const handleConfirm = async () => {
   }
   if (ISALIPAY){
     data = {...data, ...verifyResult}
-  } else {
-    data.wxpvCode = verifyResult
-  }
-  // 未注册
-  if (!Taro.getStorageSync('loginToken')){
     data.aesUserId = Taro.getStorageSync('aesUserId')
   } else {
+    data.wxpvCode = verifyResult
     data.aesUnionId = Taro.getStorageSync('aesUnionId')
   }
   await register(data).then(({loginToken, loginUser}) => {

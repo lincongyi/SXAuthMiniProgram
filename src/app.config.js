@@ -44,5 +44,8 @@ export default defineAppConfig({
     'scope.userLocation': {
       'desc': '是否允许获取你当前的地理位置信息？'
     }
+  },
+  networkTimeout: {
+    request: 15*1000
   }
 })
