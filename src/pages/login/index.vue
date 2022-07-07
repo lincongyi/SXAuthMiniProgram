@@ -236,24 +236,26 @@ const handleConfirm = async () => {
     })
   }
 
-  let data = {
-    phoneNum: phoneNum.value,
-    regMode: 'id',
-    certToken: certToken.value,
-    loginType: Taro.getStorageSync('loginType') ?? 0
-  }
-  if (ISALIPAY){
-    data = {...data, ...verifyResult}
-    data.aesUserId = Taro.getStorageSync('aesUserId')
-  } else {
-    data.wxpvCode = verifyResult
-    data.aesUnionId = Taro.getStorageSync('aesUnionId')
-  }
+  if (!Taro.getStorageSync('loginToken') || !Taro.getStorageSync('loginType')){
+    let data = {
+      phoneNum: phoneNum.value,
+      regMode: 'id',
+      certToken: certToken.value,
+      loginType: Taro.getStorageSync('loginType') ?? 0
+    }
+    if (ISALIPAY){
+      data = {...data, ...verifyResult}
+      data.aesUserId = Taro.getStorageSync('aesUserId')
+    } else {
+      data.wxpvCode = verifyResult
+      data.aesUnionId = Taro.getStorageSync('aesUnionId')
+    }
 
-  await register(data).then(({loginToken, loginUser}) => {
-    Taro.setStorageSync('loginToken', loginToken)
-    Taro.setStorageSync('loginUser', loginUser)
-  })
+    await register(data).then(({loginToken, loginUser}) => {
+      Taro.setStorageSync('loginToken', loginToken)
+      Taro.setStorageSync('loginUser', loginUser)
+    })
+  }
 
   if (!Taro.getStorageSync('loginType')){ // 小程序内部运行
     Taro.showModal({
@@ -268,7 +270,7 @@ const handleConfirm = async () => {
   } else { // 第三方小程序跳转
     Taro.showModal({
       title: '认证成功',
-      content: '返回第三方小程序',
+      content: `返回第三方${Number(Taro.getStorageSync('loginType')) === 1 ? '小程序':'H5'}`,
       showCancel: false,
       success: () => {
         if (Number(Taro.getStorageSync('loginType'))===1){
