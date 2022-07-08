@@ -32,7 +32,7 @@ export async function isLogin(){
     Taro.setStorageSync('loginToken', loginToken)
     Taro.setStorageSync('loginUser', loginUser)
 
-    if (!Taro.getStorageSync('loginToken')){
+    if (!loginToken){
       if (ISALIPAY) Taro.setStorageSync('aesUserId', userData.aesUserId) // 加密后的userId
       else Taro.setStorageSync('aesUnionId', userData.aesUnionId) // 加密后的unionId
     }
@@ -65,3 +65,8 @@ export function formatDate(timestamp) {
   * 身份号码正则
  */
 export const idcardRex = /^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$|^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X)$/
+
+/**
+  * 返回h5页面地址
+ */
+export const backToH5Url = 'https://sfrz.shxga.gov.cn/auth/sxauthalipay/authResult.html'

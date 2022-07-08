@@ -96,7 +96,6 @@ function request (options = {}) {
         Taro.hideLoading()
         console.log({
           baseOptions,
-          options,
           result: e,
         })
       },

@@ -118,8 +118,8 @@ const handleLogin = () => {
     content: '您尚未登录',
     confirmText: '立即登录',
     cancelText: '暂不登录',
-    success: (res) => {
-      if (res.confirm) {
+    success: ({confirm}) => {
+      if (confirm) {
         loginNow()
       }
     }
@@ -242,7 +242,7 @@ const loopGetAuthList = async() => {
 }
 // 轮询接口获取认证记录 end
 
-useDidShow(async () => {
+useDidShow(() => {
   const currentInstance = Taro.getCurrentInstance().page
   if (Taro.getTabBar) Taro.getTabBar(currentInstance).selected = 0
 

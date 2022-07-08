@@ -62,7 +62,7 @@ import {handleCollectInfo} from '@utils/collectInfo'
 import {getCertToken, checkCerTokenAgent, getUserIdKey, checkCertCodeAgent, getCertifyResult, getUserPhoneNum} from '@api/auth'
 import {register} from '@api/login'
 import {checkIsSupportFacialRecognition, startFacialRecognitionVerify, alipayGetPhoneNumber} from '@utils/taro'
-import {isLogin, idcardRex} from '@utils/index'
+import {isLogin, idcardRex, backToH5Url} from '@utils/index'
 import {alipayAuth} from '@utils/alipayAuth'
 
 // 用户录入信息
@@ -207,8 +207,9 @@ const handleConfirm = async () => {
   // 如果从第三方小程序跳转过来，就要重新收集信息
   let collectionInfo = await handleCollectInfo()
   // 5.校验活体检测结果
+  let result
   if (ISALIPAY){
-    await getCertifyResult({
+    result = await getCertifyResult({
       ...verifyResult,
       collectionInfo,
       usedAgent: canSelfAuth.value,
@@ -221,11 +222,14 @@ const handleConfirm = async () => {
       } else if (Number(Taro.getStorageSync('loginType'))===1){ // 第三方跳转
         Taro.navigateBackMiniProgram({extraData: {}})
       } else {
-        // Taro.ap.navigateToAlipayPage()
+        Taro.ap.navigateToAlipayPage({
+          path: encodeURIComponent(`${backToH5Url}?mode=${mode.value}&data=${data}`)
+        })
       }
+      return false
     })
   } else {
-    await checkCertCodeAgent({
+    result = await checkCertCodeAgent({
       collectionInfo,
       usedAgent: canSelfAuth.value,
       usedMode: mode.value,
@@ -275,7 +279,16 @@ const handleConfirm = async () => {
         if (Number(Taro.getStorageSync('loginType'))===1){
           Taro.navigateBackMiniProgram({extraData: {}})
         } else {
-          // Taro.ap.navigateToAlipayPage()
+          console.log(`${backToH5Url}?mode=${mode.value}&data=${result.data}`)
+          Taro.ap.navigateToAlipayPage({
+            path: `${backToH5Url}?mode=${mode.value}&data=${result.data}`,
+            success: () => {
+
+            },
+            fail: (e) => {
+              console.log(e)
+            }
+          })
         }
       }
     })
