@@ -216,17 +216,6 @@ const handleConfirm = async () => {
       usedMode: mode.value,
       certToken: certToken.value,
       idInfo: toRaw(userInfo)
-    }).catch(({data}) => {
-      if (!Taro.getStorageSync('loginType')){ // 小程序内部运行
-        Taro.navigateTo({url: `/pages/authResult/index?mode=${mode.value}&data=${data}`})
-      } else if (Number(Taro.getStorageSync('loginType'))===1){ // 第三方跳转
-        Taro.navigateBackMiniProgram({extraData: {}})
-      } else {
-        Taro.ap.navigateToAlipayPage({
-          path: encodeURIComponent(`${backToH5Url}?mode=${mode.value}&data=${data}`)
-        })
-      }
-      return false
     })
   } else {
     result = await checkCertCodeAgent({
@@ -238,68 +227,94 @@ const handleConfirm = async () => {
       idInfo: toRaw(userInfo)
     })
   }
+  let {data, retCode, retMessage} = result
 
-  if (!Taro.getStorageSync('loginToken') || !Taro.getStorageSync('loginType')){
-    let data = {
-      phoneNum: phoneNum.value,
-      regMode: 'id',
-      certToken: certToken.value,
-      loginType: Taro.getStorageSync('loginType') ?? 0
-    }
-    if (ISALIPAY){
-      data = {...data, ...verifyResult}
-      data.aesUserId = Taro.getStorageSync('aesUserId')
-    } else {
-      data.wxpvCode = verifyResult
-      data.aesUnionId = Taro.getStorageSync('aesUnionId')
-    }
-
-    await register(data).then(({loginToken, loginUser}) => {
-      Taro.setStorageSync('loginToken', loginToken)
-      Taro.setStorageSync('loginUser', loginUser)
-    })
-  }
-
-  if (!Taro.getStorageSync('loginType')){ // 小程序内部运行
-    Taro.showModal({
-      title: '注册成功',
-      content: `您的账号已绑定${ISALIPAY?'支付宝':'微信'}，下次可直接使用${ISALIPAY?'支付宝':'微信'}授权快捷登录`,
-      showCancel: false,
-      success: () => {
-        // 跳转到首页
-        Taro.switchTab({url: '/pages/index/index'})
-      }
-    })
-  } else { // 第三方小程序跳转
-    Taro.showModal({
-      title: '认证成功',
-      content: `返回第三方${Number(Taro.getStorageSync('loginType')) === 1 ? '小程序':'H5'}`,
-      showCancel: false,
-      success: () => {
-        if (Number(Taro.getStorageSync('loginType'))===1){
-          Taro.navigateBackMiniProgram({extraData: {}})
-        } else {
-          console.log(`${backToH5Url}?mode=${mode.value}&data=${result.data}`)
-          Taro.ap.navigateToAlipayPage({
-            path: `${backToH5Url}?mode=${mode.value}&data=${result.data}`,
-            success: () => {
-
-            },
-            fail: (e) => {
-              console.log(e)
-            }
-          })
+  if (retCode){ // 认证失败
+    if (!Taro.getStorageSync('loginType')){ // 小程序内部运行
+      Taro.navigateTo({url: `/pages/authResult/index?mode=${mode.value}&data=${data}`})
+    } else if (Number(Taro.getStorageSync('loginType'))===1){ // 返回第三方小程序
+      Taro.navigateBackMiniProgram({
+        extraData: {
+          mode: mode.value,
+          retCode,
+          retMessage
         }
+      })
+    } else { // 返回第三方h5
+      let {resStr, foreBackUrl} = data
+      Taro.setStorageSync('hasAuth', true) // 标识之前已经走过认证流程，避免返回重新认证使用同一个certToken
+      Taro.ap.navigateToAlipayPage({
+        path: `${backToH5Url}?mode=${mode.value}&resStr=${resStr}&foreBackUrl=${foreBackUrl}`
+      })
+    }
+  } else { // 认证成功
+    if (!Taro.getStorageSync('loginToken') || !Taro.getStorageSync('loginType')){
+      let data = {
+        phoneNum: phoneNum.value,
+        regMode: 'id',
+        certToken: certToken.value,
+        loginType: Taro.getStorageSync('loginType') ?? 0
       }
-    })
+      if (ISALIPAY){
+        data = {...data, ...verifyResult}
+        data.aesUserId = Taro.getStorageSync('aesUserId')
+      } else {
+        data.wxpvCode = verifyResult
+        data.aesUnionId = Taro.getStorageSync('aesUnionId')
+      }
+
+      await register(data).then(({loginToken, loginUser}) => {
+        Taro.setStorageSync('loginToken', loginToken)
+        Taro.setStorageSync('loginUser', loginUser)
+      })
+    }
+
+    if (!Taro.getStorageSync('loginType')){ // 小程序内部运行
+      Taro.showModal({
+        title: '注册成功',
+        content: `您的账号已绑定${ISALIPAY?'支付宝':'微信'}，下次可直接使用${ISALIPAY?'支付宝':'微信'}授权快捷登录`,
+        showCancel: false,
+        success: () => {
+          // 跳转到首页
+          Taro.switchTab({url: '/pages/index/index'})
+        }
+      })
+    } else { // 第三方跳转
+      Taro.showModal({
+        title: '认证成功',
+        content: `返回第三方${Number(Taro.getStorageSync('loginType')) === 1 ? '小程序':'H5'}`,
+        showCancel: false,
+        success: () => {
+          if (Number(Taro.getStorageSync('loginType'))===1){ // 返回第三方小程序
+            Taro.navigateBackMiniProgram({extraData: {
+              mode: mode.value,
+              retCode: result.retCode,
+              retMessage: result.retMessage
+            }})
+          } else { // 返回指定h5页面
+            let {resStr, foreBackUrl} = result.data
+            Taro.setStorageSync('hasAuth', true) // 标识之前已经走过认证流程，避免返回重新认证使用同一个certToken
+            Taro.ap.navigateToAlipayPage({
+              path: `${backToH5Url}?mode=${mode.value}&resStr=${resStr}&foreBackUrl=${foreBackUrl}`
+            })
+          }
+        }
+      })
+    }
   }
 }
 useDidShow(async () => {
-  // 获取第三方小程序跳转时带过来的certToken
-  if (Taro.getStorageSync('loginType')&&!certToken.value){
-    await isLogin()
-    certToken.value = Taro.getStorageSync('certToken')
-    await handleCheckCertToken()
+  // 如果用户之前已经验证过，返回本页面，直接导向首页
+  if (Taro.getStorageSync('hasAuth')){
+    Taro.removeStorageSync({key: 'hasAuth'})
+    Taro.switchTab({url: '/pages/index/index'})
+  } else {
+    // 获取第三方小程序跳转时带过来的certToken
+    if (Taro.getStorageSync('loginType')&&!certToken.value){
+      await isLogin()
+      certToken.value = Taro.getStorageSync('certToken')
+      await handleCheckCertToken()
+    }
   }
 })
 </script>

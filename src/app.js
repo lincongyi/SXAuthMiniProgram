@@ -7,7 +7,7 @@ import copyright from '@components/copyright/index.vue'
 import {Button, Icon, Dialog, Popup, OverLay, Input, Cell, CellGroup, Divider, DatePicker, Picker, Switch, Swiper, SwiperItem, ActionSheet, Checkbox} from '@nutui/nutui-taro'
 
 const App = createApp({
-  async onLaunch () {
+  onLaunch () {
     // 清理本地数据缓存
     Taro.clearStorageSync()
 
@@ -17,7 +17,7 @@ const App = createApp({
     // 版本更新
     handleUpdate()
   },
-  async onShow(options){
+  onShow(options){
     // 判断是否从第三方小程序跳转
     let extraData = options.referrerInfo?.extraData // 兼容支付宝options默认没有referrerInfo字段
     if (extraData){

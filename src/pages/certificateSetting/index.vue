@@ -3,7 +3,16 @@
     <view class="certificate-pannel">
       <view class="column">
         <view class="top-conent">起始日期</view>
-        <view :class="['selected-date', {'unselected':!idStartDate}]" @tap="showDatePicker(0)">{{idStartDate||'请选择身份证有效期起始日期'}}</view>
+        <view :class="['selected-date', {'unselected':!idStartDate}]">
+          <picker
+            mode="date"
+            :value="startDateValue"
+            :start="minDate"
+            :end="(new Date())"
+            @change="handleStartDateChange">
+            <view>{{idStartDate||'请选择身份证有效期起始日期'}}</view>
+          </picker>
+        </view>
       </view>
       <view class="column">
         <view class="top-conent">
@@ -13,22 +22,22 @@
             <nut-switch v-model="isPermanent" @change="isPermanentChange"/>
           </view>
         </view>
-        <view v-show="!isPermanent" :class="['selected-date', {'unselected':!idEndDate}]" @tap="showDatePicker(1)">{{idEndDate||'请选择身份证有效期截止日期'}}</view>
+        <view v-show="!isPermanent" :class="['selected-date', {'unselected':!idEndDate}]">
+          <picker
+            mode="date"
+            :value="endDateValue"
+            :start="(new Date())"
+            :end="maxDate"
+            @change="handleEndDateChange">
+            <view>{{idEndDate||'请选择身份证有效期截止日期'}}</view>
+          </picker>
+        </view>
       </view>
     </view>
     <view class="btn-warp">
       <nut-button type="primary" shape="square" block @tap="handleConfirm">确定</nut-button>
     </view>
   </view>
-  <nut-datepicker
-    :title="datePickerTitle"
-    v-model="currentDate"
-    v-model:visible="datePickerShow"
-    :min-date="minDate"
-    :max-date="maxDate"
-    :is-show-chinese="true"
-    @confirm="confirm"
-  ></nut-datepicker>
 
   <!-- Copyright -->
   <copyright />
@@ -36,41 +45,45 @@
 
 <script setup>
 import {ref} from 'vue'
-import Taro from '@tarojs/taro'
+import Taro, {useDidShow} from '@tarojs/taro'
 import './index.scss'
 import {updateYXQ} from '@api/setting'
 
-const datePickerIndex = ref(0) // 0.起始日期；1.截至日期
-const datePickerTitle = ref('') // 日期选择器标题
-const datePickerShow = ref(false) // 控制日期选择器显示隐藏
-const currentDate = ref('') // 日期选择器日期
+// 默认起始日期
+const minDate = ref(new Date('2000-01-01')) // 限制开始时间
+const maxDate = ref(new Date('2040-12-31')) // 限制结束时间
 const idStartDate = ref('') // 起始日期
 const idEndDate = ref('') // 截至日期
-const minDate = ref(new Date('2000-01-01')) // 限制开始时间
-const maxDate = ref(new Date('2030-12-31')) // 限制结束时间
+// 计算日期差值
+const calcDate = (date) => {
+  let today = new Date()
+  let todayTimestamp = today.getTime()
+  let origin = new Date(date)
+  let originTimestamp = origin.getTime()
+  let targetTimestamp = (todayTimestamp+originTimestamp) / 2
+  let target = new Date(targetTimestamp)
+  return `${target.getFullYear()}-${fillZero(target.getMonth()+1)}-${fillZero(target.getDate())}`
+}
+const fillZero = (target) => {
+  target = target + ''
+  return (target.length === 1 ? `0${target}` : target)
+}
+const startDateValue = ref(calcDate(minDate.value))
+const endDateValue = ref(calcDate(maxDate.value))
 const isPermanent = ref(false) // 是否长期有效
 
-// 显示日期选择器
-const showDatePicker = (index) => {
-  let target = [idStartDate, idEndDate][index].value.replace(/\./g, ',')
-  currentDate.value = target ? new Date(target) : new Date()
-
-  datePickerIndex.value = index
-  datePickerTitle.value = ['起始日期', '截至日期'][index]
-  minDate.value = [new Date('2000-01-01'), new Date()][index]
-  maxDate.value = [new Date(), maxDate.value][index]
-  datePickerShow.value = true
+// 设置起始日期
+const handleStartDateChange = (e) => {
+  idStartDate.value = e.detail.value.replace(/\//g, '') // 兼容ios日期返回'/'，同意处理成'-'
+  // 设置的是起始日期的话，截止日期最大年度单位+20
+  let date = new Date()
+  let year = date.getFullYear()+20
+  maxDate.value = new Date(`${year}-12-31`)
 }
 
-// 选择日期
-const confirm = ({selectedValue}) => {
-  ([idStartDate, idEndDate][datePickerIndex.value]).value = selectedValue.join('.')
-  if (!datePickerIndex.value){ // 设置的是起始日期的话，截止日期最大年度单位+20
-    let date = new Date()
-    let year = date.getFullYear()+20
-    maxDate.value = new Date(`${year}-12-31`)
-  }
-
+// 设置截止日期
+const handleEndDateChange = (e) => {
+  idEndDate.value = e.detail.value.replace(/\//g, '') // 兼容ios日期返回'/'，同意处理成'-'
 }
 
 // 切换是否长期有效
@@ -98,10 +111,10 @@ const handleConfirm = async () => {
     })
   }
   await updateYXQ({
-    idStartDate: idStartDate.value.replace(/\./g, ''),
-    idEndDate: idEndDate.value.replace(/\./g, '')
+    idStartDate: idStartDate.value.replace(/-/g, ''),
+    idEndDate: idEndDate.value.replace(/-/g, '')
   })
-  Taro.setStorageSync('loginUser', {...Taro.getStorageSync('loginUser'), ...{idStartDate: idStartDate.value, idEndDate: idEndDate.value}})
+  Taro.setStorageSync('loginUser', {...Taro.getStorageSync('loginUser'), ...{idStartDate: idStartDate.value.replace(/-/g, '.'), idEndDate: idEndDate.value.replace(/-/g, '.')}})
   Taro.showToast({
     title: '证件有效期添加成功',
     mask: true,
@@ -112,4 +125,34 @@ const handleConfirm = async () => {
     }
   })
 }
+
+// 格式化日期显示
+const formatDate = (date) => {
+  let arr = [4, 2, 2]
+  let target = []
+  let flag = 0
+  for (let i=0;i<arr.length;i++){
+    target.push(date.substr(flag, arr[i]))
+    flag += arr[i]
+  }
+  return target.join('-')
+}
+
+useDidShow(() => {
+  if (Taro.getStorageSync('loginToken')){
+    let loginUser = Taro.getStorageSync('loginUser')
+    // 初始化起始日期
+    if (loginUser.idStartDate) startDateValue.value = idStartDate.value = formatDate(loginUser.idStartDate)
+
+    // 初始化截止日期
+    if (loginUser.idEndDate){
+      if (loginUser.idEndDate === '00000000'){
+        endDateValue.value = ''
+        isPermanent.value = true
+      } else {
+        endDateValue.value = idEndDate.value = formatDate(loginUser.idEndDate)
+      }
+    }
+  }
+})
 </script>

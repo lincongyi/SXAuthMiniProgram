@@ -190,8 +190,6 @@ const handleConfirm = async () => {
       usedAgent: canSelfAuth.value,
       usedMode: mode.value,
       certToken: certToken.value
-    }).catch(({data}) => {
-      Taro.navigateTo({url: `/pages/authResult/index?mode=${mode.value}&data=${data}`})
     })
   } else {
     result = await checkCertCodeAgent({
@@ -202,6 +200,10 @@ const handleConfirm = async () => {
       certToken: certToken.value
     })
   }
+  let {data, retCode} = result
+
+  if (retCode) return Taro.navigateTo({url: `/pages/authResult/index?mode=${mode.value}&data=${data}`}) // 认证失败
+
   if (Object.keys(result).length){
     Taro.showToast({
       icon: 'none',

@@ -50,17 +50,18 @@ function request (options = {}) {
           // 第三方小程序跳转，不做任何处理
           resolve()
         } else if (r.data.retCode){
-          return Taro.showModal({
+          Taro.showModal({
             title: '温馨提示',
             content: r.data.retMessage,
             showCancel: false,
             success: () => {
-              reject(r.data)
+              resolve(r.data)
             }
           })
+        } else {
+          //网络请求成功 返回数据
+          resolve(r.data)
         }
-        //网络请求成功 返回数据
-        resolve(r.data)
       },
       fail(err) {
         Taro.hideLoading()

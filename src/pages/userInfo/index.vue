@@ -89,7 +89,11 @@ const formatDate = (date) => {
 
 // 证件有效期
 const period = computed(() => {
-  return (!loginUser.idStartDate&&!loginUser.idEndDate) ? '' : `${formatDate(loginUser.idStartDate)}-${formatDate(loginUser.idEndDate)}`
+  if (loginUser.idEndDate === '00000000'){
+    return '长期有效'
+  } else {
+    return (!loginUser.idStartDate&&!loginUser.idEndDate) ? '' : `${formatDate(loginUser.idStartDate)}-${formatDate(loginUser.idEndDate)}`
+  }
 })
 
 // 获取手机号码
