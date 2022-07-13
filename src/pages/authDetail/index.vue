@@ -158,7 +158,7 @@ const handleConfirm = async () => {
   }
   let {data, retCode} = result
 
-  if (retCode) return Taro.navigateTo({url: `/pages/authResult/index?mode=${authDetail.value.authMode}&data=${data}`}) // 认证失败
+  if (retCode) return Taro.navigateTo({url: `/pages/authResult/index?mode=${authDetail.value.authMode}&data=${data.resStr}`}) // 认证失败
 
   if (Object.keys(result).length){
     Taro.showToast({
@@ -167,7 +167,7 @@ const handleConfirm = async () => {
       mask: true,
       success: () => {
         Taro.removeStorageSync('authDetail')
-        Taro.navigateTo({url: `/pages/authResult/index?mode=${authDetail.value.authMode}&data=${result.data}`})
+        Taro.navigateTo({url: `/pages/authResult/index?mode=${authDetail.value.authMode}&data=${data.resStr}`})
       }
     })
   }

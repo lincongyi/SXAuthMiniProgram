@@ -231,7 +231,7 @@ const handleConfirm = async () => {
 
   if (retCode){ // 认证失败
     if (!Taro.getStorageSync('loginType')){ // 小程序内部运行
-      Taro.navigateTo({url: `/pages/authResult/index?mode=${mode.value}&data=${data}`})
+      Taro.navigateTo({url: `/pages/authResult/index?mode=${mode.value}&data=${data.resStr}`})
     } else if (Number(Taro.getStorageSync('loginType'))===1){ // 返回第三方小程序
       Taro.navigateBackMiniProgram({
         extraData: {

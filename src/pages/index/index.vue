@@ -202,7 +202,7 @@ const handleConfirm = async () => {
   }
   let {data, retCode} = result
 
-  if (retCode) return Taro.navigateTo({url: `/pages/authResult/index?mode=${mode.value}&data=${data}`}) // 认证失败
+  if (retCode) return Taro.navigateTo({url: `/pages/authResult/index?mode=${mode.value}&data=${data.resStr}`}) // 认证失败
 
   if (Object.keys(result).length){
     Taro.showToast({
@@ -210,7 +210,7 @@ const handleConfirm = async () => {
       title: '认证成功',
       mask: true,
       success: () => {
-        Taro.navigateTo({url: `/pages/authResult/index?mode=${mode.value}&data=${result.data}`})
+        Taro.navigateTo({url: `/pages/authResult/index?mode=${mode.value}&data=${data.resStr}`})
       }
     })
   }

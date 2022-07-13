@@ -90,6 +90,7 @@ const onConfirm = () => {
       title: '请同意服务协议',
     })
   }
+  isChecked.value = false
   emits('onConfirm')
 }
 </script>
