@@ -304,17 +304,16 @@ const handleConfirm = async () => {
   }
 }
 useDidShow(async () => {
-  // 如果用户之前已经验证过，返回本页面，直接导向首页
+  // 如果是h5返回的情况，直接跳转到首页
   if (Taro.getStorageSync('hasAuth')){
-    Taro.removeStorageSync({key: 'hasAuth'})
+    Taro.removeStorageSync('hasAuth')
     Taro.switchTab({url: '/pages/index/index'})
-  } else {
-    // 获取第三方小程序跳转时带过来的certToken
-    if (Taro.getStorageSync('loginType')&&!certToken.value){
-      await isLogin()
-      certToken.value = Taro.getStorageSync('certToken')
-      await handleCheckCertToken()
-    }
+  }
+  // 获取第三方小程序跳转时带过来的certToken
+  if (Taro.getStorageSync('loginType')&&!certToken.value){
+    await isLogin()
+    certToken.value = Taro.getStorageSync('certToken')
+    await handleCheckCertToken()
   }
 })
 </script>
