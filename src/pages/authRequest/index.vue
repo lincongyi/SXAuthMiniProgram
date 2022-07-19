@@ -94,7 +94,7 @@ const cacheData = (item) => {
 
 // 计算剩余时间
 const calRestTime = (target) => {
-  let timestamp = (new Date()).getTime()
+  let timestamp = Date.now()
   for (let i=0;i<target.length;i++){
     let item = target[i]
     if (item.isExpired) continue // 标志了已过期的认证条目，不做计算

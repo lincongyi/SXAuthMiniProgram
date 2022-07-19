@@ -56,7 +56,7 @@ const userInfo = reactive({
 const modeRange = [66, 64, 16, 18]
 const needDate = ref(false)
 
-const dateTime = formatDate((new Date()).getTime()).replace(/\./g, '/')
+const dateTime = formatDate(Date.now()).replace(/\./g, '/')
 
 // 选择证件起始时间
 const onStartDateChange = (e) => {

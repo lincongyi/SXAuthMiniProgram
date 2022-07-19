@@ -56,8 +56,7 @@ const idStartDate = ref('') // 起始日期
 const idEndDate = ref('') // 截至日期
 // 计算日期差值
 const calcDate = (date) => {
-  let today = new Date()
-  let todayTimestamp = today.getTime()
+  let todayTimestamp = Date.now()
   let origin = new Date(date)
   let originTimestamp = origin.getTime()
   let targetTimestamp = (todayTimestamp+originTimestamp) / 2
