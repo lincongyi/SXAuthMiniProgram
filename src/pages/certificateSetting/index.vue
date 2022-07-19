@@ -57,8 +57,7 @@ const idEndDate = ref('') // 截至日期
 // 计算日期差值
 const calcDate = (date) => {
   let todayTimestamp = Date.now()
-  let origin = new Date(date)
-  let originTimestamp = origin.getTime()
+  let originTimestamp = Date.parse(date)
   let targetTimestamp = (todayTimestamp+originTimestamp) / 2
   let target = new Date(targetTimestamp)
   return `${target.getFullYear()}-${fillZero(target.getMonth()+1)}-${fillZero(target.getDate())}`

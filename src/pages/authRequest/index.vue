@@ -100,7 +100,7 @@ const calRestTime = (target) => {
     if (item.isExpired) continue // 标志了已过期的认证条目，不做计算
 
     let expireTime = item.expireTime.replace(/-/g, '/') // 兼容ios日期识别的bug
-    let expireTimestamp = (new Date(expireTime)).getTime()
+    let expireTimestamp = Date.parse(expireTime)
     let restTimestamp = expireTimestamp - timestamp
     if (restTimestamp>0){
       let hour = parseInt(restTimestamp/(60*60*1000))
