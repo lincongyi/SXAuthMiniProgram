@@ -33,7 +33,8 @@
           <nut-icon name="arrow-right" size="16" color="#bbb"></nut-icon>
         </view>
       </view>
-      <view class="column" @tap="toAddRequest">
+      <!-- 测试用的功能 上线屏蔽-->
+      <view class="column" @tap="toAddRequest" v-if="isOpened">
         <image class="column-icon" mode="widthFix" :src="userCenterRecordImage" />
         <view class="cell">
           <view class="left-label">新增认证请求</view>
@@ -61,6 +62,8 @@ const loginStatus = ref(false) // 判断用户是否登录状态
 
 const fullName = ref('') // 用户名
 const idNum = ref('') // 证件号码
+
+const isOpened = ref(false) // 是否打开新增请求功能入口
 
 // 登录/注册
 const handleLogin = () => {
