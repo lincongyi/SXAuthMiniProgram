@@ -16,6 +16,6 @@
 
 ### setting.js 设置用户信息模块
 
-### 陕西扫码认证demo
+## 陕西扫码认证demo
 
-## https://sfrz.shxga.gov.cn/test/pcdemo/facecert/home.html
+### https://sfrz.shxga.gov.cn/test/pcdemo/facecert/home.html

@@ -240,7 +240,7 @@ const handleConfirm = async () => {
           retMessage
         }
       })
-    } else { // 返回第三方h5
+    } else { // 返回认证结果h5页面
       let {resStr, foreBackUrl} = data
       Taro.setStorageSync('hasAuth', true) // 标识之前已经走过认证流程，避免返回重新认证使用同一个certToken
       Taro.ap.navigateToAlipayPage({
@@ -280,26 +280,19 @@ const handleConfirm = async () => {
         }
       })
     } else { // 第三方跳转
-      Taro.showModal({
-        title: '认证成功',
-        content: `返回第三方${Number(Taro.getStorageSync('loginType')) === 1 ? '小程序':'H5'}`,
-        showCancel: false,
-        success: () => {
-          if (Number(Taro.getStorageSync('loginType'))===1){ // 返回第三方小程序
-            Taro.navigateBackMiniProgram({extraData: {
-              mode: mode.value,
-              retCode: result.retCode,
-              retMessage: result.retMessage
-            }})
-          } else { // 返回指定h5页面
-            let {resStr, foreBackUrl} = result.data
-            Taro.setStorageSync('hasAuth', true) // 标识之前已经走过认证流程，避免返回重新认证使用同一个certToken
-            Taro.ap.navigateToAlipayPage({
-              path: `${backToH5Url}?mode=${mode.value}&resStr=${resStr}&foreBackUrl=${foreBackUrl}`
-            })
-          }
-        }
-      })
+      if (Number(Taro.getStorageSync('loginType'))===1){ // 返回第三方小程序
+        Taro.navigateBackMiniProgram({extraData: {
+          mode: mode.value,
+          retCode: result.retCode,
+          retMessage: result.retMessage
+        }})
+      } else { // 返回认证结果h5页面
+        let {resStr, foreBackUrl} = result.data
+        Taro.setStorageSync('hasAuth', true) // 标识之前已经走过认证流程，避免返回重新认证使用同一个certToken
+        Taro.ap.navigateToAlipayPage({
+          path: `${backToH5Url}?mode=${mode.value}&resStr=${resStr}&foreBackUrl=${foreBackUrl}`
+        })
+      }
     }
   }
 }

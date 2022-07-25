@@ -49,7 +49,7 @@
 </template>
 
 <script setup>
-import {ref} from 'vue'
+import {ref, watch} from 'vue'
 import Taro, {useDidShow} from '@tarojs/taro'
 import './index.scss'
 import {isLogin} from '@utils/index'
@@ -58,7 +58,6 @@ import userCenterRecordImage from '@images/user-center-record.png'
 import userCenterSettingImage from '@images/user-center-setting.png'
 
 const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
-const loginStatus = ref(false) // 判断用户是否登录状态
 
 const fullName = ref('') // 用户名
 const idNum = ref('') // 证件号码
@@ -76,7 +75,6 @@ const handleLogin = () => {
       if (confirm) {
         await isLogin()
         loginStatus.value = true
-        setLoginUserInfo()
       }
     }
   })
@@ -129,13 +127,16 @@ const toAddRequest = () => {
   }
 }
 
+const loginStatus = ref(Taro.getStorageSync('loginToken') ? true : false) // 判断用户是否登录状态
+
+watch(loginStatus, (value) => { // 监听用户登录状态若为true，设置用户信息
+  if (value) setLoginUserInfo()
+})
+
+Taro.setStorageSync('loginType', 0) // 重置当前用户为小程序内部运行流程
+
 useDidShow(() => {
   const currentInstance = Taro.getCurrentInstance().page
   if (Taro.getTabBar) Taro.getTabBar(currentInstance).selected = 1
-
-  loginStatus.value = Taro.getStorageSync('loginToken') ? true : false
-  if (loginStatus.value) setLoginUserInfo()
-
-  Taro.setStorageSync('loginType', 0)
 })
 </script>

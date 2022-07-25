@@ -68,7 +68,7 @@
 </template>
 
 <script setup>
-import {ref, defineAsyncComponent} from 'vue'
+import {ref, defineAsyncComponent, watch} from 'vue'
 import Taro, {useDidShow, useDidHide} from '@tarojs/taro'
 import './index.scss'
 import {isLogin} from '@utils/index'
@@ -88,8 +88,6 @@ const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
 const bannerList = [banner_01, banner_02]
 const noticeSize = ref(0) // 待完成认证个数
 
-const loginStatus = ref(false) // 是否登录状态
-
 let timer = null
 const loopPeriod = 1000*60*5 // 轮询接口5分钟
 
@@ -108,7 +106,6 @@ const authActionSheetComponent = ref(null)
 const loginNow = async() => {
   await isLogin()
   loginStatus.value = true
-  loginEvent()
 }
 
 // 登录/注册
@@ -244,14 +241,17 @@ const loopGetAuthList = async() => {
 }
 // 轮询接口获取认证记录 end
 
+const loginStatus = ref(Taro.getStorageSync('loginToken') ? true : false) // 是否登录状态
+
+watch(loginStatus, (value) => { // 监听用户登录状态若为true，获取用户认证记录
+  if (value) loginEvent()
+})
+
+Taro.setStorageSync('loginType', 0) // 重置当前用户为小程序内部运行流程
+
 useDidShow(() => {
   const currentInstance = Taro.getCurrentInstance().page
   if (Taro.getTabBar) Taro.getTabBar(currentInstance).selected = 0
-
-  loginStatus.value = Taro.getStorageSync('loginToken') ? true : false
-  if (loginStatus.value) loginEvent()
-
-  Taro.setStorageSync('loginType', 0)
 })
 
 useDidHide(() => {
