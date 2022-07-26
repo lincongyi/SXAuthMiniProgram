@@ -127,7 +127,7 @@ const handleConfirm = async () => {
     mask: true,
     success: () => {
       setTimeout(() => {
-        Taro.switchTab({url: '/pages/index/index'})
+        Taro.reLaunch({url: '/pages/index/index'})
       }, 1000)
     }
   })

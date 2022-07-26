@@ -276,7 +276,7 @@ const handleConfirm = async () => {
         showCancel: false,
         success: () => {
           // 跳转到首页
-          Taro.switchTab({url: '/pages/index/index'})
+          Taro.reLaunch({url: '/pages/index/index'})
         }
       })
     } else { // 第三方跳转
@@ -300,7 +300,7 @@ useDidShow(async () => {
   // 如果是h5返回的情况，直接跳转到首页
   if (Taro.getStorageSync('hasAuth')){
     Taro.removeStorageSync('hasAuth')
-    Taro.switchTab({url: '/pages/index/index'})
+    Taro.reLaunch({url: '/pages/index/index'})
   }
   // 获取第三方小程序跳转时带过来的certToken
   if (Taro.getStorageSync('loginType')&&!certToken.value){

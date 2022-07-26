@@ -69,7 +69,7 @@
 
 <script setup>
 import {ref, defineAsyncComponent, watch} from 'vue'
-import Taro, {useDidShow, useDidHide} from '@tarojs/taro'
+import Taro, {useDidShow, useDidHide, useTabItemTap} from '@tarojs/taro'
 import './index.scss'
 import {isLogin} from '@utils/index'
 import {handleCollectInfo} from '@utils/collectInfo'
@@ -245,9 +245,16 @@ const loginStatus = ref(Taro.getStorageSync('loginToken') ? true : false) // 是
 
 watch(loginStatus, (value) => { // 监听用户登录状态若为true，获取用户认证记录
   if (value) loginEvent()
+}, {
+  immediate: true
 })
 
 Taro.setStorageSync('loginType', 0) // 重置当前用户为小程序内部运行流程
+
+useTabItemTap(() => {
+  console.log('index page')
+  loginStatus.value = Taro.getStorageSync('loginToken') ? true : false
+})
 
 useDidShow(() => {
   const currentInstance = Taro.getCurrentInstance().page

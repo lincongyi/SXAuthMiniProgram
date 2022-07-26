@@ -74,7 +74,7 @@ const onClose = () => {
       if (confirm){
         let loginType = Taro.getStorageSync('loginType') ?? 0
         if (loginType) Taro.navigateBackMiniProgram({extraData: {}})
-        else Taro.switchTab({url: '/pages/index/index'})
+        else Taro.reLaunch({url: '/pages/index/index'})
       } else {
         actionSheetVisible.value = true
       }

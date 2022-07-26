@@ -50,7 +50,7 @@
 
 <script setup>
 import {ref, watch} from 'vue'
-import Taro, {useDidShow} from '@tarojs/taro'
+import Taro, {useDidShow, useTabItemTap} from '@tarojs/taro'
 import './index.scss'
 import {isLogin} from '@utils/index'
 import avatarImage from '@images/avatar-default.png' // 用户默认头像
@@ -131,9 +131,16 @@ const loginStatus = ref(Taro.getStorageSync('loginToken') ? true : false) // 判
 
 watch(loginStatus, (value) => { // 监听用户登录状态若为true，设置用户信息
   if (value) setLoginUserInfo()
+}, {
+  immediate: true
 })
 
 Taro.setStorageSync('loginType', 0) // 重置当前用户为小程序内部运行流程
+
+useTabItemTap(() => {
+  console.log('mine page')
+  loginStatus.value = Taro.getStorageSync('loginToken') ? true : false
+})
 
 useDidShow(() => {
   const currentInstance = Taro.getCurrentInstance().page

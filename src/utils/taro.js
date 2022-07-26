@@ -232,7 +232,7 @@ export function startFacialRecognitionVerify(name, idCardNumber, userIdKey){
         setTimeout(() => {
           let loginType = Taro.getStorageSync('loginType') ?? 0
           if (loginType) Taro.navigateBackMiniProgram({extraData: {}})
-          else Taro.switchTab({url: '/pages/index/index'})
+          else Taro.reLaunch({url: '/pages/index/index'})
         }, 1000)
       }
     })
