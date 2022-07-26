@@ -6,7 +6,7 @@
   </view>
 </template>
 <script setup>
-import { toRefs } from 'vue'
+import {toRefs} from 'vue'
 import './index.scss'
 import copyrightImage from '@images/copyright.png'
 const props = defineProps({

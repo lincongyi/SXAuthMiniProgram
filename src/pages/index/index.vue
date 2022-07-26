@@ -43,6 +43,7 @@
       </view>
       <!-- 二维码认证 end -->
     </view>
+    <tabbar/>
   </view>
 
   <authActionSheet
@@ -69,7 +70,7 @@
 
 <script setup>
 import {ref, defineAsyncComponent, watch} from 'vue'
-import Taro, {useDidShow, useDidHide} from '@tarojs/taro'
+import Taro, {useDidShow, useDidHide, useTabItemTap} from '@tarojs/taro'
 import './index.scss'
 import {isLogin} from '@utils/index'
 import {handleCollectInfo} from '@utils/collectInfo'
@@ -81,6 +82,8 @@ import banner_02 from '@images/banner-02.png'
 import noticeImage from '@images/notice.png'
 import scanQrcodeImage from '@images/scan-qrcode.png'
 import showQrcodeImage from '@images/show-qrcode.png'
+
+const tabbar = defineAsyncComponent(() => import('@components/tabbar/index.vue')) // tabbar
 
 // 获取小程序当前环境
 const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
@@ -245,13 +248,23 @@ const loginStatus = ref(Taro.getStorageSync('loginToken') ? true : false) // 是
 
 watch(loginStatus, (value) => { // 监听用户登录状态若为true，获取用户认证记录
   if (value) loginEvent()
+}, {
+  immediate: true
+})
+
+// 针对支付宝兼容安卓手机切换tabbar时偶尔不执行useDidShow的bug
+useTabItemTap(() => {
+  if (timer) clearInterval(timer)
+  loginStatus.value = Taro.getStorageSync('loginToken') ? true : false
+  if (loginStatus.value) loginEvent()
 })
 
 Taro.setStorageSync('loginType', 0) // 重置当前用户为小程序内部运行流程
 
 useDidShow(() => {
-  const currentInstance = Taro.getCurrentInstance().page
-  if (Taro.getTabBar) Taro.getTabBar(currentInstance).selected = 0
+  if (Taro.getEnv() === 'ALIPAY') return
+
+  loginStatus.value = Taro.getStorageSync('loginToken') ? true : false
 })
 
 useDidHide(() => {
