@@ -124,7 +124,7 @@
 .login-tips {
   position: fixed;
   right: 0;
-  bottom: 30px;
+  bottom: calc(env(safe-area-inset-bottom) + 16px + 110px);
   left: 0;
   display: flex;
   justify-content: space-between;
@@ -135,10 +135,6 @@
   font-size: 26px;
   border-radius: 36px;
   background: linear-gradient(180deg, #fdf2c9, #f6efd5);
-
-  &.is-fixed {
-    bottom: calc(env(safe-area-inset-bottom) + 16px + 110px);
-  }
 
   .login-btn {
     padding: 0 22px;

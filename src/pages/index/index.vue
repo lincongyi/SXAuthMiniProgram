@@ -57,7 +57,7 @@
   />
 
   <block v-if="!loginStatus">
-    <view :class="['login-tips',{'is-fixed':!ISALIPAY}]">
+    <view class="login-tips">
       <text>登录后体验更多功能</text>
       <view class="login-btn" @tap="loginNow">立即登录</view>
     </view>
@@ -70,7 +70,7 @@
 
 <script setup>
 import {ref, defineAsyncComponent, watch} from 'vue'
-import Taro, {useDidShow, useDidHide, useTabItemTap} from '@tarojs/taro'
+import Taro, {useDidShow, useDidHide} from '@tarojs/taro'
 import './index.scss'
 import {isLogin} from '@utils/index'
 import {handleCollectInfo} from '@utils/collectInfo'
@@ -252,19 +252,10 @@ watch(loginStatus, (value) => { // 监听用户登录状态若为true，获取�
   immediate: true
 })
 
-// 针对支付宝兼容安卓手机切换tabbar时偶尔不执行useDidShow的bug
-useTabItemTap(() => {
-  if (timer) clearInterval(timer)
-  loginStatus.value = Taro.getStorageSync('loginToken') ? true : false
-  if (loginStatus.value) loginEvent()
-})
-
 Taro.setStorageSync('loginType', 0) // 重置当前用户为小程序内部运行流程
 
 useDidShow(() => {
-  if (Taro.getEnv() === 'ALIPAY') return
-
-  loginStatus.value = Taro.getStorageSync('loginToken') ? true : false
+  if (timer) clearInterval(timer)
 })
 
 useDidHide(() => {

@@ -51,7 +51,7 @@
 
 <script setup>
 import {ref, defineAsyncComponent, watch} from 'vue'
-import Taro, {useDidShow, useTabItemTap} from '@tarojs/taro'
+import Taro from '@tarojs/taro'
 import './index.scss'
 import {isLogin} from '@utils/index'
 import avatarImage from '@images/avatar-default.png' // 用户默认头像
@@ -139,15 +139,4 @@ watch(loginStatus, (value) => { // 监听用户登录状态若为true，设置�
 })
 
 Taro.setStorageSync('loginType', 0) // 重置当前用户为小程序内部运行流程
-
-// 针对支付宝兼容安卓手机切换tabbar时偶尔不执行useDidShow的bug
-useTabItemTap(() => {
-  loginStatus.value = Taro.getStorageSync('loginToken') ? true : false
-})
-
-useDidShow(() => {
-  if (Taro.getEnv() === 'ALIPAY') return
-
-  loginStatus.value = Taro.getStorageSync('loginToken') ? true : false
-})
 </script>

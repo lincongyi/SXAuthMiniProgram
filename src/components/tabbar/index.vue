@@ -13,7 +13,6 @@
   </nut-tabbar>
 </template>
 <script setup>
-import {ref} from 'vue'
 import Taro, {useRouter} from '@tarojs/taro'
 import tabbarHomeOn from '@images/tabbar-home-on.png'
 import tabbarHomeOff from '@images/tabbar-home-off.png'
@@ -30,7 +29,7 @@ const tabbarIndex = tabbarList.findIndex((item) => item === target)
 const tabSwitch = (data, index) => {
   if (index===tabbarIndex) return
 
-  Taro.navigateTo({
+  Taro.reLaunch({
     url: `/pages/${tabbarList[index]}/index`
   })
 }
