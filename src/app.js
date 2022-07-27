@@ -4,7 +4,7 @@ import {getEnv, handleUpdate} from '@utils/taro'
 import './app.scss'
 import '@styles/theme.scss'
 import copyright from '@components/copyright/index.vue'
-import {Button, Icon, Dialog, Popup, OverLay, Input, Cell, CellGroup, Divider, DatePicker, Picker, Switch, Swiper, SwiperItem, ActionSheet, Checkbox} from '@nutui/nutui-taro'
+import {Button, Icon, Dialog, Popup, OverLay, Input, Cell, CellGroup, Divider, DatePicker, Picker, Switch, Swiper, SwiperItem, ActionSheet, Checkbox, Tabbar, TabbarItem} from '@nutui/nutui-taro'
 
 const App = createApp({
   onLaunch () {
@@ -50,5 +50,7 @@ App
   .use(Swiper).use(SwiperItem)
   .use(ActionSheet)
   .use(Checkbox)
+  .use(Tabbar)
+  .use(TabbarItem)
 
 export default App

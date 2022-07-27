@@ -16,23 +16,6 @@ export default defineAppConfig({
     'pages/webView/index', // 网页承载器
     'pages/addRequest/index', // 新增认证请求（该页面用于测试，正式线不上）
   ],
-  tabBar: {
-    'custom': true,
-    'list': [
-      {
-        selectedIconPath: 'images/tabbar-home-on.png',
-        iconPath: 'images/tabbar-home-off.png',
-        pagePath: 'pages/index/index',
-        text: '首页'
-      },
-      {
-        selectedIconPath: 'images/tabbar-mine-on.png',
-        iconPath: 'images/tabbar-mine-off.png',
-        pagePath: 'pages/mine/index',
-        text: '我的'
-      }
-    ]
-  },
   window: {
     backgroundTextStyle: 'light',
     navigationBarBackgroundColor: '#fff',

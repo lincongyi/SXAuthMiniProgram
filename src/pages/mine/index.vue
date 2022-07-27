@@ -42,22 +42,23 @@
         </view>
       </view>
     </view>
+    <tabbar/>
   </view>
 
   <!-- Copyright -->
-  <copyright :isFixed="!ISALIPAY" />
+  <copyright :isFixed="true" />
 </template>
 
 <script setup>
-import {ref, watch} from 'vue'
-import Taro, {useDidShow} from '@tarojs/taro'
+import {ref, defineAsyncComponent, watch} from 'vue'
+import Taro from '@tarojs/taro'
 import './index.scss'
 import {isLogin} from '@utils/index'
 import avatarImage from '@images/avatar-default.png' // 用户默认头像
 import userCenterRecordImage from '@images/user-center-record.png'
 import userCenterSettingImage from '@images/user-center-setting.png'
 
-const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
+const tabbar = defineAsyncComponent(() => import('@components/tabbar/index.vue')) // tabbar
 
 const fullName = ref('') // 用户名
 const idNum = ref('') // 证件号码
@@ -136,13 +137,4 @@ watch(loginStatus, (value) => { // 监听用户登录状态若为true，设置�
 })
 
 Taro.setStorageSync('loginType', 0) // 重置当前用户为小程序内部运行流程
-
-useDidShow(() => {
-  console.log('mine page useDidShow event')
-  loginStatus.value = Taro.getStorageSync('loginToken') ? true : false
-  loginStatus.value && setLoginUserInfo()
-
-  const currentInstance = Taro.getCurrentInstance().page
-  if (Taro.getTabBar) Taro.getTabBar(currentInstance).selected = 1
-})
 </script>

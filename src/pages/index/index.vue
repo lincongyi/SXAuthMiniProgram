@@ -43,6 +43,7 @@
       </view>
       <!-- 二维码认证 end -->
     </view>
+    <tabbar/>
   </view>
 
   <authActionSheet
@@ -56,14 +57,14 @@
   />
 
   <block v-if="!loginStatus">
-    <view :class="['login-tips',{'is-fixed':!ISALIPAY}]">
+    <view class="login-tips">
       <text>登录后体验更多功能</text>
       <view class="login-btn" @tap="loginNow">立即登录</view>
     </view>
   </block>
   <block v-else>
     <!-- copyright -->
-    <copyright :isFixed="!ISALIPAY" />
+    <copyright :isFixed="true" />
   </block>
 </template>
 
@@ -81,6 +82,8 @@ import banner_02 from '@images/banner-02.png'
 import noticeImage from '@images/notice.png'
 import scanQrcodeImage from '@images/scan-qrcode.png'
 import showQrcodeImage from '@images/show-qrcode.png'
+
+const tabbar = defineAsyncComponent(() => import('@components/tabbar/index.vue')) // tabbar
 
 // 获取小程序当前环境
 const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
@@ -252,12 +255,7 @@ watch(loginStatus, (value) => { // 监听用户登录状态若为true，获取�
 Taro.setStorageSync('loginType', 0) // 重置当前用户为小程序内部运行流程
 
 useDidShow(() => {
-  console.log('index page useDidShow event')
-  loginStatus.value = Taro.getStorageSync('loginToken') ? true : false
-  loginStatus.value && loginEvent()
-
-  const currentInstance = Taro.getCurrentInstance().page
-  if (Taro.getTabBar) Taro.getTabBar(currentInstance).selected = 0
+  if (timer) clearInterval(timer)
 })
 
 useDidHide(() => {
