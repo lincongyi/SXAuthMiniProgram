@@ -64,7 +64,7 @@
   </block>
   <block v-else>
     <!-- copyright -->
-    <copyright :isFixed="!ISALIPAY" />
+    <copyright :isFixed="true" />
   </block>
 </template>
 

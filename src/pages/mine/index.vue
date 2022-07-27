@@ -46,7 +46,7 @@
   </view>
 
   <!-- Copyright -->
-  <copyright :isFixed="!ISALIPAY" />
+  <copyright :isFixed="true" />
 </template>
 
 <script setup>
@@ -59,8 +59,6 @@ import userCenterRecordImage from '@images/user-center-record.png'
 import userCenterSettingImage from '@images/user-center-setting.png'
 
 const tabbar = defineAsyncComponent(() => import('@components/tabbar/index.vue')) // tabbar
-
-const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
 
 const fullName = ref('') // 用户名
 const idNum = ref('') // 证件号码

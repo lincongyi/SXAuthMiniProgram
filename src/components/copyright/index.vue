@@ -16,4 +16,5 @@ const props = defineProps({
   }
 })
 const {isFixed} = toRefs(props)
+console.log(isFixed)
 </script>
