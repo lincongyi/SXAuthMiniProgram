@@ -78,7 +78,7 @@ const authResult = computed(() => {
 
 // 跳转到认证请求||记录页面
 const toAuthRequest = () => {
-  Taro.switchTab({url: '/pages/index/index'})
+  Taro.reLaunch({url: '/pages/index/index'})
 }
 
 useDidShow(() => {
