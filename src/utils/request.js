@@ -1,6 +1,16 @@
 import Taro from '@tarojs/taro'
-// const BASE_URL = 'http://gat.shaanxi.gov.cn/auth/sxfama'
-const BASE_URL = 'https://sfrz.shxga.gov.cn/sxfama'
+let config = {
+  development: {
+    baseUrl: 'http://gat.shaanxi.gov.cn/auth/sxfama',
+  },
+  release: {
+    baseUrl: 'https://sit.sfrz.shxga.gov.cn/sxfama',
+  },
+  production: {
+    baseUrl: 'https://sfrz.shxga.gov.cn/sxfama',
+  },
+}
+const BASE_URL = config[process.env.NODE_ENV].baseUrl
 
 function request (options = {}) {
   const {url, data, method='post'} = options
