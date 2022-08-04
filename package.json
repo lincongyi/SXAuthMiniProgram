@@ -10,6 +10,7 @@
   },
   "scripts": {
     "build:weapp": "taro build --type weapp",
+    "build:weapp:upload": "taro build --type weapp --upload",
     "build:swan": "taro build --type swan",
     "build:alipay": "taro build --type alipay",
     "build:tt": "taro build --type tt",
@@ -49,6 +50,7 @@
   "devDependencies": {
     "@babel/core": "^7.8.0",
     "@tarojs/mini-runner": "3.4.11",
+    "@tarojs/plugin-mini-ci": "^3.5.1",
     "@tarojs/webpack-runner": "3.4.11",
     "@types/webpack-env": "^1.13.6",
     "@vue/compiler-sfc": "^3.0.0",
