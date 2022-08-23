@@ -21,7 +21,7 @@
     <view class="btn-warp">
       <nut-button type="primary" shape="square" block @tap="handleSubmit" :class="{'disabled':btnDisabled}">下一步</nut-button>
       <block v-if="ISALIPAY">
-        <button class="get-phone-number-btn" open-type="getAuthorize" @getauthorize="getPhoneNumber" @error="onAuthError" scope="phoneNumber" v-show="!btnDisabled"></button>
+        <button class="get-phone-number-btn" open-type="getAuthorize" @getauthorize="getPhoneNumber" @error="onGetPhoneNumberError" scope="phoneNumber" v-show="!btnDisabled"></button>
       </block>
       <block v-else>
         <button class="get-phone-number-btn" open-type="getPhoneNumber" @getphonenumber="getPhoneNumber" v-show="!btnDisabled"></button>
@@ -135,7 +135,7 @@ const getPhoneNumber = async (event) => {
   phoneNum.value = userData.phoneNum
   handleSubmit()
 }
-const onAuthError = (e) => {
+const onGetPhoneNumberError = (e) => {
   if (e.detail.errorMessage === '用户取消授权'){
     Taro.showModal({
       title: '温馨提示',
@@ -148,6 +148,7 @@ const onAuthError = (e) => {
   }
 }
 
+// 获取手机号码后，正式执行下一步流程
 const handleSubmit = async () => {
   // 调起人脸认证前的校验流程
   // 第三方小程序跳转，无需再次获取校验certToken

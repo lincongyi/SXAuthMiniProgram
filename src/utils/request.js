@@ -7,7 +7,7 @@ let config = {
     baseUrl: 'https://sit.sfrz.shxga.gov.cn/sxfama',
   },
   production: {
-    baseUrl: 'https://sfrz.shxga.gov.cn/sxfama',
+    baseUrl: 'https://sfrz.wsbs.shxga.gov.cn/sxfama',
   },
 }
 const BASE_URL = config[process.env.NODE_ENV].baseUrl
