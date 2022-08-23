@@ -1,16 +1,4 @@
 const path = require('path')
-const CIPluginOpt = {
-  // 微信小程序
-  weapp: {
-    appid: 'wxba14eaf2d4b819a9',
-    privateKeyPath: './private.wxba14eaf2d4b819a9.key',
-  },
-
-  // 版本号
-  version: '1.0.0',
-  // 版本发布描述
-  desc: 'v1.0.0'
-}
 const config = {
   projectName: 'SXAuthMiniProgram',
   date: '2022-6-6',
@@ -23,7 +11,7 @@ const config = {
   },
   sourceRoot: 'src',
   outputRoot: `dist/${process.env.TARO_ENV}`,
-  plugins: ['@tarojs/plugin-html', ['@tarojs/plugin-mini-ci', CIPluginOpt]],
+  plugins: ['@tarojs/plugin-html'],
   defineConstants: {
   },
   copy: {

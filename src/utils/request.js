@@ -105,10 +105,12 @@ function request (options = {}) {
       },
       complete(e) {
         Taro.hideLoading()
-        console.log({
-          baseOptions,
-          result: e,
-        })
+        if (process.env.NODE_ENV === 'development') {
+          console.log({
+            baseOptions,
+            result: e,
+          })
+        }
       },
     })
   })
