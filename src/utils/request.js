@@ -1,7 +1,8 @@
 import Taro from '@tarojs/taro'
 let config = {
   development: {
-    baseUrl: 'http://gat.shaanxi.gov.cn/auth/sxfama',
+    baseUrl: 'https://sfrz.wsbs.shxga.gov.cn/sxfama',
+    // baseUrl: 'http://gat.shaanxi.gov.cn/auth/sxfama',
   },
   release: {
     baseUrl: 'https://sit.sfrz.shxga.gov.cn/sxfama',
@@ -59,13 +60,13 @@ function request (options = {}) {
           }
           // 第三方小程序跳转，不做任何处理
           resolve()
-        } else if (r.data.retCode){
+        } else if (r.data.retCode) {
           Taro.showModal({
             title: '温馨提示',
             content: r.data.retMessage,
             showCancel: false,
             success: () => {
-              resolve(r.data)
+              reject(r.data)
             }
           })
         } else {
@@ -105,12 +106,10 @@ function request (options = {}) {
       },
       complete(e) {
         Taro.hideLoading()
-        if (process.env.NODE_ENV === 'development') {
-          console.log({
-            baseOptions,
-            result: e,
-          })
-        }
+        console.log({
+          baseOptions,
+          result: e,
+        })
       },
     })
   })

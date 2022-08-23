@@ -5,9 +5,9 @@
       <view class="mail-box">{{mailBox}}</view>
     </block>
     <block v-else>
-      <nut-input placeholder="请输入邮箱地址" clearable v-model="mailBox" label="邮箱" max-length="20" />
+      <nut-input placeholder="请输入邮箱地址" v-model="mailBox" label="邮箱" max-length="20" />
     </block>
-    <nut-input v-model="verificationCode" clearable center label="邮箱验证码" placeholder="请输入邮箱验证码" max-length="6">
+    <nut-input v-model="verificationCode" center label="邮箱验证码" placeholder="请输入邮箱验证码" max-length="6">
       <template #button>
         <nut-button size="small" type="primary" shape="square" :disabled="!canGetCode || isDisabled" @tap="getCode"> {{getCodeBtnTxt}} </nut-button>
       </template>

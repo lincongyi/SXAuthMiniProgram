@@ -178,7 +178,6 @@ const handleConfirm = async () => {
       verifyResult = await startFacialRecognitionVerify(loginUser.fullName, loginUser.idNum, userIdKey)
     }
   }
-
   // collectionInfo尝试从storage里面取
   let collectionInfo = await handleCollectInfo()
   // 5.校验活体检测结果

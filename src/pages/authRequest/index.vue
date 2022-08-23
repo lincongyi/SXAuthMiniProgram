@@ -2,7 +2,7 @@
     <view class="container">
     <block v-if="!authList.length">
       <image class="no-auth-record" mode="widthFix" :src="noAuthRecordImage" />
-      <view class="no-auth-record-tips">暂无认证任务</view>
+      <view class="no-auth-record-tips">暂无认证记录</view>
     </block>
     <block v-else>
       <view class="auth-list">

@@ -1,7 +1,7 @@
 <template>
   <view class="container">
-    <nut-input placeholder="省市区县、乡镇等" clearable v-model="city" label="所在地区" max-length="20" />
-    <nut-input placeholder="街道、楼牌号等" clearable v-model="street" label="详细地址" max-length="30" />
+    <nut-input placeholder="省市区县、乡镇等" v-model="city" label="所在地区" max-length="20" />
+    <nut-input placeholder="街道、楼牌号等" v-model="street" label="详细地址" max-length="30" />
     <view class="btn-warp">
       <nut-button type="primary" shape="square" block @tap="handleConfirm" :class="{'disabled':btnDisabled}">保存</nut-button>
     </view>
@@ -37,7 +37,7 @@ const handleConfirm = async () => {
   setTimeout(() => { // 兼容输入框失焦，键盘隐藏过程中导致toast闪的bug
     Taro.showToast({
       mask: true,
-      title: '绑定成功',
+      title: '保存成功',
       success: () => {
         setTimeout(() => {
           Taro.navigateBack({delta: 1})

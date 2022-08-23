@@ -50,8 +50,8 @@ import './index.scss'
 import {updateYXQ} from '@api/setting'
 
 // 默认起始日期
-const minDate = ref(new Date('2000-01-01')) // 限制开始时间
-const maxDate = ref(new Date('2040-12-31')) // 限制结束时间
+const minDate = ref('2000-01-01') // 限制开始时间
+const maxDate = ref('2040-12-31') // 限制结束时间
 const idStartDate = ref('') // 起始日期
 const idEndDate = ref('') // 截至日期
 // 计算日期差值
@@ -72,16 +72,16 @@ const isPermanent = ref(false) // 是否长期有效
 
 // 设置起始日期
 const handleStartDateChange = (e) => {
-  idStartDate.value = e.detail.value.replace(/\//g, '') // 兼容ios日期返回'/'，同意处理成'-'
+  idStartDate.value = e.detail.value.replace(/\//g, '-') // 兼容ios日期返回'/'，同意处理成'-'
   // 设置的是起始日期的话，截止日期最大年度单位+20
   let date = new Date()
   let year = date.getFullYear()+20
-  maxDate.value = new Date(`${year}-12-31`)
+  maxDate.value = `${year}-12-31`
 }
 
 // 设置截止日期
 const handleEndDateChange = (e) => {
-  idEndDate.value = e.detail.value.replace(/\//g, '') // 兼容ios日期返回'/'，同意处理成'-'
+  idEndDate.value = e.detail.value.replace(/\//g, '-') // 兼容ios日期返回'/'，同意处理成'-'
 }
 
 // 切换是否长期有效
@@ -114,7 +114,7 @@ const handleConfirm = async () => {
   })
   Taro.setStorageSync('loginUser', {...Taro.getStorageSync('loginUser'), ...{idStartDate: idStartDate.value.replace(/-/g, '.'), idEndDate: idEndDate.value.replace(/-/g, '.')}})
   Taro.showToast({
-    title: '证件有效期添加成功',
+    title: '成功设置证件有效期',
     mask: true,
     success: () => {
       setTimeout(() => {
@@ -126,6 +126,7 @@ const handleConfirm = async () => {
 
 // 格式化日期显示
 const formatDate = (date) => {
+  date = date.replace(/\./g, '')
   let arr = [4, 2, 2]
   let target = []
   let flag = 0

@@ -8,26 +8,24 @@
       <!-- 用户信息录入 start -->
       <view class="form-group">
         <nut-input v-model="type" readonly label="证件类型" />
-        <nut-input v-model="userInfo.fullName" label="姓名" placeholder="请输入姓名" :readonly="!canEdit" clearable required maxlength="20" />
-        <nut-input v-model="userInfo.idNum" label="证件号码" placeholder="请输入证件号码" :readonly="!canEdit" clearable required maxlength="18" />
+        <nut-input v-model="userInfo.fullName" label="姓名" placeholder="请输入姓名" :readonly="!canEdit" required maxlength="20" />
+        <nut-input v-model="userInfo.idNum" label="证件号码" placeholder="请输入证件号码" :readonly="!canEdit" required maxlength="18" />
         <block v-if="[16,18].includes(mode)">
-          <nut-input v-model="userInfo.idStartDate" label="起始日期" :readonly="!canEdit" clearable required maxlength="18" />
-          <nut-input v-model="userInfo.idEndDate" label="截止日期" :readonly="!canEdit" clearable required maxlength="18" />
+          <nut-input v-model="userInfo.idStartDate" label="起始日期" :readonly="!canEdit" required maxlength="18" />
+          <nut-input v-model="userInfo.idEndDate" label="截止日期" :readonly="!canEdit" required maxlength="18" />
         </block>
       </view>
       <!-- 用户信息录入 end -->
     </view>
 
     <view class="btn-warp">
-      <nut-button type="primary" shape="square" block @tap="handleSubmit" :class="{'disabled':btnDisabled}">下一步</nut-button>
+      <nut-button type="primary" shape="square" block :class="{'disabled':btnDisabled}">下一步</nut-button>
       <block v-if="ISALIPAY">
         <button class="get-phone-number-btn" open-type="getAuthorize" @getauthorize="getPhoneNumber" @error="onGetPhoneNumberError" scope="phoneNumber" v-show="!btnDisabled"></button>
       </block>
       <block v-else>
-        <button class="get-phone-number-btn" open-type="getPhoneNumber" @getphonenumber="getPhoneNumber" v-show="!btnDisabled"></button>
+        <button class="get-phone-number-btn" open-type="getPhoneNumber" @getphonenumber="getPhoneNumber"></button>
       </block>
-
-
     </view>
 
     <view class="tips-textarea">
@@ -98,6 +96,7 @@ const toProtocol = () => {
 
 // 下一步（先获取手机号码，再走流程）
 const getPhoneNumber = async (event) => {
+  console.log(222222222222)
   // 校验用户信息
   let {fullName, idNum} = toRaw(userInfo)
   if (!fullName){
