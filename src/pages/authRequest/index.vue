@@ -118,12 +118,6 @@ const calRestTime = (target) => {
 
 // 初始化页面数据
 const init = async () => {
-  if (noMore.value){
-    return Taro.showToast({
-      icon: 'none',
-      title: '没有更多了',
-    })
-  }
   let {data} = await getAuthList({
     pageNum: pageNum.value,
     pageSize: pageSize.value,
@@ -153,6 +147,12 @@ useDidShow(() => {
 })
 
 useReachBottom(() => {
+  if (noMore.value){
+    return Taro.showToast({
+      icon: 'none',
+      title: '没有更多了',
+    })
+  }
   init()
 })
 

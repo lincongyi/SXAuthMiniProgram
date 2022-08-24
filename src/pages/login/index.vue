@@ -19,12 +19,12 @@
     </view>
 
     <view class="btn-warp">
-      <nut-button type="primary" shape="square" block :class="{'disabled':btnDisabled}">下一步</nut-button>
+      <nut-button type="primary" shape="square" block :class="{'disabled':btnDisabled}" @tap="validateUserInfo">下一步</nut-button>
       <block v-if="ISALIPAY">
         <button class="get-phone-number-btn" open-type="getAuthorize" @getauthorize="getPhoneNumber" @error="onGetPhoneNumberError" scope="phoneNumber" v-show="!btnDisabled"></button>
       </block>
       <block v-else>
-        <button class="get-phone-number-btn" open-type="getPhoneNumber" @getphonenumber="getPhoneNumber"></button>
+        <button class="get-phone-number-btn" open-type="getPhoneNumber" @getphonenumber="getPhoneNumber" v-show="!btnDisabled"></button>
       </block>
     </view>
 
@@ -95,8 +95,7 @@ const toProtocol = () => {
   Taro.navigateTo({url: `/pages/webView/index?url=${url}`})
 }
 
-// 下一步（先获取手机号码，再走流程）
-const getPhoneNumber = async (event) => {
+const validateUserInfo = () => {
   // 校验用户信息
   let {fullName, idNum} = toRaw(userInfo)
   if (!fullName){
@@ -115,7 +114,10 @@ const getPhoneNumber = async (event) => {
       title: '身份号码格式有误'
     })
   }
+}
 
+// 下一步（先获取手机号码，再走流程）
+const getPhoneNumber = async (event) => {
   let jsCode
   if (ISALIPAY){
     jsCode = await alipayGetPhoneNumber()
