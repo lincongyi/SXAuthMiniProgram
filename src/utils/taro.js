@@ -241,13 +241,8 @@ export function startFacialRecognitionVerify(name, idCardNumber, userIdKey){
               }, 1000)
             }
           })
-        } else {
-          // Taro.showToast({
-          //   icon: 'none',
-          //   title: '人脸与身份信息不匹配',
-          //   mask: true
-          // })
-          return verifyResult
+        } else { // 人脸与身份信息不匹配
+          resolve(verifyResult)
         }
       }
     })

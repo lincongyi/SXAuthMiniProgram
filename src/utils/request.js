@@ -1,22 +1,21 @@
 import Taro from '@tarojs/taro'
 let config = {
   development: {
-    baseUrl: 'https://sfrz.wsbs.shxga.gov.cn/sxfama',
-    // baseUrl: 'http://gat.shaanxi.gov.cn/auth/sxfama',
+    baseUrl: 'https://sfrz.wsbs.shxga.gov.cn',
   },
   release: {
-    baseUrl: 'https://sit.sfrz.shxga.gov.cn/sxfama',
+    baseUrl: 'https://sit.sfrz.shxga.gov.cn',
   },
   production: {
-    baseUrl: 'https://sfrz.wsbs.shxga.gov.cn/sxfama',
+    baseUrl: 'https://sfrz.wsbs.shxga.gov.cn',
   },
 }
-const BASE_URL = config[process.env.NODE_ENV].baseUrl
+export const BASE_URL = `${config[process.env.NODE_ENV].baseUrl}`
 
 function request (options = {}) {
   const {url, data, method='post'} = options
   const baseOptions = {
-    url: `${BASE_URL}${url}`,
+    url: `${BASE_URL}/sxfama${url}`,
     data,
     method,
     header: {

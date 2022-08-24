@@ -62,6 +62,7 @@ import {register} from '@api/login'
 import {checkIsSupportFacialRecognition, startFacialRecognitionVerify, alipayGetPhoneNumber} from '@utils/taro'
 import {isLogin, idcardRex, backToH5Url} from '@utils/index'
 import {alipayAuth} from '@utils/alipayAuth'
+import {BASE_URL} from '@utils/request'
 
 // 用户录入信息
 const type = '第二代居民身份证'
@@ -90,13 +91,12 @@ const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
 
 // 查看用户服务协议（暂时写死）
 const toProtocol = () => {
-  let url = 'https://sfrz.shxga.gov.cn/shanxiauthagreement/sxauthuseragreement.html'
+  let url = `${BASE_URL}/shanxiauthagreement/sxauthuseragreement.html`
   Taro.navigateTo({url: `/pages/webView/index?url=${url}`})
 }
 
 // 下一步（先获取手机号码，再走流程）
 const getPhoneNumber = async (event) => {
-  console.log(222222222222)
   // 校验用户信息
   let {fullName, idNum} = toRaw(userInfo)
   if (!fullName){

@@ -1,6 +1,7 @@
 import Taro from '@tarojs/taro'
 import {TaroLogin, getUserInfo, getAuthCode} from '@utils/taro'
 import {login} from '@api/login'
+import {BASE_URL} from '@utils/request'
 
 // 判断用户未登录 -> 登录 or 注册 || 已登录
 export async function isLogin(){
@@ -69,4 +70,4 @@ export const idcardRex = /^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$|
 /**
   * 返回h5页面地址
  */
-export const backToH5Url = 'https://sfrz.shxga.gov.cn/auth/sxauthalipay/authResult.html'
+export const backToH5Url = `${BASE_URL}/auth/sxauthalipay/authResult.html`

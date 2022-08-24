@@ -18,4 +18,4 @@
 
 ## 陕西扫码认证demo
 
-### https://sfrz.shxga.gov.cn/test/pcdemo/facecert/home.html
+### https://sfrz.wsbs.shxga.gov.cn/sxauthalipay/authTask.html
