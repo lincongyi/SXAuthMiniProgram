@@ -2,7 +2,7 @@
     <view class="container">
     <block v-if="!authList.length">
       <image class="no-auth-record" mode="widthFix" :src="noAuthRecordImage" />
-      <view class="no-auth-record-tips">暂无认证记录</view>
+      <view class="no-auth-record-tips">暂无{{['认证记录', '认证请求'][flag]}}</view>
     </block>
     <block v-else>
       <view class="auth-list">
@@ -22,7 +22,8 @@
               <view class="auth-info">{{item.authTime}}</view>
             </template>
           </view>
-          <nut-button v-if="flag" shape="square" type="primary" @tap.stop="toAuth(item)" :disabled="!(item.hour||item.minute||item.second)">马上认证</nut-button>
+
+          <nut-button v-if="flag" shape="square" :color="item.isExpired ? '#ddd':'#0a7aee'" @tap.stop="toAuth(item)">马上认证</nut-button>
           <view class="auth-result" v-else>
             <view :class="['auth-status', authResult[item.authResStr].class]">{{authResult[item.authResStr].text}}</view>
             <nut-icon name="right" class="arrow" size="18" color="#bbb"></nut-icon>
@@ -43,7 +44,7 @@ import noAuthRecordImage from '@images/no-auth-record.png'
 import './index.scss'
 import {getAuthList} from '@api/auth'
 
-const flag = ref(0) // 0.认证记录；1.待认证
+const flag = ref(0) // 0.认证记录；1.认证请求
 const authList = ref([]) // 认证数据
 const pageNum = ref(0)
 const pageSize = ref(10)
@@ -59,6 +60,7 @@ const authResult = [
 
 // 马上认证
 const toAuth = (item) => {
+  if (item.isExpired) return
   cacheData(item)
   Taro.navigateTo({
     url: `/pages/authDetail/index?authResult=3&certToken=${item.certToken}`
@@ -126,7 +128,7 @@ const init = async () => {
   })
   if (data.size>=pageSize.value) pageNum.value++
   else noMore.value = true
-  if (!flag.value){
+  if (!flag.value) {
     authList.value = [...authList.value, ...data.list]
   } else { // 如果是认证请求，需要计算剩余时间
     authList.value = [...authList.value, ...calRestTime(data.list)]
