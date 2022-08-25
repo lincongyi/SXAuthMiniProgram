@@ -153,7 +153,7 @@ const onGetPhoneNumberError = (e) => {
 const handleSubmit = async () => {
   // 调起人脸认证前的校验流程
   // 第三方小程序跳转，无需再次获取校验certToken
-  if (!Taro.getStorageSync('loginType')){
+  if (!Taro.getStorageSync('certToken')){
     //  1.收集信息
     let collectionInfo = await handleCollectInfo()
 
@@ -171,24 +171,30 @@ const handleSubmit = async () => {
 
 const handleCheckCertToken = async () => {
   let result = await checkCerTokenAgent({certToken: certToken.value})
-  let {authTipsInfo, authUser} = result.data
-  canSelfAuth.value = result.data.canSelfAuth ?? false
-  mode.value = result.data.mode
-  // 如果是第三方跳转过来的，反显用户信息
-  if (Number(Taro.getStorageSync('loginType'))){
-    for (let key in authUser){
-      userInfo[key] = authUser[key]
+  // 校验certToken过期
+  if (result === 4030) {
+    Taro.removeStorageSync('certToken')
+    handleSubmit()
+  } else {
+    let {authTipsInfo, authUser} = result.data
+    canSelfAuth.value = result.data.canSelfAuth ?? false
+    mode.value = result.data.mode
+    // 如果是第三方跳转过来的，反显用户信息
+    if (Number(Taro.getStorageSync('loginType'))){
+      for (let key in authUser){
+        userInfo[key] = authUser[key]
+      }
+      // 如果用户在第三方小程序已录入个人信息，就设置输入框不可编辑
+      if (userInfo.idNum&&userInfo.fullName) canEdit.value = false
     }
-    // 如果用户在第三方小程序已录入个人信息，就设置输入框不可编辑
-    if (userInfo.idNum&&userInfo.fullName) canEdit.value = false
-  }
 
-  // 初始化authActionSheet的信息
-  beforeAuth.value = authTipsInfo.beforeAuth
-  beforeProtocol.value = authTipsInfo.beforeProtocol
-  let protocol = authTipsInfo.protocolList[0]
-  protocolName.value = protocol.name
-  protocolUrl.value = protocol.url
+    // 初始化authActionSheet的信息
+    beforeAuth.value = authTipsInfo.beforeAuth
+    beforeProtocol.value = authTipsInfo.beforeProtocol
+    let protocol = authTipsInfo.protocolList[0]
+    protocolName.value = protocol.name
+    protocolUrl.value = protocol.url
+  }
 }
 
 // 确认授权 开始人脸识别
@@ -251,6 +257,7 @@ const handleConfirm = async () => {
       })
     }
   } else { // 认证成功
+    Taro.removeStorageSync('certToken') // 移除certToken，否则下次认证会重复使用之前的certToken
     if (!Taro.getStorageSync('loginToken') || !Taro.getStorageSync('loginType')){
       let data = {
         phoneNum: phoneNum.value,

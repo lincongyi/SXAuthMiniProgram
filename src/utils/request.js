@@ -59,6 +59,8 @@ function request (options = {}) {
           }
           // 第三方小程序跳转，不做任何处理
           resolve()
+        } else if (r.data.retCode === 4030) {
+          resolve(r.data.retCode)
         } else if (r.data.retCode) {
           Taro.showModal({
             title: '温馨提示',
