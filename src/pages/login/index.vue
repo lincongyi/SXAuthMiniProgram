@@ -161,6 +161,7 @@ const handleSubmit = async () => {
     let authType = 'InsideRegular'
     let {tokenInfo} = await getCertToken({mode: mode.value, authType, collectionInfo, idInfo: toRaw(userInfo)}) // 获取certToken
     certToken.value = tokenInfo.certToken
+    Taro.setStorageSync('certToken', certToken.value)
 
     // 3.校验certToken，并返回授权信息
     await handleCheckCertToken()
@@ -174,7 +175,7 @@ const handleCheckCertToken = async () => {
   canSelfAuth.value = result.data.canSelfAuth ?? false
   mode.value = result.data.mode
   // 如果是第三方跳转过来的，反显用户信息
-  if (Taro.getStorageSync('loginType')){
+  if (Number(Taro.getStorageSync('loginType'))){
     for (let key in authUser){
       userInfo[key] = authUser[key]
     }
@@ -305,7 +306,7 @@ useDidShow(async () => {
     Taro.reLaunch({url: '/pages/index/index'})
   }
   // 获取第三方小程序跳转时带过来的certToken
-  if (Taro.getStorageSync('loginType')&&!certToken.value){
+  if (Number(Taro.getStorageSync('loginType'))&&!certToken.value){
     await isLogin()
     certToken.value = Taro.getStorageSync('certToken')
     await handleCheckCertToken()

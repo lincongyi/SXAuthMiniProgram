@@ -114,7 +114,7 @@ const handleConfirm = async () => {
   })
   Taro.setStorageSync('loginUser', {...Taro.getStorageSync('loginUser'), ...{idStartDate: idStartDate.value.replace(/-/g, '.'), idEndDate: idEndDate.value.replace(/-/g, '.')}})
   Taro.showToast({
-    title: '成功设置证件有效期',
+    title: '设置成功',
     mask: true,
     success: () => {
       setTimeout(() => {

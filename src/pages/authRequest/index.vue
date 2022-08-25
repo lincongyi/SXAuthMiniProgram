@@ -118,6 +118,7 @@ const calRestTime = (target) => {
 
 // 初始化页面数据
 const init = async () => {
+  if (noMore.value) return
   let {data} = await getAuthList({
     pageNum: pageNum.value,
     pageSize: pageSize.value,

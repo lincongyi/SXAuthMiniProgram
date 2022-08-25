@@ -32,7 +32,6 @@ const App = createApp({
       // 如果用户之前已经验证过，返回本页面，直接导向首页
       if (Taro.getStorageSync('hasAuth')) Taro.removeStorageSync('hasAuth')
     }
-
   }
 })
 
