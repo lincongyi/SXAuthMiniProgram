@@ -111,8 +111,7 @@ const getPhoneNumber = async (event) => {
     }
     jsCode = event.detail.code
   }
-  let {retCode, data: phoneNum} = await updatePhoneNum({jsCode})
-  if (retCode) return
+  let {data: phoneNum} = await updatePhoneNum({jsCode})
   loginUser.phoneNum = phoneNum
   let loginUserStorage = Taro.getStorageSync('loginUser')
   Taro.setStorageSync('loginUser', {...loginUserStorage, ...{phoneNum}})

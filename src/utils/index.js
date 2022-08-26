@@ -1,7 +1,6 @@
 import Taro from '@tarojs/taro'
 import {TaroLogin, getUserInfo, getAuthCode} from '@utils/taro'
 import {login} from '@api/login'
-import {BASE_URL} from '@utils/request'
 
 // 判断用户未登录 -> 登录 or 注册 || 已登录
 export async function isLogin(){
@@ -66,8 +65,3 @@ export function formatDate(timestamp) {
   * 身份号码正则
  */
 export const idcardRex = /^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$|^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X)$/
-
-/**
-  * 返回h5页面地址
- */
-export const backToH5Url = `${BASE_URL}/sxauthalipay/authResult.html`

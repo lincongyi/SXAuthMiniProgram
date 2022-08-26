@@ -41,6 +41,13 @@
           <nut-icon name="arrow-right" size="16" color="#bbb"></nut-icon>
         </view>
       </view>
+      <view class="column" @tap="toLoseEfficacy" v-if="isOpened">
+        <image class="column-icon" mode="widthFix" :src="userCenterSettingImage" />
+        <view class="cell">
+          <view class="left-label">使loginToken失效</view>
+          <nut-icon name="arrow-right" size="16" color="#bbb"></nut-icon>
+        </view>
+      </view>
     </view>
     <tabbar/>
   </view>
@@ -126,6 +133,15 @@ const toAddRequest = () => {
       url: '/pages/addRequest/index'
     })
   }
+}
+
+// 使loginToken失效
+const toLoseEfficacy = () => {
+  Taro.showToast({
+    icon: 'none',
+    title: 'loginToken已失效',
+  })
+  Taro.setStorageSync('loginToken', '111111111111')
 }
 
 const loginStatus = ref(Taro.getStorageSync('loginToken') ? true : false) // 判断用户是否登录状态

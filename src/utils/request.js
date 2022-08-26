@@ -1,5 +1,6 @@
 import Taro from '@tarojs/taro'
-let config = {
+import {isLogin} from '@utils/index'
+const config = {
   development: {
     baseUrl: 'https://sfrz.wsbs.shxga.gov.cn',
   },
@@ -59,15 +60,20 @@ function request (options = {}) {
           }
           // 第三方小程序跳转，不做任何处理
           resolve()
-        } else if (r.data.retCode === 4030) {
+        } else if (r.data.retCode === 4030) { // certToken过期
           resolve(r.data.retCode)
         } else if (r.data.retCode) {
           Taro.showModal({
             title: '温馨提示',
             content: r.data.retMessage,
             showCancel: false,
-            success: () => {
-              resolve(r.data)
+            success: async () => {
+              if (r.data.retCode === 3002) { // loginToken过期
+                Taro.removeStorageSync('loginToken')
+                await isLogin() // 静默登录
+              } else {
+                reject(r.data)
+              }
             }
           })
         } else {

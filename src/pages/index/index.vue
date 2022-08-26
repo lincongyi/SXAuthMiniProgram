@@ -196,6 +196,8 @@ const handleConfirm = async () => {
       usedAgent: canSelfAuth.value,
       usedMode: mode.value,
       certToken: certToken.value
+    }).catch(({data}) => { // 认证失败
+      Taro.navigateTo({url: `/pages/authResult/index?mode=${mode.value}&data=${data.resStr}`})
     })
   } else {
     result = await checkCertCodeAgent({
@@ -204,11 +206,11 @@ const handleConfirm = async () => {
       usedMode: mode.value,
       wxpvCode: verifyResult,
       certToken: certToken.value
+    }).catch(({data}) => { // 认证失败
+      Taro.navigateTo({url: `/pages/authResult/index?mode=${mode.value}&data=${data.resStr}`})
     })
   }
-  let {data, retCode} = result
-
-  if (retCode) return Taro.navigateTo({url: `/pages/authResult/index?mode=${mode.value}&data=${data.resStr}`}) // 认证失败
+  let {data} = result
 
   if (Object.keys(result).length){
     Taro.showToast({
