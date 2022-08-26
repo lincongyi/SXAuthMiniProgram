@@ -234,6 +234,7 @@ export function startFacialRecognitionVerify(name, idCardNumber, userIdKey){
                 let loginType = Taro.getStorageSync('loginType') ?? 0
                 if (loginType) Taro.navigateBackMiniProgram({extraData: {}})
                 else {
+                  Taro.removeStorageSync('certToken')
                   let url = '/pages/index/index'
                   if (Taro.getCurrentInstance().router.path === url) return // 当前在首页无需刷新
                   Taro.reLaunch({url})

@@ -67,7 +67,7 @@ function request (options = {}) {
             content: r.data.retMessage,
             showCancel: false,
             success: () => {
-              reject(r.data)
+              resolve(r.data)
             }
           })
         } else {

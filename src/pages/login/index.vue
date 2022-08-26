@@ -171,7 +171,7 @@ const handleSubmit = async () => {
 
 const handleCheckCertToken = async () => {
   let result = await checkCerTokenAgent({certToken: certToken.value})
-  // 校验certToken过期
+  // 校验certToken过期，重新获取certToken
   if (result === 4030) {
     Taro.removeStorageSync('certToken')
     handleSubmit()
@@ -238,10 +238,10 @@ const handleConfirm = async () => {
   }
   let {data, retCode, retMessage} = result
 
-  if (retCode){ // 认证失败
-    if (!Taro.getStorageSync('loginType')){ // 小程序内部运行
-      Taro.navigateTo({url: `/pages/authResult/index?mode=${mode.value}&data=${data.resStr}`})
-    } else if (Number(Taro.getStorageSync('loginType'))===1){ // 返回第三方小程序
+  Taro.removeStorageSync('certToken') // 移除certToken，否则下次认证会重复使用之前的certToken
+  if (retCode) { // 认证失败
+    // 小程序内部运行，认证失败不做任何操作
+    if (Number(Taro.getStorageSync('loginType'))===1){ // 返回第三方小程序
       Taro.navigateBackMiniProgram({
         extraData: {
           mode: mode.value,
@@ -249,7 +249,7 @@ const handleConfirm = async () => {
           retMessage
         }
       })
-    } else { // 返回认证结果h5页面
+    } else if (Number(Taro.getStorageSync('loginType'))===2) { // 返回认证结果h5页面
       let {resStr, foreBackUrl} = data
       Taro.setStorageSync('hasAuth', true) // 标识之前已经走过认证流程，避免返回重新认证使用同一个certToken
       Taro.ap.navigateToAlipayPage({
@@ -257,7 +257,6 @@ const handleConfirm = async () => {
       })
     }
   } else { // 认证成功
-    Taro.removeStorageSync('certToken') // 移除certToken，否则下次认证会重复使用之前的certToken
     if (!Taro.getStorageSync('loginToken') || !Taro.getStorageSync('loginType')){
       let data = {
         phoneNum: phoneNum.value,
