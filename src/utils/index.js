@@ -70,4 +70,4 @@ export const idcardRex = /^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$|
 /**
   * 返回h5页面地址
  */
-export const backToH5Url = `${BASE_URL}/auth/sxauthalipay/authResult.html`
+export const backToH5Url = `${BASE_URL}/sxauthalipay/authResult.html`

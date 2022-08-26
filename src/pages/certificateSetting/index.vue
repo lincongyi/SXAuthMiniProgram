@@ -108,10 +108,11 @@ const handleConfirm = async () => {
       showCancel: false
     })
   }
-  await updateYXQ({
+  let {retCode=0} = await updateYXQ({
     idStartDate: idStartDate.value.replace(/-/g, ''),
     idEndDate: idEndDate.value.replace(/-/g, '')
   })
+  if (retCode) return
   Taro.setStorageSync('loginUser', {...Taro.getStorageSync('loginUser'), ...{idStartDate: idStartDate.value.replace(/-/g, '.'), idEndDate: idEndDate.value.replace(/-/g, '.')}})
   Taro.showToast({
     title: '设置成功',
