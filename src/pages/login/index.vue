@@ -219,7 +219,6 @@ const handleConfirm = async () => {
 
   // 如果从第三方小程序跳转过来，就要重新收集信息
   let collectionInfo = await handleCollectInfo()
-  console.log('loginType', Taro.getStorageSync('loginType'))
   // 5.校验活体检测结果
   // 认证失败回调方法
   let handleFailCallback = ({data, retCode, retMessage}) => {
@@ -252,6 +251,7 @@ const handleConfirm = async () => {
       idInfo: toRaw(userInfo)
     }).catch((res) => {
       handleFailCallback(res)
+      return new Promise(() => {}) // 中断promise链的方式处理错误
     })
   } else {
     await checkCertCodeAgent({
@@ -263,6 +263,7 @@ const handleConfirm = async () => {
       idInfo: toRaw(userInfo)
     }).catch((res) => {
       handleFailCallback(res)
+      return new Promise(() => {}) // 中断promise链的方式处理错误
     })
   }
 

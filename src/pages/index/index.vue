@@ -198,6 +198,7 @@ const handleConfirm = async () => {
       certToken: certToken.value
     }).catch(({data}) => { // 认证失败
       Taro.navigateTo({url: `/pages/authResult/index?mode=${mode.value}&data=${data.resStr}`})
+      return new Promise(() => {}) // 中断promise链的方式处理错误
     })
   } else {
     result = await checkCertCodeAgent({
@@ -208,6 +209,7 @@ const handleConfirm = async () => {
       certToken: certToken.value
     }).catch(({data}) => { // 认证失败
       Taro.navigateTo({url: `/pages/authResult/index?mode=${mode.value}&data=${data.resStr}`})
+      return new Promise(() => {}) // 中断promise链的方式处理错误
     })
   }
   let {data} = result

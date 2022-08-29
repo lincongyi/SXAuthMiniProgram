@@ -71,7 +71,8 @@ const onClose = () => {
     title: '温馨提示',
     content: '是否确认取消授权',
     success: ({confirm}) => {
-      if (confirm){
+      if (confirm) {
+        Taro.removeStorageSync('certToken')
         let loginType = Taro.getStorageSync('loginType') ?? 0
         if (loginType) Taro.navigateBackMiniProgram({extraData: {}})
       } else {

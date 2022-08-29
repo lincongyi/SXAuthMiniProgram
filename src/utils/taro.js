@@ -223,27 +223,26 @@ export function startFacialRecognitionVerify(name, idCardNumber, userIdKey){
       success: ({verifyResult}) => {
         resolve(verifyResult)
       },
-      fail: async ({errMsg, verifyResult}) => {
-        if (errMsg.includes('cancel')) {
+      fail: async ({errMsg, errCode, verifyResult}) => {
+        Taro.removeStorageSync('certToken') // 移除certToken，否则下次认证会重复使用之前的certToken
+        if (errCode === 10004) { // 人脸与身份信息不匹配
+          resolve(verifyResult)
+        } else {
+          let errMssage
+          if (errMsg.includes('cancel')) errMssage = '取消认证'
+          else errMssage = errMsg.substring(errMsg.indexOf(':fail')+6)
           Taro.showToast({
             icon: 'none',
-            title: '取消认证',
+            title: errMssage,
             mask: true,
             success: () => {
               setTimeout(() => {
                 let loginType = Taro.getStorageSync('loginType') ?? 0
                 if (loginType) Taro.navigateBackMiniProgram({extraData: {}})
-                else {
-                  Taro.removeStorageSync('certToken')
-                  let url = '/pages/index/index'
-                  if (Taro.getCurrentInstance().router.path === url) return // 当前在首页无需刷新
-                  Taro.reLaunch({url})
-                }
+                else Taro.removeStorageSync('certToken')
               }, 1000)
             }
           })
-        } else { // 人脸与身份信息不匹配
-          resolve(verifyResult)
         }
       }
     })
