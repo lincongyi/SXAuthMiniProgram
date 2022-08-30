@@ -16,12 +16,9 @@
       <view class="agreement-protocol">
         <nut-checkbox v-model="isChecked" class="checkbox" icon-name="" icon-active-name="checklist">
           <text v-html="beforeProtocol"></text>
+          <text>查看</text>
+          <text v-html="protocolName" class="protocol-link" @tap="toProtocol(protocolUrl)"></text>
         </nut-checkbox>
-      </view>
-
-      <view class="protocol">
-        <text>查看</text>
-        <text v-html="protocolName" class="protocol-link" @tap="toProtocol(protocolUrl)"></text>
       </view>
 
       <nut-button type="primary" shape="square" block @tap="onConfirm">确认授权</nut-button>
