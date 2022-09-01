@@ -28,8 +28,8 @@
     "dev:qq": "npm run build:qq -- --watch",
     "dev:jd": "npm run build:jd -- --watch",
     "dev:quickapp": "npm run build:quickapp -- --watch",
-    "release:weapp": "cross-env NODE_ENV=release taro build --type weapp",
-    "release:alipay": "cross-env NODE_ENV=release taro build --type alipay"
+    "release:weapp": "cross-env NODE_ENV=release taro build --type weapp --watch",
+    "release:alipay": "cross-env NODE_ENV=release taro build --type alipay --watch"
   },
   "browserslist": [
     "last 3 versions",

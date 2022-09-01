@@ -145,25 +145,24 @@ const handleScanCode = async () => {
         certToken.value = result.slice(result.indexOf('=')+1)
 
         // 校验certToken，并返回授权信息
-        result = await checkCerTokenAgent({certToken: certToken.value})
-        if (result === 4030) { // 校验certToken过期
+        result = await checkCerTokenAgent({certToken: certToken.value}).catch(({retMessage}) => {
           Taro.showModal({
             title: '温馨提示',
-            content: 'token已过期',
+            content: retMessage,
           })
-        } else {
-          let {authTipsInfo} = result.data
-          canSelfAuth.value = result.data.canSelfAuth ?? false
-          mode.value = result.data.mode
+          return new Promise(() => {}) // 中断promise链的方式处理错误
+        })
+        let {authTipsInfo} = result.data
+        canSelfAuth.value = result.data.canSelfAuth ?? false
+        mode.value = result.data.mode
 
-          // 初始化authActionSheet的信息
-          beforeAuth.value = authTipsInfo.beforeAuth
-          beforeProtocol.value = authTipsInfo.beforeProtocol
-          let protocol = authTipsInfo.protocolList[0]
-          protocolName.value = protocol.name
-          protocolUrl.value = protocol.url
-          authActionSheetComponent.value.actionSheetVisible = true
-        }
+        // 初始化authActionSheet的信息
+        beforeAuth.value = authTipsInfo.beforeAuth
+        beforeProtocol.value = authTipsInfo.beforeProtocol
+        let protocol = authTipsInfo.protocolList[0]
+        protocolName.value = protocol.name
+        protocolUrl.value = protocol.url
+        authActionSheetComponent.value.actionSheetVisible = true
       }
     })
   }

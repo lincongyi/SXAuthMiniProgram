@@ -174,31 +174,42 @@ const handleSubmit = async () => {
 }
 
 const handleCheckCertToken = async () => {
-  let result = await checkCerTokenAgent({certToken: certToken.value})
-  // 校验certToken过期，重新获取certToken
-  if (result === 4030) {
-    Taro.removeStorageSync('certToken')
-    handleSubmit()
-  } else {
-    let {authTipsInfo, authUser} = result.data
-    canSelfAuth.value = result.data.canSelfAuth ?? false
-    mode.value = result.data.mode
-    // 如果是第三方跳转过来的，反显用户信息
-    if (Number(Taro.getStorageSync('loginType'))){
-      for (let key in authUser){
-        userInfo[key] = authUser[key]
-      }
-      // 如果用户在第三方小程序已录入个人信息，就设置输入框不可编辑
-      if (userInfo.idNum&&userInfo.fullName) canEdit.value = false
+  let result = await checkCerTokenAgent({certToken: certToken.value}).catch(({retCode, retMessage}) => {
+    if (Number(Taro.getStorageSync('loginType'))) {
+      setTimeout(() => {
+        Taro.navigateBackMiniProgram({
+          extraData: {
+            mode: mode.value,
+            retCode,
+            retMessage
+          }
+        })
+      }, 1000)
+    } else {
+      Taro.removeStorageSync('certToken')
+      handleSubmit()
+      return new Promise(() => {}) // 中断promise链的方式处理错误
     }
-
-    // 初始化authActionSheet的信息
-    beforeAuth.value = authTipsInfo.beforeAuth
-    beforeProtocol.value = authTipsInfo.beforeProtocol
-    let protocol = authTipsInfo.protocolList[0]
-    protocolName.value = protocol.name
-    protocolUrl.value = protocol.url
+  })
+  let {authTipsInfo, authUser} = result.data
+  canSelfAuth.value = result.data.canSelfAuth ?? false
+  mode.value = result.data.mode
+  // 如果是第三方跳转过来的，反显用户信息
+  if (Number(Taro.getStorageSync('loginType'))){
+    for (let key in authUser){
+      userInfo[key] = authUser[key]
+    }
+    // 如果用户在第三方小程序已录入个人信息，就设置输入框不可编辑
+    if (userInfo.idNum&&userInfo.fullName) canEdit.value = false
   }
+
+  // 初始化authActionSheet的信息
+  beforeAuth.value = authTipsInfo.beforeAuth
+  beforeProtocol.value = authTipsInfo.beforeProtocol
+  let protocol = authTipsInfo.protocolList[0]
+  protocolName.value = protocol.name
+  protocolUrl.value = protocol.url
+
 }
 
 // 确认授权 开始人脸识别
