@@ -1,6 +1,6 @@
 <template>
   <nut-actionsheet
-    title="温馨提示"
+    title="认证授权"
     v-model:visible="actionSheetVisible"
     @close="onClose"
   >

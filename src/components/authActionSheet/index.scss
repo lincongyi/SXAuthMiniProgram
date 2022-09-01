@@ -22,11 +22,14 @@
   display: flex;
   align-items: center;
   margin: 32px 0;
-  font-size: 24px;
   color: #999;
 
   .protocol-link {
     color: #4a90e2;
+  }
+
+  text {
+    font-size: 22px;
   }
 }
 

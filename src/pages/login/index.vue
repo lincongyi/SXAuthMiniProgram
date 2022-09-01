@@ -252,8 +252,9 @@ const handleConfirm = async () => {
       })
     }
   }
+  let result
   if (ISALIPAY){
-    await getCertifyResult({
+    result = await getCertifyResult({
       ...verifyResult,
       collectionInfo,
       usedAgent: canSelfAuth.value,
@@ -265,7 +266,7 @@ const handleConfirm = async () => {
       return new Promise(() => {}) // 中断promise链的方式处理错误
     })
   } else {
-    await checkCertCodeAgent({
+    result = await checkCertCodeAgent({
       collectionInfo,
       usedAgent: canSelfAuth.value,
       usedMode: mode.value,

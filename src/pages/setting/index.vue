@@ -18,7 +18,7 @@
 </template>
 
 <script setup>
-import Taro from '@tarojs/taro'
+import Taro, {useDidShow} from '@tarojs/taro'
 import './index.scss'
 import {logout} from '@api/login'
 
@@ -57,5 +57,9 @@ const handleLogout = () => {
     }
   })
 }
+
+useDidShow(() => {
+  Taro.removeStorageSync('certToken') // 移除certToken，不然切换账号的时候返回setting页面，再进入，不会重新获取弹出框的内容
+})
 
 </script>
