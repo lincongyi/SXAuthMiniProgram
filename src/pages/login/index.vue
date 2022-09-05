@@ -18,7 +18,7 @@
       <!-- 用户信息录入 end -->
     </view>
 
-    <view class="btn-warp">
+    <view class="btn-warp" v-if="isBtnShow">
       <nut-button type="primary" shape="square" block :class="{'disabled':btnDisabled}" @tap="validateUserInfo">下一步</nut-button>
       <block v-if="ISALIPAY">
         <button class="get-phone-number-btn" open-type="getAuthorize" @getauthorize="getPhoneNumber" @error="onGetPhoneNumberError" scope="phoneNumber" v-show="!btnDisabled"></button>
@@ -66,7 +66,7 @@ import {BASE_URL} from '@utils/request'
 /**
   * 返回h5页面地址
  */
-const backToH5Url = `${BASE_URL}/sxauthalipay/authResult.html`
+const backToH5Url = `${BASE_URL}/sxauthalipay/toMiniProgram.html`
 
 // 用户录入信息
 const type = '第二代居民身份证'
@@ -78,7 +78,8 @@ const userInfo = reactive({
   idEndDate: ''
 })
 const canEdit = ref(true) // 是否允许用户录入信息
-const btnDisabled = computed(() => !userInfo.fullName || !userInfo.idNum)
+const isBtnShow = ref(true)// 控制[下一步]显示隐藏
+const btnDisabled = computed(() => !userInfo.fullName || !userInfo.idNum) // 控制[下一步]按钮样式
 
 const phoneNum = ref('') // 用户手机号码
 
@@ -175,7 +176,7 @@ const handleSubmit = async () => {
 
 const handleCheckCertToken = async () => {
   let result = await checkCerTokenAgent({certToken: certToken.value}).catch(({retCode, retMessage}) => {
-    if (Number(Taro.getStorageSync('loginType'))) {
+    if (Taro.getStorageSync('loginType')) {
       setTimeout(() => {
         Taro.navigateBackMiniProgram({
           extraData: {
@@ -195,12 +196,18 @@ const handleCheckCertToken = async () => {
   canSelfAuth.value = result.data.canSelfAuth ?? false
   mode.value = result.data.mode
   // 如果是第三方跳转过来的，反显用户信息
-  if (Number(Taro.getStorageSync('loginType'))){
+  if (Taro.getStorageSync('loginType')){
     for (let key in authUser){
       userInfo[key] = authUser[key]
     }
     // 如果用户在第三方小程序已录入个人信息，就设置输入框不可编辑
-    if (userInfo.idNum&&userInfo.fullName) canEdit.value = false
+    if (userInfo.idNum && userInfo.fullName) {
+      canEdit.value = false
+      if (Taro.getStorageSync('loginType')) {
+        isBtnShow.value = false // 如果有用户的登录信息，隐藏下一步按钮并直接显示授权弹窗
+        authActionSheetComponent.value.actionSheetVisible = true
+      }
+    }
   }
 
   // 初始化authActionSheet的信息
@@ -235,7 +242,7 @@ const handleConfirm = async () => {
   let handleFailCallback = ({data, retCode, retMessage}) => {
     Taro.removeStorageSync('certToken') // 移除certToken，否则下次认证会重复使用之前的certToken
     // 小程序内部运行，认证失败不做任何操作
-    let loginType = Number(Taro.getStorageSync('loginType'))
+    let loginType = Taro.getStorageSync('loginType')
     if (loginType===1){ // 返回第三方小程序
       Taro.navigateBackMiniProgram({
         extraData: {
@@ -313,7 +320,7 @@ const handleConfirm = async () => {
       }
     })
   } else { // 第三方跳转
-    if (Number(Taro.getStorageSync('loginType'))===1){ // 返回第三方小程序
+    if (Taro.getStorageSync('loginType')===1){ // 返回第三方小程序
       Taro.navigateBackMiniProgram({extraData: {
         mode: mode.value,
         retCode: result.retCode,
@@ -334,8 +341,8 @@ useDidShow(async () => {
     Taro.removeStorageSync('hasAuth')
     Taro.reLaunch({url: '/pages/index/index'})
   }
-  // 获取第三方小程序跳转时带过来的certToken
-  if (Number(Taro.getStorageSync('loginType'))&&!certToken.value){
+  // 获取第三方小程序或h5跳转时带过来的certToken
+  if (Taro.getStorageSync('loginType')&&!certToken.value){
     await isLogin()
     certToken.value = Taro.getStorageSync('certToken')
     await handleCheckCertToken()
