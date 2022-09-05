@@ -71,7 +71,8 @@ const onClose = () => {
       if (confirm) {
         Taro.removeStorageSync('certToken')
         let loginType = Taro.getStorageSync('loginType') ?? 0
-        if (loginType) Taro.navigateBackMiniProgram({extraData: {}})
+        if (loginType === 1) Taro.navigateBackMiniProgram({extraData: {}})
+        else if (loginType === 2) Taro.reLaunch({url: '/pages/index/index'})
       } else {
         actionSheetVisible.value = true
       }

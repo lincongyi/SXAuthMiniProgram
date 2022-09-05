@@ -116,6 +116,7 @@ function request (options = {}) {
           result: e,
         })
       },
+      timeout: 15*1000
     })
   })
 }
