@@ -23,18 +23,18 @@
 
       <!-- 二维码认证 start -->
       <view class="content">
-        <view class="section">
+        <view class="section" @tap="handleScanCode">
           <image class="icon" mode="widthFix" :src="scanQrcodeImage" />
-          <view class="column" @tap="handleScanCode">
+          <view class="column">
             <view class="title">扫码认证</view>
             <view class="info">扫描二维码进行身份认证</view>
           </view>
           <nut-icon name="arrow-right" size="24" color="#999"></nut-icon>
         </view>
 
-        <view class="section">
+        <view class="section" @tap="toPersonalQrcode">
           <image class="icon" mode="widthFix" :src="showQrcodeImage" />
-          <view class="column" @tap="toPersonalQrcode">
+          <view class="column">
             <view class="title">个人身份二维码</view>
             <view class="info">出示二维码进行身份认证</view>
           </view>

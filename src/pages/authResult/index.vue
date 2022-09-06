@@ -8,7 +8,7 @@
       <view :class="['step',['failed','successful'][item.value]]">{{item.key}}</view>
     </block>
     <view class="btn-warp">
-      <nut-button type="primary" shape="square" block @tap="toAuthRequest">确定</nut-button>
+      <nut-button type="primary" shape="square" block @tap="handleEvent">{{Taro.getStorageSync('authStr')?'关闭':'确定'}}</nut-button>
     </view>
   </view>
 
@@ -76,9 +76,14 @@ const authResult = computed(() => {
   }
 })
 
-// 跳转到认证请求||记录页面
-const toAuthRequest = () => {
-  Taro.reLaunch({url: '/pages/index/index'})
+// 跳转到认证请求||记录页面 or 关闭小程序
+const handleEvent = () => {
+  if (Taro.getStorageSync('authStr')) {
+    Taro.removeStorageSync('authStr')
+    Taro.exitMiniProgram()
+  } else {
+    Taro.reLaunch({url: '/pages/index/index'})
+  }
 }
 
 useDidShow(() => {

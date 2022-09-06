@@ -253,7 +253,7 @@ const handleConfirm = async () => {
       })
     } else if (loginType === 2) { // 返回认证结果h5页面
       let {resStr, foreBackUrl} = data
-      Taro.setStorageSync('hasAuth', true) // 标识之前已经走过认证流程，避免返回重新认证使用同一个certToken
+      Taro.setStorageSync('authStr', resStr) // 标识之前已经走过认证流程，避免返回重新认证使用同一个certToken
       Taro.ap.navigateToAlipayPage({
         path: `${backToH5Url}?mode=${mode.value}&resStr=${resStr}&foreBackUrl=${foreBackUrl}`
       })
@@ -328,7 +328,7 @@ const handleConfirm = async () => {
       }})
     } else { // 返回认证结果h5页面
       let {resStr, foreBackUrl} = result.data
-      Taro.setStorageSync('hasAuth', true) // 标识之前已经走过认证流程，避免返回重新认证使用同一个certToken
+      Taro.setStorageSync('authStr', resStr) // 标识之前已经走过认证流程，避免返回重新认证使用同一个certToken
       Taro.ap.navigateToAlipayPage({
         path: `${backToH5Url}?mode=${mode.value}&resStr=${resStr}&foreBackUrl=${foreBackUrl}`
       })
@@ -336,10 +336,10 @@ const handleConfirm = async () => {
   }
 }
 useDidShow(async () => {
-  // 如果是h5返回的情况，直接跳转到首页
-  if (Taro.getStorageSync('hasAuth')){
-    Taro.removeStorageSync('hasAuth')
-    Taro.reLaunch({url: '/pages/index/index'})
+  // 如果是h5返回的情况，直接跳转到认证结果页面
+  let authStr = Taro.getStorageSync('authStr')
+  if (authStr){
+    Taro.navigateTo({url: `/pages/authResult/index?mode=${mode.value}&data=${authStr}`})
   }
   // 获取第三方小程序或h5跳转时带过来的certToken
   if (Taro.getStorageSync('loginType')&&!certToken.value){
