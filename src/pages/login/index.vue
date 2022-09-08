@@ -44,6 +44,7 @@
     :protocolName="protocolName"
     :protocolUrl="protocolUrl"
     :mode="mode"
+    :foreBackUrl="foreBackUrl"
     @onConfirm="handleConfirm"
   />
 
@@ -53,12 +54,12 @@
 </template>
 <script setup>
 import {ref, reactive, toRaw, computed, defineAsyncComponent} from 'vue'
-import Taro, {useDidShow} from '@tarojs/taro'
+import Taro, {useDidShow, useRouter} from '@tarojs/taro'
 import loginImage from '@images/logo.png'
 import './index.scss'
 import {handleCollectInfo} from '@utils/collectInfo'
 import {getCertToken, checkCerTokenAgent, getUserIdKey, checkCertCodeAgent, getCertifyResult, getUserPhoneNum} from '@api/auth'
-import {register} from '@api/login'
+import {register, checkReg} from '@api/login'
 import {checkIsSupportFacialRecognition, startFacialRecognitionVerify, alipayGetPhoneNumber} from '@utils/taro'
 import {isLogin, idcardRex} from '@utils/index'
 import {alipayAuth} from '@utils/alipayAuth'
@@ -93,6 +94,7 @@ const protocolUrl = ref('') // 用户服务协议url
 const authActionSheet = defineAsyncComponent(() => import('@components/authActionSheet/index.vue')) // 授权弹窗
 const authActionSheetComponent = ref(null)
 const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
+const foreBackUrl = ref('') // 第三方h5地址
 
 // 查看用户服务协议（暂时写死）
 const toProtocol = () => {
@@ -123,6 +125,10 @@ const validateUserInfo = () => {
 
 // 下一步（先获取手机号码，再走流程）
 const getPhoneNumber = async (event) => {
+  let router = useRouter()
+  let {isSwitch} = router.params
+  Number(isSwitch) && await checkReg({idNum: userInfo.idNum}) // 切换账号的话，优先判断切换的账号是否为当前账号（自己无法切换自己）
+
   let jsCode
   if (ISALIPAY){
     jsCode = await alipayGetPhoneNumber()
@@ -175,8 +181,10 @@ const handleSubmit = async () => {
 }
 
 const handleCheckCertToken = async () => {
-  let result = await checkCerTokenAgent({certToken: certToken.value}).catch(({retCode, retMessage}) => {
-    if (Taro.getStorageSync('loginType')) {
+  let result = await checkCerTokenAgent({certToken: certToken.value}).catch((data) => {
+    let loginType = Taro.getStorageSync('loginType')
+    if (loginType === 1) {
+      let {retCode, retMessage} = data
       setTimeout(() => {
         Taro.navigateBackMiniProgram({
           extraData: {
@@ -185,7 +193,11 @@ const handleCheckCertToken = async () => {
             retMessage
           }
         })
-      }, 1000)
+      }, 500)
+    } else if (loginType === 2 && data?.data?.foreBackUrl) {
+      Taro.ap.navigateToAlipayPage({
+        path: `${backToH5Url}?mode=${mode.value}&foreBackUrl=${data.data.foreBackUrl}`
+      })
     } else {
       Taro.removeStorageSync('certToken')
       handleSubmit()
@@ -193,6 +205,7 @@ const handleCheckCertToken = async () => {
     }
   })
   let {authTipsInfo, authUser} = result.data
+  foreBackUrl.value = result.data.foreBackUrl ?? ''
   canSelfAuth.value = result.data.canSelfAuth ?? false
   mode.value = result.data.mode
   // 如果是第三方跳转过来的，反显用户信息
@@ -227,7 +240,10 @@ const handleConfirm = async () => {
   let verifyResult
   if (![16, 64].includes(Number(mode.value))){
     if (ISALIPAY){
-      verifyResult = await alipayAuth()
+      verifyResult = await alipayAuth().catch(() => {
+        authActionSheetComponent.value.actionSheetVisible = true
+        return new Promise(() => {}) // 中断promise链的方式处理错误
+      })
     } else {
       let {userIdKey} = await getUserIdKey({...toRaw(userInfo), certToken: certToken.value})
       await checkIsSupportFacialRecognition() // 检测设备是否支持活体检测
@@ -252,10 +268,10 @@ const handleConfirm = async () => {
         }
       })
     } else if (loginType === 2) { // 返回认证结果h5页面
-      let {resStr, foreBackUrl} = data
+      let {resStr} = data
       Taro.setStorageSync('authStr', resStr) // 标识之前已经走过认证流程，避免返回重新认证使用同一个certToken
       Taro.ap.navigateToAlipayPage({
-        path: `${backToH5Url}?mode=${mode.value}&resStr=${resStr}&foreBackUrl=${foreBackUrl}`
+        path: `${backToH5Url}?mode=${mode.value}&resStr=${resStr}&foreBackUrl=${data.foreBackUrl}`
       })
     }
   }
@@ -327,10 +343,10 @@ const handleConfirm = async () => {
         retMessage: result.retMessage
       }})
     } else { // 返回认证结果h5页面
-      let {resStr, foreBackUrl} = result.data
+      let {resStr} = result.data
       Taro.setStorageSync('authStr', resStr) // 标识之前已经走过认证流程，避免返回重新认证使用同一个certToken
       Taro.ap.navigateToAlipayPage({
-        path: `${backToH5Url}?mode=${mode.value}&resStr=${resStr}&foreBackUrl=${foreBackUrl}`
+        path: `${backToH5Url}?mode=${mode.value}&resStr=${resStr}&foreBackUrl=${result.data.foreBackUrl}`
       })
     }
   }

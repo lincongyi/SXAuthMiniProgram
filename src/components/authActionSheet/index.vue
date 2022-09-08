@@ -30,7 +30,13 @@
 import {ref} from 'vue'
 import Taro from '@tarojs/taro'
 import './index.scss'
-defineProps({
+import {BASE_URL} from '@utils/request'
+/**
+  * 返回h5页面地址
+ */
+const backToH5Url = `${BASE_URL}/sxauthalipay/toMiniProgram.html`
+
+const props = defineProps({
   beforeAuth: {
     type: String,
     default: ''
@@ -50,6 +56,10 @@ defineProps({
   mode: {
     type: [Number, String],
     default: 0
+  },
+  foreBackUrl: {
+    type: String,
+    default: ''
   }
 })
 const actionSheetVisible = ref(false) // 控制动作面板显示隐藏
@@ -71,16 +81,27 @@ const onClose = () => {
       if (confirm) {
         Taro.removeStorageSync('certToken')
         let loginType = Taro.getStorageSync('loginType') ?? 0
-        if (loginType === 1) Taro.navigateBackMiniProgram({extraData: {}})
-        else if (loginType === 2) Taro.reLaunch({url: '/pages/index/index'})
+        if (loginType === 1) {
+          Taro.navigateBackMiniProgram({
+            extraData: {
+              mode: props.mode,
+              retCode: 5204,
+              retMessage: '用户取消认证'
+            }
+          })
+        } else if (loginType === 2 && props.foreBackUrl) {
+          Taro.ap.navigateToAlipayPage({
+            path: `${backToH5Url}?mode=${props.mode}&foreBackUrl=${props.foreBackUrl}`
+          })
+        }
       } else {
         actionSheetVisible.value = true
       }
     }
   })
 }
-// 确认授权
 const emits = defineEmits(['onConfirm'])
+// 确认授权
 const onConfirm = () => {
   if (!isChecked.value){
     return Taro.showToast({

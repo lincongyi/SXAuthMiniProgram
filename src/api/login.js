@@ -42,3 +42,13 @@ export function logoff(data){
     data
   })
 }
+
+/**
+ * 切换账号时，校验用户是否本人
+*/
+export function checkReg(data){
+  return request({
+    url: '/checkReg',
+    data
+  })
+}

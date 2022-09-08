@@ -6,7 +6,7 @@
           <nut-icon name="arrow-right" size="16"></nut-icon>
         </template>
       </nut-cell>
-      <nut-cell title="切换账号" @tap="toLogin"></nut-cell>
+      <nut-cell title="切换账号" @tap="switchAccount"></nut-cell>
     </nut-cell-group>
     <view class="btn-warp">
       <nut-button type="primary" shape="square" plain block color="#666" @tap="handleLogout">退出登录</nut-button>
@@ -30,9 +30,9 @@ const toAccountManagement = () => {
 }
 
 // 切换账号
-const toLogin = () => {
+const switchAccount = () => {
   Taro.navigateTo({
-    url: '/pages/login/index'
+    url: '/pages/login/index?isSwitch=1'
   })
 }
 
