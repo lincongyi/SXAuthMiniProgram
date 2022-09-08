@@ -265,6 +265,7 @@ Taro.setStorageSync('loginType', 0) // 重置当前用户为小程序内部运�
 
 useDidShow(() => {
   if (timer) clearInterval(timer)
+  Taro.removeStorageSync('certToken') // 返回首页，抹掉certToken，避免重新进入认证时，重复使用该certTokens
 })
 
 useDidHide(() => {
