@@ -141,7 +141,6 @@ const handleScanCode = async () => {
     Taro.scanCode({
       onlyFromCamera: true,
       success: async ({result}) => {
-        console.log('result', result)
         // 从返回的url中截取出certToken
         certToken.value = result.slice(result.indexOf('=') + 1)
 
