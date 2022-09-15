@@ -141,17 +141,13 @@ const handleScanCode = async () => {
     Taro.scanCode({
       onlyFromCamera: true,
       success: async ({result}) => {
+        console.log('result', result)
         // 从返回的url中截取出certToken
-        certToken.value = result.slice(result.indexOf('=')+1)
+        certToken.value = result.slice(result.indexOf('=') + 1)
 
         // 校验certToken，并返回授权信息
-        result = await checkCerTokenAgent({certToken: certToken.value}).catch(({retMessage}) => {
-          Taro.showModal({
-            title: '温馨提示',
-            content: retMessage,
-          })
-          return new Promise(() => {}) // 中断promise链的方式处理错误
-        })
+        result = await checkCerTokenAgent({certToken: certToken.value})
+
         let {authTipsInfo} = result.data
         canSelfAuth.value = result.data.canSelfAuth ?? false
         mode.value = result.data.mode
