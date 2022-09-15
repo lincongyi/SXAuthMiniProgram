@@ -216,8 +216,8 @@ const handleCheckCertToken = async () => {
     // 如果用户在第三方小程序已录入个人信息，就设置输入框不可编辑
     if (userInfo.idNum && userInfo.fullName) {
       canEdit.value = false
-      if (Taro.getStorageSync('loginType')) {
-        isBtnShow.value = false // 如果有用户的登录信息，隐藏下一步按钮并直接显示授权弹窗
+      if (Taro.getStorageSync('loginType')&&Taro.getStorageSync('loginToken')) {
+        isBtnShow.value = false // 如果第三方跳转过来的用户，有之前注册登录信息，则隐藏下一步按钮并直接显示授权弹窗
         authActionSheetComponent.value.actionSheetVisible = true
       }
     }
