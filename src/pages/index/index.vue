@@ -259,7 +259,7 @@ watch(loginStatus, (value) => { // 监听用户登录状态若为true，获取�
 Taro.setStorageSync('loginType', 0) // 重置当前用户为小程序内部运行流程
 
 useDidShow(() => {
-  if (timer) clearInterval(timer)
+  if (Taro.getStorageSync('loginToken')) loginEvent()
   Taro.removeStorageSync('certToken') // 返回首页，抹掉certToken，避免重新进入认证时，重复使用该certTokens
 })
 

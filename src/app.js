@@ -29,8 +29,7 @@ const App = createApp({
     if (certToken){
       Taro.setStorageSync('certToken', certToken)
       Taro.setStorageSync('loginType', 2)
-      // 如果用户之前已经验证过，返回本页面，直接导向首页
-      if (Taro.getStorageSync('authStr')) Taro.removeStorageSync('authStr')
+      if (Taro.getStorageSync('authStr')) Taro.removeStorageSync('authStr') // 删除认证记录信息
     }
   }
 })
