@@ -1,8 +1,12 @@
 <template>
   <view class="container">
     <view class="banner">
-      <nut-swiper :pagination-visible="true" pagination-color="#fff" auto-play="3000">
-        <nut-swiper-item v-for="(item,index) in bannerList" :key="index">
+      <nut-swiper
+        :pagination-visible="true"
+        pagination-color="#fff"
+        auto-play="3000"
+      >
+        <nut-swiper-item v-for="(item, index) in bannerList" :key="index">
           <img class="banner-image" :src="item" />
         </nut-swiper-item>
       </nut-swiper>
@@ -10,11 +14,11 @@
 
     <view class="wrap">
       <!-- 通知消息 start -->
-      <view class="notice" v-if="loginStatus&&noticeSize">
-        <image class="notice-icon" mode="widthFix" :src="noticeImage"/>
+      <view class="notice" v-if="loginStatus && noticeSize">
+        <image class="notice-icon" mode="widthFix" :src="noticeImage" />
         <view class="info">
           您有
-          <view class="amount">{{noticeSize}}</view>
+          <view class="amount">{{ noticeSize }}</view>
           个认证请求待完成
         </view>
         <view class="btn" @tap="toAuthRequest">查看</view>
@@ -43,7 +47,7 @@
       </view>
       <!-- 二维码认证 end -->
     </view>
-    <tabbar/>
+    <tabbar />
   </view>
 
   <authActionSheet
@@ -74,8 +78,17 @@ import Taro, {useDidShow, useDidHide} from '@tarojs/taro'
 import './index.scss'
 import {isLogin} from '@utils/index'
 import {handleCollectInfo} from '@utils/collectInfo'
-import {getAuthList, checkCerTokenAgent, getUserIdKey, getCertifyResult, checkCertCodeAgent} from '@api/auth'
-import {checkIsSupportFacialRecognition, startFacialRecognitionVerify} from '@utils/taro'
+import {
+  getAuthList,
+  checkCerTokenAgent,
+  getUserIdKey,
+  getCertifyResult,
+  checkCertCodeAgent,
+} from '@api/auth'
+import {
+  checkIsSupportFacialRecognition,
+  startFacialRecognitionVerify,
+} from '@utils/taro'
 import {alipayAuth} from '@utils/alipayAuth'
 import banner_01 from '@images/banner-01.png'
 import banner_02 from '@images/banner-02.png'
@@ -83,7 +96,9 @@ import noticeImage from '@images/notice.png'
 import scanQrcodeImage from '@images/scan-qrcode.png'
 import showQrcodeImage from '@images/show-qrcode.png'
 
-const tabbar = defineAsyncComponent(() => import('@components/tabbar/index.vue')) // tabbar
+const tabbar = defineAsyncComponent(() =>
+  import('@components/tabbar/index.vue')
+) // tabbar
 
 // 获取小程序当前环境
 const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
@@ -92,7 +107,7 @@ const bannerList = [banner_01, banner_02]
 const noticeSize = ref(0) // 待完成认证个数
 
 let timer = null
-const loopPeriod = 1000*60*5 // 轮询接口5分钟
+const loopPeriod = 1000 * 60 * 5 // 轮询接口5分钟
 
 const canSelfAuth = ref(false) // 是否代他人认证
 const mode = ref(0) // 认证模式
@@ -102,11 +117,13 @@ const beforeAuth = ref('') // 动作面板温馨提示内容
 const beforeProtocol = ref('') // 同意协议提示内容
 const protocolName = ref('') // 《用户服务协议》
 const protocolUrl = ref('') // 《用户服务协议》url
-const authActionSheet = defineAsyncComponent(() => import('@components/authActionSheet/index.vue')) // 授权弹窗
+const authActionSheet = defineAsyncComponent(() =>
+  import('@components/authActionSheet/index.vue')
+) // 授权弹窗
 const authActionSheetComponent = ref(null)
 
 // 立即登录
-const loginNow = async() => {
+const loginNow = async () => {
   await isLogin()
   loginStatus.value = true
 }
@@ -122,14 +139,14 @@ const handleLogin = () => {
       if (confirm) {
         loginNow()
       }
-    }
+    },
   })
 }
 
 // 跳转到认证请求页面
 const toAuthRequest = () => {
   Taro.navigateTo({
-    url: '/pages/authRequest/index?flag=1'
+    url: '/pages/authRequest/index?flag=1',
   })
 }
 
@@ -158,7 +175,7 @@ const handleScanCode = async () => {
         protocolName.value = protocol.name
         protocolUrl.value = protocol.url
         authActionSheetComponent.value.actionSheetVisible = true
-      }
+      },
     })
   }
 }
@@ -169,29 +186,36 @@ const handleConfirm = async () => {
 
   // 4.活体检测（16，64模式无需走活检流程）
   let verifyResult = ''
-  if (![16, 64].includes(Number(mode.value))){
-    if (ISALIPAY){
+  if (![16, 64].includes(Number(mode.value))) {
+    if (ISALIPAY) {
       verifyResult = await alipayAuth()
     } else {
       let {userIdKey} = await getUserIdKey({certToken: certToken.value})
       await checkIsSupportFacialRecognition() // 检测设备是否支持活体检测
       let loginUser = Taro.getStorageSync('loginUser')
-      verifyResult = await startFacialRecognitionVerify(loginUser.fullName, loginUser.idNum, userIdKey)
+      verifyResult = await startFacialRecognitionVerify(
+        loginUser.fullName,
+        loginUser.idNum,
+        userIdKey
+      )
     }
   }
   // collectionInfo尝试从storage里面取
   let collectionInfo = await handleCollectInfo()
   // 5.校验活体检测结果
   let result
-  if (ISALIPAY){
+  if (ISALIPAY) {
     result = await getCertifyResult({
       ...verifyResult,
       collectionInfo,
       usedAgent: canSelfAuth.value,
       usedMode: mode.value,
-      certToken: certToken.value
-    }).catch(({data}) => { // 认证失败
-      Taro.navigateTo({url: `/pages/authResult/index?mode=${mode.value}&data=${data.resStr}`})
+      certToken: certToken.value,
+    }).catch(({data}) => {
+      // 认证失败
+      Taro.navigateTo({
+        url: `/pages/authResult/index?mode=${mode.value}&data=${data.resStr}`,
+      })
       return new Promise(() => {}) // 中断promise链的方式处理错误
     })
   } else {
@@ -200,22 +224,27 @@ const handleConfirm = async () => {
       usedAgent: canSelfAuth.value,
       usedMode: mode.value,
       wxpvCode: verifyResult,
-      certToken: certToken.value
-    }).catch(({data}) => { // 认证失败
-      Taro.navigateTo({url: `/pages/authResult/index?mode=${mode.value}&data=${data.resStr}`})
+      certToken: certToken.value,
+    }).catch(({data}) => {
+      // 认证失败
+      Taro.navigateTo({
+        url: `/pages/authResult/index?mode=${mode.value}&data=${data.resStr}`,
+      })
       return new Promise(() => {}) // 中断promise链的方式处理错误
     })
   }
   let {data} = result
 
-  if (Object.keys(result).length){
+  if (Object.keys(result).length) {
     Taro.showToast({
       icon: 'none',
       title: '认证成功',
       mask: true,
       success: () => {
-        Taro.navigateTo({url: `/pages/authResult/index?mode=${mode.value}&data=${data.resStr}`})
-      }
+        Taro.navigateTo({
+          url: `/pages/authResult/index?mode=${mode.value}&data=${data.resStr}`,
+        })
+      },
     })
   }
 }
@@ -238,7 +267,7 @@ const loginEvent = async () => {
   }, loopPeriod)
 }
 
-const loopGetAuthList = async() => {
+const loopGetAuthList = async () => {
   let {data} = await getAuthList({
     pageNum: 0,
     pageSize: 0,
@@ -246,15 +275,22 @@ const loopGetAuthList = async() => {
   })
   noticeSize.value = data.size
 }
+console.log(123)
+
 // 轮询接口获取认证记录 end
 
 const loginStatus = ref(Taro.getStorageSync('loginToken') ? true : false) // 是否登录状态
 
-watch(loginStatus, (value) => { // 监听用户登录状态若为true，获取用户认证记录
-  if (value) loginEvent()
-}, {
-  immediate: true
-})
+watch(
+  loginStatus,
+  (value) => {
+    // 监听用户登录状态若为true，获取用户认证记录
+    if (value) loginEvent()
+  },
+  {
+    immediate: true,
+  }
+)
 
 Taro.setStorageSync('loginType', 0) // 重置当前用户为小程序内部运行流程
 
