@@ -28,6 +28,9 @@ export default defineAppConfig({
       'desc': '是否允许获取你当前的地理位置信息？'
     }
   },
+  requiredPrivateInfos: [
+    'getLocation'
+  ],
   networkTimeout: {
     request: 15*1000
   }
