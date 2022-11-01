@@ -205,33 +205,37 @@ const handleConfirm = async () => {
   // 5.校验活体检测结果
   let result
   if (ISALIPAY) {
-    result = await getCertifyResult({
-      ...verifyResult,
-      collectionInfo,
-      usedAgent: canSelfAuth.value,
-      usedMode: mode.value,
-      certToken: certToken.value,
-    }).catch(({data}) => {
+    try {
+      result = await getCertifyResult({
+        ...verifyResult,
+        collectionInfo,
+        usedAgent: canSelfAuth.value,
+        usedMode: mode.value,
+        certToken: certToken.value,
+      })
+    } catch ({data}) {
       // 认证失败
       Taro.navigateTo({
         url: `/pages/authResult/index?mode=${mode.value}&data=${data.resStr}`,
       })
-      return new Promise(() => {}) // 中断promise链的方式处理错误
-    })
+      return false
+    }
   } else {
-    result = await checkCertCodeAgent({
-      collectionInfo,
-      usedAgent: canSelfAuth.value,
-      usedMode: mode.value,
-      wxpvCode: verifyResult,
-      certToken: certToken.value,
-    }).catch(({data}) => {
+    try {
+      result = await checkCertCodeAgent({
+        collectionInfo,
+        usedAgent: canSelfAuth.value,
+        usedMode: mode.value,
+        wxpvCode: verifyResult,
+        certToken: certToken.value,
+      })
+    } catch ({data}) {
       // 认证失败
       Taro.navigateTo({
         url: `/pages/authResult/index?mode=${mode.value}&data=${data.resStr}`,
       })
-      return new Promise(() => {}) // 中断promise链的方式处理错误
-    })
+      return false
+    }
   }
   let {data} = result
 
@@ -275,7 +279,6 @@ const loopGetAuthList = async () => {
   })
   noticeSize.value = data.size
 }
-console.log(123)
 
 // 轮询接口获取认证记录 end
 

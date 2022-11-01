@@ -5,7 +5,7 @@ const config = {
     baseUrl: 'https://sfrz.wsbs.shxga.gov.cn',
   },
   release: {
-    baseUrl: 'https://sit.sfrz.wsbs.shxga.gov.cn',
+    baseUrl: 'https://sxrz.colorid.com.cn:1443',
   },
   production: {
     baseUrl: 'https://sfrz.wsbs.shxga.gov.cn',

@@ -139,32 +139,41 @@ const handleConfirm = async () => {
   let collectionInfo = await handleCollectInfo()
   // 5.校验活体检测结果
   let result
-  if (ISALIPAY){
-    result = await getCertifyResult({
-      ...verifyResult,
-      collectionInfo,
-      usedAgent: canSelfAuth.value,
-      usedMode: mode.value,
-      certToken: certToken.value
-    }).catch(({data}) => { // 认证失败
-      Taro.navigateTo({url: `/pages/authResult/index?mode=${authDetail.value.authMode}&data=${data.resStr}`})
-      return new Promise(() => {}) // 中断promise链的方式处理错误
-    })
+  if (ISALIPAY) {
+    try {
+      result = await getCertifyResult({
+        ...verifyResult,
+        collectionInfo,
+        usedAgent: canSelfAuth.value,
+        usedMode: mode.value,
+        certToken: certToken.value
+      })
+    } catch ({data}) {
+      // 认证失败
+      Taro.navigateTo({
+        url: `/pages/authResult/index?mode=${authDetail.value.authMode}&data=${data.resStr}`
+      })
+      return false
+    }
   } else {
-    result = await checkCertCodeAgent({
-      collectionInfo,
-      usedAgent: canSelfAuth.value,
-      usedMode: mode.value,
-      wxpvCode: verifyResult,
-      certToken: certToken.value
-    }).catch(({data}) => { // 认证失败
-      Taro.navigateTo({url: `/pages/authResult/index?mode=${authDetail.value.authMode}&data=${data.resStr}`})
-      return new Promise(() => {}) // 中断promise链的方式处理错误
-    })
+    try {
+      result = await checkCertCodeAgent({
+        collectionInfo,
+        usedAgent: canSelfAuth.value,
+        usedMode: mode.value,
+        wxpvCode: verifyResult,
+        certToken: certToken.value
+      })
+    } catch ({data}) {
+      Taro.navigateTo({
+        url: `/pages/authResult/index?mode=${authDetail.value.authMode}&data=${data.resStr}`
+      })
+      return false
+    }
   }
-  let {data} = result
+  if (Object.keys(result).length) {
+    let {data} = result
 
-  if (Object.keys(result).length){
     Taro.showToast({
       icon: 'none',
       title: '认证成功',
