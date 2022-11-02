@@ -184,7 +184,7 @@ const handleCheckCertToken = async () => {
   let result
   try {
     result = await checkCerTokenAgent({certToken: certToken.value})
-  } catch {
+  } catch (data) {
     let loginType = Taro.getStorageSync('loginType')
     if (loginType === 1) {
       let {retCode, retMessage} = data
