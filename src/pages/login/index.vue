@@ -79,7 +79,7 @@ const userInfo = reactive({
   idEndDate: ''
 })
 const canEdit = ref(true) // 是否允许用户录入信息
-const isBtnShow = ref(true)// 控制[下一步]显示隐藏
+const isBtnShow = ref(true)// 控制[下一步]按钮显示隐藏，[下一步]按钮主要用于获取用户手机号码
 const btnDisabled = computed(() => !userInfo.fullName || !userInfo.idNum) // 控制[下一步]按钮样式
 
 const phoneNum = ref('') // 用户手机号码
@@ -125,10 +125,18 @@ const validateUserInfo = () => {
 
 // 下一步（先获取手机号码，再走流程）
 const getPhoneNumber = async (event) => {
+  // 切换账号的话，优先判断切换的账号是否为当前账号（自己无法切换自己）
   let router = useRouter()
   let {isSwitch} = router.params
-  Number(isSwitch) && await checkReg({idNum: userInfo.idNum}) // 切换账号的话，优先判断切换的账号是否为当前账号（自己无法切换自己）
+  if (Number(isSwitch)){
+    try {
+      await checkReg({idNum: userInfo.idNum})
+    } catch {
+      return false
+    }
+  }
 
+  // 获取手机号码
   let jsCode
   if (ISALIPAY){
     jsCode = await alipayGetPhoneNumber()
@@ -313,6 +321,7 @@ const handleConfirm = async () => {
 
   // 认证成功
   Taro.removeStorageSync('certToken') // 移除certToken，否则下次认证会重复使用之前的certToken
+  // 不存在loginToken或者小程序内部流程，走注册功能
   if (!Taro.getStorageSync('loginToken') || !Taro.getStorageSync('loginType')){
     let data = {
       phoneNum: phoneNum.value,
