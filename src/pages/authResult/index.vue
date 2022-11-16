@@ -8,7 +8,7 @@
       <view :class="['step',['failed','successful'][item.value]]">{{item.key}}</view>
     </block>
     <view class="btn-warp">
-      <nut-button type="primary" shape="square" block @tap="handleEvent">{{Taro.getStorageSync('authStr')?'关闭':'确定'}}</nut-button>
+      <nut-button type="primary" shape="square" block @tap="handleEvent">{{Taro.getStorageSync('authStr')||authResult?'关闭':'确定'}}</nut-button>
     </view>
   </view>
 
@@ -69,7 +69,7 @@ const authResultStep = computed(() => {
 // 认证结果：0-失败；1-成功；
 const authResult = computed(() => {
   if (!authData.value){
-    return 0
+    return 1
   } else {
     let item = authResultStep.value.find((item) => !item.value)
     return item ? 1:0
@@ -78,7 +78,7 @@ const authResult = computed(() => {
 
 // 跳转到认证请求||记录页面 or 关闭小程序
 const handleEvent = () => {
-  if (Taro.getStorageSync('authStr')) {
+  if (Taro.getStorageSync('authStr')||authResult) {
     Taro.removeStorageSync('authStr')
     Taro.exitMiniProgram()
   } else {

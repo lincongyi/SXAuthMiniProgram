@@ -371,10 +371,11 @@ const handleConfirm = async () => {
 }
 useDidShow(async () => {
   let loginType = Taro.getStorageSync('loginType')
-  // 如果是h5跳转，并且已经有认证结果的情况下
+  // 如果是h5跳转
   let authStr = Taro.getStorageSync('authStr')
-  if (authStr && loginType === 2) {
-    Taro.navigateTo({url: `/pages/authResult/index?mode=${mode.value}&data=${authStr}`}) // 重定向到到认证结果页面
+  if (loginType === 2) {
+    // 已经有认证结果的情况下 或者 h5页面再返回小程序，重定向到结果页面
+    if (authStr || !Taro.getStorageSync('certToken')) Taro.navigateTo({url: `/pages/authResult/index?mode=${mode.value}&data=${authStr}`}) // 重定向到到认证结果页面
   }
   // 获取第三方小程序或h5跳转时带过来的certToken
   if (loginType&&!certToken.value){
