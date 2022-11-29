@@ -60,7 +60,7 @@ import {ref, defineAsyncComponent} from 'vue'
 import './index.scss'
 import Taro, {useDidShow, useRouter} from '@tarojs/taro'
 import {handleCollectInfo} from '@utils/collectInfo'
-import {checkCerTokenAgent, commCheckCertCode} from '@api/auth'
+import {checkCerTokenAgent, commCheckCertCode, getCertifyResult, checkCertCodeAgent} from '@api/auth'
 import toBeCertifiedImage from '@images/to-be-certified.png'
 import certificationSuccessfulImage from '@images/certification-successful.png'
 import certificationFailedImage from '@images/certification-failed.png'
@@ -97,6 +97,7 @@ const protocolName = ref('') // 《用户服务协议》
 const protocolUrl = ref('') // 《用户服务协议》url
 const authActionSheet = defineAsyncComponent(() => import('@components/authActionSheet/index.vue')) // 授权弹窗
 const authActionSheetComponent = ref(null)
+const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
 
 // 立即认证
 const handleAuth = async () => {
@@ -125,6 +126,49 @@ const handleConfirm = async () => {
     Taro.removeStorageSync('imgBase64') // 跳转前移除缓存图片
     Taro.removeStorageSync('mode') // 跳转前移除mode
     Taro.navigateTo({url: `/pages/webViewDispatch/index?mode=${mode.value}`})
+  } else {
+    let collectionInfo = await handleCollectInfo()
+
+    let result
+    if (ISALIPAY) {
+      try {
+        result = await getCertifyResult({
+          collectionInfo,
+          usedAgent: canSelfAuth.value,
+          usedMode: mode.value,
+          certToken: certToken.value
+        })
+      } catch ({data}) {
+      // 认证失败
+        Taro.navigateTo({
+          url: `/pages/authResult/index?mode=${authDetail.value.authMode}&data=${data.resStr}`
+        })
+        return false
+      }
+    } else {
+      try {
+        result = await checkCertCodeAgent({
+          collectionInfo,
+          usedAgent: canSelfAuth.value,
+          usedMode: mode.value,
+          certToken: certToken.value
+        })
+      } catch ({data}) {
+        Taro.navigateTo({
+          url: `/pages/authResult/index?mode=${authDetail.value.authMode}&data=${data.resStr}`
+        })
+        return false
+      }
+    }
+    Taro.showToast({
+      icon: 'none',
+      title: '认证成功',
+      mask: true,
+      success: () => {
+        Taro.removeStorageSync('authDetail')
+        Taro.navigateTo({url: `/pages/authResult/index?mode=${authDetail.value.authMode}&data=${result.data.resStr}`})
+      }
+    })
   }
 }
 
