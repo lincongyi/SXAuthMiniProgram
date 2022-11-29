@@ -8,7 +8,7 @@
       <view :class="['step',['failed','successful'][item.value]]">{{item.key}}</view>
     </block>
     <view class="btn-warp">
-      <nut-button type="primary" shape="square" block @tap="handleEvent">{{Taro.getStorageSync('authStr')||authResult?'关闭':'确定'}}</nut-button>
+      <nut-button type="primary" shape="square" block @tap="handleEvent">{{Taro.getStorageSync('authStr')||authResult && loginType?'关闭':'确定'}}</nut-button>
     </view>
   </view>
 
@@ -22,6 +22,8 @@ import Taro, {useDidShow, useRouter} from '@tarojs/taro'
 import './index.scss'
 import certificationSuccessfulImage from '@images/certification-successful.png'
 import certificationFailedImage from '@images/certification-failed.png'
+
+const loginType = Taro.getStorageSync('loginType')
 
 // authRes:00XX
 // 第一字节：姓名，身份号码，有效期等文本信息比对结果
@@ -80,7 +82,8 @@ const authResult = computed(() => {
 const handleEvent = () => {
   if (Taro.getStorageSync('authStr')||authResult) {
     Taro.removeStorageSync('authStr')
-    Taro.exitMiniProgram()
+    if (loginType) Taro.exitMiniProgram()
+    Taro.reLaunch({url: '/pages/index/index'})
   } else {
     Taro.reLaunch({url: '/pages/index/index'})
   }

@@ -48,6 +48,13 @@
           <nut-icon name="arrow-right" size="16" color="#bbb"></nut-icon>
         </view>
       </view>
+      <view class="column" @tap="toWebWiew" v-if="isOpened">
+        <image class="column-icon" mode="widthFix" :src="userCenterSettingImage" />
+        <view class="cell">
+          <view class="left-label">跳转到webview页面</view>
+          <nut-icon name="arrow-right" size="16" color="#bbb"></nut-icon>
+        </view>
+      </view>
     </view>
     <tabbar/>
   </view>
@@ -70,7 +77,7 @@ const tabbar = defineAsyncComponent(() => import('@components/tabbar/index.vue')
 const fullName = ref('') // 用户名
 const idNum = ref('') // 证件号码
 
-const isOpened = ref(false) // 是否打开新增请求功能入口
+const isOpened = ref(true) // 是否打开新增请求功能入口
 
 // 登录/注册
 const handleLogin = () => {
@@ -142,6 +149,11 @@ const toLoseEfficacy = () => {
     title: 'loginToken已失效',
   })
   Taro.setStorageSync('loginToken', '111111111111')
+}
+
+// 跳转到webview页面
+const toWebWiew = () => {
+  Taro.navigateTo({url: '/pages/webViewDispatch/index'})
 }
 
 const loginStatus = ref(Taro.getStorageSync('loginToken') ? true : false) // 判断用户是否登录状态

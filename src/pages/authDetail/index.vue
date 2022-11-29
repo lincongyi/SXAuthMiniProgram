@@ -60,9 +60,7 @@ import {ref, defineAsyncComponent} from 'vue'
 import './index.scss'
 import Taro, {useDidShow, useRouter} from '@tarojs/taro'
 import {handleCollectInfo} from '@utils/collectInfo'
-import {checkCerTokenAgent, getUserIdKey, getCertifyResult, checkCertCodeAgent} from '@api/auth'
-import {checkIsSupportFacialRecognition, startFacialRecognitionVerify} from '@utils/taro'
-import {alipayAuth} from '@utils/alipayAuth'
+import {checkCerTokenAgent, commCheckCertCode} from '@api/auth'
 import toBeCertifiedImage from '@images/to-be-certified.png'
 import certificationSuccessfulImage from '@images/certification-successful.png'
 import certificationFailedImage from '@images/certification-failed.png'
@@ -99,7 +97,6 @@ const protocolName = ref('') // 《用户服务协议》
 const protocolUrl = ref('') // 《用户服务协议》url
 const authActionSheet = defineAsyncComponent(() => import('@components/authActionSheet/index.vue')) // 授权弹窗
 const authActionSheetComponent = ref(null)
-const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
 
 // 立即认证
 const handleAuth = async () => {
@@ -123,67 +120,46 @@ const handleConfirm = async () => {
   authActionSheetComponent.value.actionSheetVisible = false
 
   // 4.活体检测（16，64模式无需走活检流程）
-  let verifyResult = ''
   if (![16, 64].includes(Number(mode.value))){
-    if (ISALIPAY){
-      verifyResult = await alipayAuth()
-    } else {
-      let {userIdKey} = await getUserIdKey({certToken: certToken.value})
-      await checkIsSupportFacialRecognition() // 检测设备是否支持活体检测
-      let loginUser = Taro.getStorageSync('loginUser')
-      verifyResult = await startFacialRecognitionVerify(loginUser.fullName, loginUser.idNum, userIdKey)
-    }
+    Taro.setStorageSync('certToken', certToken.value),
+    Taro.removeStorageSync('imgBase64') // 跳转前移除缓存图片
+    Taro.removeStorageSync('mode') // 跳转前移除mode
+    Taro.navigateTo({url: `/pages/webViewDispatch/index?mode=${mode.value}`})
   }
+}
 
-  // collectionInfo尝试从storage里面取
+const ycVertify = async (imgBase64) => {
   let collectionInfo = await handleCollectInfo()
-  // 5.校验活体检测结果
-  let result
-  if (ISALIPAY) {
-    try {
-      result = await getCertifyResult({
-        ...verifyResult,
-        collectionInfo,
-        usedAgent: canSelfAuth.value,
-        usedMode: mode.value,
-        certToken: certToken.value
-      })
-    } catch ({data}) {
-      // 认证失败
-      Taro.navigateTo({
-        url: `/pages/authResult/index?mode=${authDetail.value.authMode}&data=${data.resStr}`
-      })
-      return false
-    }
-  } else {
-    try {
-      result = await checkCertCodeAgent({
-        collectionInfo,
-        usedAgent: canSelfAuth.value,
-        usedMode: mode.value,
-        wxpvCode: verifyResult,
-        certToken: certToken.value
-      })
-    } catch ({data}) {
-      Taro.navigateTo({
-        url: `/pages/authResult/index?mode=${authDetail.value.authMode}&data=${data.resStr}`
-      })
-      return false
-    }
-  }
-  if (Object.keys(result).length) {
-    let {data} = result
 
-    Taro.showToast({
-      icon: 'none',
-      title: '认证成功',
-      mask: true,
-      success: () => {
-        Taro.removeStorageSync('authDetail')
-        Taro.navigateTo({url: `/pages/authResult/index?mode=${authDetail.value.authMode}&data=${data.resStr}`})
-      }
+  let verifyResult
+  try {
+    verifyResult = await commCheckCertCode({
+      certToken: Taro.getStorageSync('certToken'),
+      collectionInfo,
+      usedMode: mode.value,
+      portrait: imgBase64
     })
+  } catch ({data}) {
+    // 认证失败
+    Taro.navigateTo({
+      url: `/pages/authResult/index?mode=${authDetail.value.authMode}&data=${data.resStr}`
+    })
+    return false
+  } finally {
+    Taro.removeStorageSync('certToken') // 移除imgBase64
+    Taro.removeStorageSync('imgBase64') // 移除imgBase64
+    Taro.removeStorageSync('mode') // 移除mode
   }
+
+  Taro.showToast({
+    icon: 'none',
+    title: '认证成功',
+    mask: true,
+    success: () => {
+      Taro.removeStorageSync('authDetail')
+      Taro.navigateTo({url: `/pages/authResult/index?mode=${authDetail.value.authMode}&data=${verifyResult.data.resStr}`})
+    }
+  })
 }
 
 useDidShow(() => {
@@ -191,6 +167,11 @@ useDidShow(() => {
   authResult.value = Number(router.params.authResult)
   certToken.value = router.params.certToken ?? ''
 
+  if (!Taro.getStorageSync('authDetail')) Taro.reLaunch({url: '/pages/index/index'})
   authDetail.value = Taro.getStorageSync('authDetail')
+
+  let imgBase64 = Taro.getStorageSync('imgBase64')
+  let mode = Taro.getStorageSync('mode')
+  imgBase64 && ycVertify(imgBase64, mode)
 })
 </script>

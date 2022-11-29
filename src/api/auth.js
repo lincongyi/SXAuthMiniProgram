@@ -66,3 +66,11 @@ export function addAuthTask(data={}){
     data
   })
 }
+
+// 云从活体检测认证
+export function commCheckCertCode(data){
+  return request({
+    url: '/commCheckCertCode',
+    data
+  })
+}

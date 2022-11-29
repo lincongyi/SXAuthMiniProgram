@@ -11,7 +11,7 @@ export async function isLogin(){
     let loginType = Taro.getStorageSync('loginType') ?? 0
     let data = {}
     if (ISALIPAY){
-      let authCode = await getAuthCode()
+      let authCode = await getAuthCode() // 获取授权码
       data = {
         authCode,
         scopes: 'auth_base',

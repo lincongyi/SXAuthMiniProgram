@@ -32,15 +32,15 @@ page {
     background-size: contain;
     content: "";
     vertical-align: middle;
-    background-image: url("https://s2.loli.net/2022/06/01/lXRhVtQTnGCf9Mq.png");
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAMAAADW3miqAAAAM1BMVEUAAACxtL26usGwtLyws72wtL2xtb2ws72xtr7///+ytb2ws72xtbyxtLyws7z////X2N2bDF73AAAADnRSTlMAvRDY88WQUTsDXaKhXE8dRsQAAACpSURBVDjLjdRbEoMgDAXQhAAq4G33v9pOK+1oUW/Od2YIecleWJtajKZtDXJuUuzoJKM54U+a5WjJOJGXQzKKUxp2MYYL9otaFJf0+2LGjdz/hVvbHxNupU8NQbyrqiBUJIAKUkAVqaCqKCgVQ/ccoDOJ6B4DdNEXZDzIRHlOKg1U8xRzdbXF02DnqPCh848vXwS+Uu7l5GvODwY/Pd4jNgqlbuewlkMyL8DSNtg/2SoYAAAAAElFTkSuQmCC");
   }
 
   &.failed::before {
-    background-image: url("https://s2.loli.net/2022/06/01/7nsJ8BPvbpg46cI.png");
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAMAAADW3miqAAAAUVBMVEUAAAD7UVH6UVH7UlL7UlL6UlL7UVH8UlL8UlL7UlL/Wlr/YGD7UlL6UVH7UVH6UVH6UVH////+9vb8pKT7eXn9vb38mJj++Pj9yMj7i4v6YGAOlcbGAAAAEHRSTlMAv9nFuqKQXFE7ERDz1vLV9gTo2AAAAPVJREFUOMuV1NFuwyAMBVBDSklI2l2apu32/x868XBlYrLS3acgHSFwsKVOisH5ZfEuxCTHGR2quPGATANMhsmaMw5y3pH5hMOc5spc8Ee+VOk+7V7vzmPPNXH9A40uJinh3R+3u5r77cFKFDPS5FwUTc5Upaqs85qLUpNX1l4kAVbRMEkirLIGUQKssgZBHIx6PtXwUB5WWQMvC3bZitmwyyJXXfBerARzFW9Nq7w4a9bVKifBGsCqILExjYqSrGlV0h+80VBtPFL1VPAqRtWLn2P96PANjS4GPt93mT5shH5L9ZvzMn/Y5v2B0R89/x1i/XH4Cz2bP9H872BoAAAAAElFTkSuQmCC");
   }
 
   &.successful::before {
-    background-image: url("https://s2.loli.net/2022/06/01/VawqsbHc6RhBAmT.png");
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAMAAADW3miqAAAAVFBMVEUAAAAAh/4Ai/8Ah/4Ah/4Ahv4Ah/0Ah/0Ah/8Ah/8Aiv8Aqv8Ahv4Ah/4Ah/4Ahv7///99wf5Wrv2Zzv70+f4/o/0Ki/0um/3n8/7B4f5yvP1Kqf3jvZRuAAAAD3RSTlMAvxDZxbqikFxROwPz1vJUzLIiAAAA4klEQVQ4y5XUyxKDIAwF0AQU8dFeWlvt4///s444jkgQezdmcRYISWgbZQ3rrtNsrCI5NWMTrgXSFNilaHakrSCkaoPDlBBTqo25IJHLqtoSyZTtgiocpPKmwWH8PxZIZPA3Md9hytxf4/ytJ8Qp45xXTKSSZspnLhXZA3PztSWTNTDrkYYxZcCkF/N+PBMGmrrFOOdVbNDR1Re980owuJJGoAQDTYxACQZMBoG6xQaGLAIlGFhSCJRgoMIH7iXD+1bpY4M6arpvZIrz7ZsfhPxInR7O/JjnF0Z+9fy7xPLr8AfXpTvb9+0DJgAAAABJRU5ErkJggg==");
   }
 }
 
