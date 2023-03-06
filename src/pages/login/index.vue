@@ -98,13 +98,13 @@ const foreBackUrl = ref('') // 第三方h5地址
 
 // 查看用户服务协议（暂时写死）
 const toProtocol = () => {
-  let url = `${BASE_URL}/shanxiauthagreement/sxauthuseragreement.html`
+  const url = `${BASE_URL}/shanxiauthagreement/sxauthuseragreement.html`
   Taro.navigateTo({url: `/pages/webView/index?url=${url}`})
 }
 
 const validateUserInfo = () => {
   // 校验用户信息
-  let {fullName, idNum} = toRaw(userInfo)
+  const {fullName, idNum} = toRaw(userInfo)
   if (!fullName){
     return Taro.showToast({
       icon: 'none',
@@ -126,8 +126,8 @@ const validateUserInfo = () => {
 // 下一步（先获取手机号码，再走流程）
 const getPhoneNumber = async (event) => {
   // 切换账号的话，优先判断切换的账号是否为当前账号（自己无法切换自己）
-  let router = useRouter()
-  let {isSwitch} = router.params
+  const router = useRouter()
+  const {isSwitch} = router.params
   if (Number(isSwitch)){
     try {
       await checkReg({idNum: userInfo.idNum})
@@ -151,7 +151,7 @@ const getPhoneNumber = async (event) => {
     jsCode = event.detail.code
   }
 
-  let {userData} = await getUserPhoneNum({jsCode})
+  const {userData} = await getUserPhoneNum({jsCode})
   phoneNum.value = userData.phoneNum
   handleSubmit()
 }
@@ -174,11 +174,11 @@ const handleSubmit = async () => {
   // 第三方小程序跳转，无需再次获取校验certToken
   if (!Taro.getStorageSync('certToken')){
     //  1.收集信息
-    let collectionInfo = await handleCollectInfo()
+    const collectionInfo = await handleCollectInfo()
 
     // 2.获取certToken
-    let authType = 'InsideRegular'
-    let {tokenInfo} = await getCertToken({mode: mode.value, authType, collectionInfo, idInfo: toRaw(userInfo)}) // 获取certToken
+    const authType = 'InsideRegular'
+    const {tokenInfo} = await getCertToken({mode: mode.value, authType, collectionInfo, idInfo: toRaw(userInfo)}) // 获取certToken
     certToken.value = tokenInfo.certToken
     Taro.setStorageSync('certToken', certToken.value)
 
@@ -193,9 +193,9 @@ const handleCheckCertToken = async () => {
   try {
     result = await checkCerTokenAgent({certToken: certToken.value})
   } catch (data) {
-    let loginType = Taro.getStorageSync('loginType')
+    const loginType = Taro.getStorageSync('loginType')
     if (loginType === 1) {
-      let {retCode, retMessage} = data
+      const {retCode, retMessage} = data
       setTimeout(() => {
         Taro.navigateBackMiniProgram({
           extraData: {
@@ -215,7 +215,7 @@ const handleCheckCertToken = async () => {
     }
     return false
   }
-  let {authTipsInfo, authUser} = result.data
+  const {authTipsInfo, authUser} = result.data
   foreBackUrl.value = result.data.foreBackUrl ?? ''
   canSelfAuth.value = result.data.canSelfAuth ?? false
   mode.value = result.data.mode
@@ -237,7 +237,7 @@ const handleCheckCertToken = async () => {
   // 初始化authActionSheet的信息
   beforeAuth.value = authTipsInfo.beforeAuth
   beforeProtocol.value = authTipsInfo.beforeProtocol
-  let protocol = authTipsInfo.protocolList[0]
+  const protocol = authTipsInfo.protocolList[0]
   protocolName.value = protocol.name
   protocolUrl.value = protocol.url
 
@@ -258,20 +258,20 @@ const handleConfirm = async () => {
         return false
       }
     } else {
-      let {userIdKey} = await getUserIdKey({...toRaw(userInfo), certToken: certToken.value})
+      const {userIdKey} = await getUserIdKey({...toRaw(userInfo), certToken: certToken.value})
       await checkIsSupportFacialRecognition() // 检测设备是否支持活体检测
       verifyResult = await startFacialRecognitionVerify(userInfo.fullName, userInfo.idNum, userIdKey)
     }
   }
 
   // 如果从第三方小程序跳转过来，就要重新收集信息
-  let collectionInfo = await handleCollectInfo()
+  const collectionInfo = await handleCollectInfo()
   // 5.校验活体检测结果
   // 认证失败回调方法
-  let handleFailCallback = ({data, retCode, retMessage}) => {
+  const handleFailCallback = ({data, retCode, retMessage}) => {
     Taro.removeStorageSync('certToken') // 移除certToken，否则下次认证会重复使用之前的certToken
     // 小程序内部运行，认证失败不做任何操作
-    let loginType = Taro.getStorageSync('loginType')
+    const loginType = Taro.getStorageSync('loginType')
     if (loginType===1){ // 返回第三方小程序
       Taro.navigateBackMiniProgram({
         extraData: {
@@ -281,7 +281,7 @@ const handleConfirm = async () => {
         }
       })
     } else if (loginType === 2) { // 返回认证结果h5页面
-      let {resStr} = data
+      const {resStr} = data
       Taro.setStorageSync('authStr', resStr) // 标识之前已经走过认证流程，避免返回重新认证使用同一个certToken
       Taro.ap.navigateToAlipayPage({
         path: `${backToH5Url}?mode=${mode.value}&resStr=${resStr}&foreBackUrl=${data.foreBackUrl}`
@@ -355,13 +355,18 @@ const handleConfirm = async () => {
     })
   } else { // 第三方跳转
     if (Taro.getStorageSync('loginType') === 1) { // 返回第三方小程序
-      Taro.navigateBackMiniProgram({extraData: {
-        mode: mode.value,
-        retCode: result.retCode,
-        retMessage: result.retMessage
-      }})
+      Taro.reLaunch({
+        url: '/pages/index/index',
+        success: () => {
+          Taro.navigateBackMiniProgram({extraData: {
+            mode: mode.value,
+            retCode: result.retCode,
+            retMessage: result.retMessage
+          }})
+        }
+      })
     } else { // 返回认证结果h5页面
-      let {resStr} = result.data
+      const {resStr} = result.data
       Taro.setStorageSync('authStr', resStr) // 标识之前已经走过认证流程，避免返回重新认证使用同一个certToken
       Taro.ap.navigateToAlipayPage({
         path: `${backToH5Url}?mode=${mode.value}&resStr=${resStr}&foreBackUrl=${result.data.foreBackUrl}`
@@ -370,9 +375,9 @@ const handleConfirm = async () => {
   }
 }
 useDidShow(async () => {
-  let loginType = Taro.getStorageSync('loginType')
+  const loginType = Taro.getStorageSync('loginType')
   // 如果是h5跳转
-  let authStr = Taro.getStorageSync('authStr')
+  const authStr = Taro.getStorageSync('authStr')
   if (loginType === 2) {
     // 已经有认证结果的情况下 或者 h5页面再返回小程序，重定向到结果页面
     if (authStr || !Taro.getStorageSync('certToken')) Taro.navigateTo({url: `/pages/authResult/index?mode=${mode.value}&data=${authStr}`}) // 重定向到到认证结果页面
