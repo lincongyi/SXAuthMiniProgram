@@ -21,14 +21,23 @@
 </template>
 
 <script setup>
-import {ref, defineAsyncComponent} from 'vue'
+import { ref, defineAsyncComponent } from 'vue'
 import Taro from '@tarojs/taro'
 import './index.scss'
-import {handleCollectInfo} from '@utils/collectInfo'
-import {getCertToken, checkCerTokenAgent, getUserIdKey, getCertifyResult, checkCertCodeAgent} from '@api/auth'
-import {logoff} from '@api/login'
-import {checkIsSupportFacialRecognition, startFacialRecognitionVerify} from '@utils/taro'
-import {alipayAuth} from '@utils/alipayAuth'
+import { handleCollectInfo } from '@utils/collectInfo'
+import {
+  getCertToken,
+  checkCerTokenAgent,
+  getUserIdKey,
+  getCertifyResult,
+  checkCertCodeAgent
+} from '@api/auth'
+import { logoff } from '@api/login'
+import {
+  checkIsSupportFacialRecognition,
+  startFacialRecognitionVerify
+} from '@utils/taro'
+import { alipayAuth } from '@utils/alipayAuth'
 
 const canSelfAuth = ref(false) // 是否代他人认证
 const certToken = ref('') // certToken
@@ -38,26 +47,29 @@ const beforeProtocol = ref('') // 同意协议提示内容
 const protocolName = ref('') // 《用户服务协议》
 const protocolUrl = ref('') // 《用户服务协议》url
 const mode = ref(66) // 注销流程66模式实人认证
-const authActionSheet = defineAsyncComponent(() => import('@components/authActionSheet/index.vue')) // 授权弹窗
+const authActionSheet = defineAsyncComponent(() =>
+  import('@components/authActionSheet/index.vue')
+) // 授权弹窗
 const authActionSheetComponent = ref(null)
 const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
 
 const deleteAccount = () => {
   Taro.showModal({
     title: '温馨提示',
-    content: '账号注销后个人身份信息将失效，无法继续使用认证业务，是否确定注销账号',
-    success: async (res) => {
+    content:
+      '账号注销后个人身份信息将失效，无法继续使用认证业务，是否确定注销账号',
+    success: async res => {
       if (res.confirm) {
         // 1.收集信息
         let collectionInfo = await handleCollectInfo(false)
         // 2.获取certToken
-        let authType='InsideRegular'
-        let {tokenInfo} = await getCertToken({authType, collectionInfo}) // 获取certToken
+        let authType = 'InsideRegular'
+        let { tokenInfo } = await getCertToken({ authType, collectionInfo }) // 获取certToken
         certToken.value = tokenInfo.certToken
 
         // 3.校验certToken，并返回授权信息
-        let result = await checkCerTokenAgent({certToken: certToken.value})
-        let {authTipsInfo} = result.data
+        let result = await checkCerTokenAgent({ certToken: certToken.value })
+        let { authTipsInfo } = result.data
         canSelfAuth.value = result.data.canSelfAuth ?? false
 
         // 初始化authActionSheet的信息
@@ -78,21 +90,25 @@ const handleConfirm = async () => {
 
   // 4.活体检测（16，64模式无需走活检流程）
   let verifyResult = ''
-  if (![16, 64].includes(Number(mode.value))){
-    if (ISALIPAY){
+  if (![16, 64].includes(Number(mode.value))) {
+    if (ISALIPAY) {
       verifyResult = await alipayAuth()
     } else {
-      let {userIdKey} = await getUserIdKey({certToken: certToken.value})
+      let { userIdKey } = await getUserIdKey({ certToken: certToken.value })
       await checkIsSupportFacialRecognition() // 检测设备是否支持活体检测
       let loginUser = Taro.getStorageSync('loginUser')
-      verifyResult = await startFacialRecognitionVerify(loginUser.fullName, loginUser.idNum, userIdKey)
+      verifyResult = await startFacialRecognitionVerify(
+        loginUser.fullName,
+        loginUser.idNum,
+        userIdKey
+      )
     }
   }
 
   // collectionInfo尝试从storage里面取
   let collectionInfo = await handleCollectInfo()
   // 5.校验活体检测结果
-  if (ISALIPAY){
+  if (ISALIPAY) {
     await getCertifyResult({
       ...verifyResult,
       collectionInfo,
@@ -113,8 +129,8 @@ const handleConfirm = async () => {
   let data = {
     certToken: certToken.value
   }
-  if (ISALIPAY){
-    data = {...data, ...verifyResult}
+  if (ISALIPAY) {
+    data = { ...data, ...verifyResult }
   } else {
     data.wxpvCode = verifyResult
   }
@@ -125,9 +141,7 @@ const handleConfirm = async () => {
     title: '注销成功',
     mask: true,
     success: () => {
-      setTimeout(() => {
-        Taro.reLaunch({url: '/pages/index/index'})
-      }, 1000)
+      Taro.reLaunch({ url: '/pages/index/index' })
     }
   })
 }

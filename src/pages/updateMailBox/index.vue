@@ -2,18 +2,44 @@
   <view class="container">
     <block v-if="isUnBound">
       <view class="title">当前绑定邮箱</view>
-      <view class="mail-box">{{mailBox}}</view>
+      <view class="mail-box">{{ mailBox }}</view>
     </block>
     <block v-else>
-      <nut-input placeholder="请输入邮箱地址" v-model="mailBox" label="邮箱" max-length="20" />
+      <nut-input
+        placeholder="请输入邮箱地址"
+        v-model="mailBox"
+        label="邮箱"
+        max-length="20"
+      />
     </block>
-    <nut-input v-model="verificationCode" center label="邮箱验证码" placeholder="请输入邮箱验证码" max-length="6">
+    <nut-input
+      v-model="verificationCode"
+      center
+      label="邮箱验证码"
+      placeholder="请输入邮箱验证码"
+      max-length="6"
+    >
       <template #button>
-        <nut-button size="small" type="primary" shape="square" :disabled="!canGetCode || isDisabled" @tap="getCode"> {{getCodeBtnTxt}} </nut-button>
+        <nut-button
+          size="small"
+          type="primary"
+          shape="square"
+          :disabled="!canGetCode || isDisabled"
+          @tap="getCode"
+        >
+          {{ getCodeBtnTxt }}
+        </nut-button>
       </template>
     </nut-input>
     <view class="btn-warp">
-      <nut-button type="primary" shape="square" block @tap="handleConfirm" :class="{'disabled':btnDisabled || verificationCode.length!==6}">{{confirmBtnTxt}}</nut-button>
+      <nut-button
+        type="primary"
+        shape="square"
+        block
+        @tap="handleConfirm"
+        :class="{ disabled: btnDisabled || verificationCode.length !== 6 }"
+        >{{ confirmBtnTxt }}</nut-button
+      >
     </view>
   </view>
 
@@ -22,10 +48,10 @@
 </template>
 
 <script setup>
-import {ref, computed} from 'vue'
-import Taro, {useDidShow, useRouter} from '@tarojs/taro'
+import { ref, computed } from 'vue'
+import Taro, { useDidShow, useRouter } from '@tarojs/taro'
 import './index.scss'
-import {sendEmailIdentifyCode, unbindEmail, bindEmail} from '@api/setting'
+import { sendEmailIdentifyCode, unbindEmail, bindEmail } from '@api/setting'
 
 const isUnBound = ref(1) // 0.绑定邮箱，1.解绑邮箱
 const mailBox = ref('') // 邮箱
@@ -44,7 +70,7 @@ const canGetCode = computed(() => mailBoxReg.test(mailBox.value))
 // 获取验证码
 const getCode = async () => {
   if (isDisabled.value) return
-  if (!canGetCode.value){
+  if (!canGetCode.value) {
     return Taro.showToast({
       icon: 'none',
       title: '请输入正确的邮箱地址'
@@ -55,7 +81,8 @@ const getCode = async () => {
     action: ['BIND', 'UNBIND'][isUnBound.value],
     email: mailBox.value
   })
-  setTimeout(() => { // 兼容输入框失焦，键盘隐藏过程中导致toast闪的bug
+  setTimeout(() => {
+    // 兼容输入框失焦，键盘隐藏过程中导致toast闪的bug
     Taro.showToast({
       icon: 'none',
       title: '邮箱验证码已发送'
@@ -66,7 +93,7 @@ const getCode = async () => {
 
   timer = setInterval(() => {
     getCodeBtnTxt.value = `${--currentTime.value}s后重发`
-    if (currentTime.value<0){
+    if (currentTime.value < 0) {
       getCodeBtnTxt.value = '获取验证码'
       currentTime.value = period
       isDisabled.value = false
@@ -77,7 +104,7 @@ const getCode = async () => {
 
 // 绑定 or 解除绑定
 const handleConfirm = async () => {
-  if (!mailBox.value){
+  if (!mailBox.value) {
     return Taro.showToast({
       icon: 'none',
       title: '请输入邮箱地址'
@@ -89,29 +116,35 @@ const handleConfirm = async () => {
     })
   }
 
-  if (!isUnBound.value){
-    await bindEmail({email: mailBox.value, identifyCode: verificationCode.value}) // 绑定
+  if (!isUnBound.value) {
+    await bindEmail({
+      email: mailBox.value,
+      identifyCode: verificationCode.value
+    }) // 绑定
   } else {
-    await unbindEmail({identifyCode: verificationCode.value}) // 解绑
+    await unbindEmail({ identifyCode: verificationCode.value }) // 解绑
     mailBox.value = ''
   }
 
   let loginUser = Taro.getStorageSync('loginUser')
-  Taro.setStorageSync('loginUser', {...loginUser, ...{email: mailBox.value}})
+  Taro.setStorageSync('loginUser', {
+    ...loginUser,
+    ...{ email: mailBox.value }
+  })
 
   Taro.showToast({
     mask: true,
     title: `已${confirmBtnTxt.value}邮箱`,
     success: () => {
       setTimeout(() => {
-        Taro.navigateBack({delta: 1})
+        Taro.navigateBack({ delta: 1 })
       }, 1000)
     }
   })
 }
 
 useDidShow(() => {
-  let router = useRouter()
+  const router = useRouter()
   isUnBound.value = Number(router.params?.isUnBound) ?? 0
   if (isUnBound.value) mailBox.value = Taro.getStorageSync('loginUser').email
   Taro.setNavigationBarTitle({

@@ -1,12 +1,16 @@
 <template>
   <view class="container">
     <view class="auth-result">
-      <image class="result-image" mode="widthFix" :src="resultList[authResult].resultImage"/>
-      <view class="description">{{resultList[authResult].resultTxt}}</view>
+      <image
+        class="result-image"
+        mode="widthFix"
+        :src="resultList[authResult].resultImage"
+      />
+      <view class="description">{{ resultList[authResult].resultTxt }}</view>
     </view>
     <view class="auth-info">
       <!-- 待认证 start -->
-      <block v-if="authResult>=3">
+      <block v-if="authResult >= 3">
         <nut-cell-group>
           <nut-cell title="认证场景" :desc="authDetail.authSceneStr"></nut-cell>
           <nut-cell title="认证来源" :desc="authDetail.sourceName"></nut-cell>
@@ -24,19 +28,33 @@
           <nut-cell title="姓名" :desc="authDetail.fullName"></nut-cell>
           <nut-cell title="证件号码" :desc="authDetail.idNum"></nut-cell>
         </nut-cell-group>
-        <nut-divider :style="{ color: '#e5e5e5', borderColor: '#e5e5e5', padding: '0 16px' }"/>
+        <nut-divider
+          :style="{
+            color: '#e5e5e5',
+            borderColor: '#e5e5e5',
+            padding: '0 16px'
+          }"
+        />
         <nut-cell-group>
           <nut-cell title="认证模式" :desc="authDetail.authModeStr"></nut-cell>
           <nut-cell title="发起时间" :desc="authDetail.createTime"></nut-cell>
-          <nut-cell v-if="authResult!==2" title="认证时间" :desc="authDetail.authTime"></nut-cell>
+          <nut-cell
+            v-if="authResult !== 2"
+            title="认证时间"
+            :desc="authDetail.authTime"
+          ></nut-cell>
         </nut-cell-group>
-        <view class="tips">温馨提示：本次互联网可信身份认证服务由广州大白互联网科技有限公司提供技术支持</view>
+        <view class="tips"
+          >温馨提示：本次互联网可信身份认证服务由广州大白互联网科技有限公司提供技术支持</view
+        >
       </block>
       <!-- 认证成功、认证失败、认证过期 start -->
     </view>
-    <block v-if="authResult>=3">
+    <block v-if="authResult >= 3">
       <view class="btn-warp">
-        <nut-button type="primary" shape="square" block @tap="handleAuth">立即认证</nut-button>
+        <nut-button type="primary" shape="square" block @tap="handleAuth"
+          >立即认证</nut-button
+        >
       </view>
     </block>
   </view>
@@ -56,13 +74,21 @@
 </template>
 
 <script setup>
-import {ref, defineAsyncComponent} from 'vue'
+import { ref, defineAsyncComponent } from 'vue'
 import './index.scss'
-import Taro, {useDidShow, useRouter} from '@tarojs/taro'
-import {handleCollectInfo} from '@utils/collectInfo'
-import {checkCerTokenAgent, getUserIdKey, getCertifyResult, checkCertCodeAgent} from '@api/auth'
-import {checkIsSupportFacialRecognition, startFacialRecognitionVerify} from '@utils/taro'
-import {alipayAuth} from '@utils/alipayAuth'
+import Taro, { useDidShow, useRouter } from '@tarojs/taro'
+import { handleCollectInfo } from '@utils/collectInfo'
+import {
+  checkCerTokenAgent,
+  getUserIdKey,
+  getCertifyResult,
+  checkCertCodeAgent
+} from '@api/auth'
+import {
+  checkIsSupportFacialRecognition,
+  startFacialRecognitionVerify
+} from '@utils/taro'
+import { alipayAuth } from '@utils/alipayAuth'
 import toBeCertifiedImage from '@images/to-be-certified.png'
 import certificationSuccessfulImage from '@images/certification-successful.png'
 import certificationFailedImage from '@images/certification-failed.png'
@@ -85,7 +111,7 @@ const resultList = [
   {
     resultTxt: '待认证',
     resultImage: toBeCertifiedImage
-  },
+  }
 ]
 const authDetail = ref({}) // 反显用户信息
 
@@ -97,22 +123,24 @@ const beforeAuth = ref('') // 动作面板温馨提示内容
 const beforeProtocol = ref('') // 同意协议提示内容
 const protocolName = ref('') // 《用户服务协议》
 const protocolUrl = ref('') // 《用户服务协议》url
-const authActionSheet = defineAsyncComponent(() => import('@components/authActionSheet/index.vue')) // 授权弹窗
+const authActionSheet = defineAsyncComponent(() =>
+  import('@components/authActionSheet/index.vue')
+) // 授权弹窗
 const authActionSheetComponent = ref(null)
 const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
 
 // 立即认证
 const handleAuth = async () => {
   // 1.校验certToken，并返回授权信息（certToken从上一个认证请求的跳过来的url中拿到）
-  let result = await checkCerTokenAgent({certToken: certToken.value})
-  let {authTipsInfo} = result.data
+  const result = await checkCerTokenAgent({ certToken: certToken.value })
+  const { authTipsInfo } = result.data
   canSelfAuth.value = result.data.canSelfAuth ?? false
   mode.value = result.data.mode
 
   // 初始化authActionSheet的信息
   beforeAuth.value = authTipsInfo.beforeAuth
   beforeProtocol.value = authTipsInfo.beforeProtocol
-  let protocol = authTipsInfo.protocolList[0]
+  const protocol = authTipsInfo.protocolList[0]
   protocolName.value = protocol.name
   protocolUrl.value = protocol.url
   authActionSheetComponent.value.actionSheetVisible = true
@@ -124,14 +152,18 @@ const handleConfirm = async () => {
 
   // 4.活体检测（16，64模式无需走活检流程）
   let verifyResult = ''
-  if (![16, 64].includes(Number(mode.value))){
-    if (ISALIPAY){
+  if (![16, 64].includes(Number(mode.value))) {
+    if (ISALIPAY) {
       verifyResult = await alipayAuth()
     } else {
-      let {userIdKey} = await getUserIdKey({certToken: certToken.value})
+      let { userIdKey } = await getUserIdKey({ certToken: certToken.value })
       await checkIsSupportFacialRecognition() // 检测设备是否支持活体检测
       let loginUser = Taro.getStorageSync('loginUser')
-      verifyResult = await startFacialRecognitionVerify(loginUser.fullName, loginUser.idNum, userIdKey)
+      verifyResult = await startFacialRecognitionVerify(
+        loginUser.fullName,
+        loginUser.idNum,
+        userIdKey
+      )
     }
   }
 
@@ -148,7 +180,7 @@ const handleConfirm = async () => {
         usedMode: mode.value,
         certToken: certToken.value
       })
-    } catch ({data}) {
+    } catch ({ data }) {
       // 认证失败
       Taro.navigateTo({
         url: `/pages/authResult/index?mode=${authDetail.value.authMode}&data=${data.resStr}`
@@ -164,7 +196,7 @@ const handleConfirm = async () => {
         wxpvCode: verifyResult,
         certToken: certToken.value
       })
-    } catch ({data}) {
+    } catch ({ data }) {
       Taro.navigateTo({
         url: `/pages/authResult/index?mode=${authDetail.value.authMode}&data=${data.resStr}`
       })
@@ -172,7 +204,7 @@ const handleConfirm = async () => {
     }
   }
   if (Object.keys(result).length) {
-    let {data} = result
+    let { data } = result
 
     Taro.showToast({
       icon: 'none',
@@ -180,14 +212,16 @@ const handleConfirm = async () => {
       mask: true,
       success: () => {
         Taro.removeStorageSync('authDetail')
-        Taro.navigateTo({url: `/pages/authResult/index?mode=${authDetail.value.authMode}&data=${data.resStr}`})
+        Taro.navigateTo({
+          url: `/pages/authResult/index?mode=${authDetail.value.authMode}&data=${data.resStr}`
+        })
       }
     })
   }
 }
 
 useDidShow(() => {
-  let router = useRouter()
+  const router = useRouter()
   authResult.value = Number(router.params.authResult)
   certToken.value = router.params.certToken ?? ''
 

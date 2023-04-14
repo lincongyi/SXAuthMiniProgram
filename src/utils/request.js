@@ -13,16 +13,16 @@ const config = {
 }
 export const BASE_URL = `${config[process.env.NODE_ENV].baseUrl}`
 
-function request (options = {}) {
-  const {url, data, method='post'} = options
+function request(options = {}) {
+  const {url, data, method = 'post'} = options
   const baseOptions = {
     url: `${BASE_URL}/sxfama${url}`,
     data,
     method,
     header: {
       'content-type': 'application/json',
-      'login-token': Taro.getStorageSync('loginToken')
-    }
+      'login-token': Taro.getStorageSync('loginToken'),
+    },
   }
 
   return new Promise((resolve, reject) => {
@@ -39,23 +39,24 @@ function request (options = {}) {
           })
         }
         // 用户未注册
-        if ([5202, 5203].includes(r.data.retCode)){
+        if ([5202, 5203].includes(r.data.retCode)) {
           const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
-          if (ISALIPAY){
-            let {aesUserId} = r.data.userData // 加密后的userId
+          if (ISALIPAY) {
+            const {aesUserId} = r.data.userData // 加密后的userId
             Taro.setStorageSync('aesUserId', aesUserId)
           } else {
-            let {aesUnionId} = r.data.userData // 加密后的unionId
+            const {aesUnionId} = r.data.userData // 加密后的unionId
             Taro.setStorageSync('aesUnionId', aesUnionId)
           }
-          if (!Taro.getStorageSync('loginType')){ // 小程序内部允许，显示提示弹窗
+          if (!Taro.getStorageSync('loginType')) {
+            // 小程序内部允许，显示提示弹窗
             return Taro.showModal({
               title: '温馨提示',
               content: r.data.retMessage,
               success: ({confirm}) => {
                 // 跳转到登录 || 注册页面
-                if (confirm) Taro.navigateTo({url: '/pages/login/index'})
-              }
+                if (confirm) Taro.navigateTo({url: '/pages/login/index?isRegister=1'})
+              },
             })
           }
           // 第三方小程序跳转，不做任何处理
@@ -66,13 +67,14 @@ function request (options = {}) {
             content: r.data.retMessage,
             showCancel: false,
             success: async () => {
-              if (r.data.retCode === 3002) { // loginToken过期
+              if (r.data.retCode === 3002) {
+                // loginToken过期
                 Taro.removeStorageSync('loginToken')
                 await isLogin() // 静默登录
               } else {
                 reject(r.data)
               }
-            }
+            },
           })
         } else {
           //网络请求成功 返回数据
@@ -81,20 +83,23 @@ function request (options = {}) {
       },
       fail(err) {
         Taro.hideLoading()
-        if (err.status===404){
+        if (err.status === 404) {
           return Taro.showModal({
             title: '温馨提示',
             content: '404',
             showCancel: false,
           })
-        } else if (err.errMsg.indexOf('timeout') !== -1 || err.errMsg.indexOf('请求超时') !== -1) {
+        } else if (
+          err.errMsg.indexOf('timeout') !== -1 ||
+          err.errMsg.indexOf('请求超时') !== -1
+        ) {
           reject({
             data: {
               retCode: -1,
               retMessage: '请求超时，请稍后重试',
             },
           })
-        } else if (err.errMsg === 'request:fail url not in domain list'){
+        } else if (err.errMsg === 'request:fail url not in domain list') {
           return Taro.showModal({
             title: '温馨提示',
             content: '当前不在 request 合法域名列表中',
@@ -116,7 +121,7 @@ function request (options = {}) {
           result: e,
         })
       },
-      timeout: 15*1000
+      timeout: 15 * 1000,
     })
   })
 }

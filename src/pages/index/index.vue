@@ -73,23 +73,23 @@
 </template>
 
 <script setup>
-import {ref, defineAsyncComponent, watch} from 'vue'
-import Taro, {useDidShow, useDidHide} from '@tarojs/taro'
+import { ref, defineAsyncComponent, watch } from 'vue'
+import Taro, { useDidShow, useDidHide } from '@tarojs/taro'
 import './index.scss'
-import {isLogin} from '@utils/index'
-import {handleCollectInfo} from '@utils/collectInfo'
+import { isLogin } from '@utils/index'
+import { handleCollectInfo } from '@utils/collectInfo'
 import {
   getAuthList,
   checkCerTokenAgent,
   getUserIdKey,
   getCertifyResult,
-  checkCertCodeAgent,
+  checkCertCodeAgent
 } from '@api/auth'
 import {
   checkIsSupportFacialRecognition,
-  startFacialRecognitionVerify,
+  startFacialRecognitionVerify
 } from '@utils/taro'
-import {alipayAuth} from '@utils/alipayAuth'
+import { alipayAuth } from '@utils/alipayAuth'
 import banner_01 from '@images/banner-01.png'
 import banner_02 from '@images/banner-02.png'
 import noticeImage from '@images/notice.png'
@@ -135,18 +135,18 @@ const handleLogin = () => {
     content: '您尚未登录',
     confirmText: '立即登录',
     cancelText: '暂不登录',
-    success: ({confirm}) => {
+    success: ({ confirm }) => {
       if (confirm) {
         loginNow()
       }
-    },
+    }
   })
 }
 
 // 跳转到认证请求页面
 const toAuthRequest = () => {
   Taro.navigateTo({
-    url: '/pages/authRequest/index?flag=1',
+    url: '/pages/authRequest/index?flag=1'
   })
 }
 
@@ -157,25 +157,34 @@ const handleScanCode = async () => {
   } else {
     Taro.scanCode({
       onlyFromCamera: true,
-      success: async ({result}) => {
+      success: async ({ result }) => {
         // 从返回的url中截取出certToken
         certToken.value = result.slice(result.indexOf('=') + 1)
 
         // 校验certToken，并返回授权信息
-        result = await checkCerTokenAgent({certToken: certToken.value})
+        result = await checkCerTokenAgent({ certToken: certToken.value })
 
-        let {authTipsInfo} = result.data
+        // 如果是16||18模式的扫码认证，用户又没有证件有效期信息的话，跳转到认证页面补充信息
+        const { authUser } = result.data
+        if (!authUser) {
+          Taro.setStorageSync('certToken', certToken.value)
+          return Taro.navigateTo({
+            url: '/pages/login/index'
+          })
+        }
+
+        const { authTipsInfo } = result.data
         canSelfAuth.value = result.data.canSelfAuth ?? false
         mode.value = result.data.mode
 
         // 初始化authActionSheet的信息
         beforeAuth.value = authTipsInfo.beforeAuth
         beforeProtocol.value = authTipsInfo.beforeProtocol
-        let protocol = authTipsInfo.protocolList[0]
+        const protocol = authTipsInfo.protocolList[0]
         protocolName.value = protocol.name
         protocolUrl.value = protocol.url
         authActionSheetComponent.value.actionSheetVisible = true
-      },
+      }
     })
   }
 }
@@ -190,9 +199,9 @@ const handleConfirm = async () => {
     if (ISALIPAY) {
       verifyResult = await alipayAuth()
     } else {
-      let {userIdKey} = await getUserIdKey({certToken: certToken.value})
+      const { userIdKey } = await getUserIdKey({ certToken: certToken.value })
       await checkIsSupportFacialRecognition() // 检测设备是否支持活体检测
-      let loginUser = Taro.getStorageSync('loginUser')
+      const loginUser = Taro.getStorageSync('loginUser')
       verifyResult = await startFacialRecognitionVerify(
         loginUser.fullName,
         loginUser.idNum,
@@ -201,7 +210,7 @@ const handleConfirm = async () => {
     }
   }
   // collectionInfo尝试从storage里面取
-  let collectionInfo = await handleCollectInfo()
+  const collectionInfo = await handleCollectInfo()
   // 5.校验活体检测结果
   let result
   if (ISALIPAY) {
@@ -211,12 +220,12 @@ const handleConfirm = async () => {
         collectionInfo,
         usedAgent: canSelfAuth.value,
         usedMode: mode.value,
-        certToken: certToken.value,
+        certToken: certToken.value
       })
-    } catch ({data}) {
+    } catch ({ data }) {
       // 认证失败
       Taro.navigateTo({
-        url: `/pages/authResult/index?mode=${mode.value}&data=${data.resStr}`,
+        url: `/pages/authResult/index?mode=${mode.value}&data=${data.resStr}`
       })
       return false
     }
@@ -227,17 +236,17 @@ const handleConfirm = async () => {
         usedAgent: canSelfAuth.value,
         usedMode: mode.value,
         wxpvCode: verifyResult,
-        certToken: certToken.value,
+        certToken: certToken.value
       })
-    } catch ({data}) {
+    } catch ({ data }) {
       // 认证失败
       Taro.navigateTo({
-        url: `/pages/authResult/index?mode=${mode.value}&data=${data.resStr}`,
+        url: `/pages/authResult/index?mode=${mode.value}&data=${data.resStr}`
       })
       return false
     }
   }
-  let {data} = result
+  const { data } = result
 
   if (Object.keys(result).length) {
     Taro.showToast({
@@ -246,9 +255,9 @@ const handleConfirm = async () => {
       mask: true,
       success: () => {
         Taro.navigateTo({
-          url: `/pages/authResult/index?mode=${mode.value}&data=${data.resStr}`,
+          url: `/pages/authResult/index?mode=${mode.value}&data=${data.resStr}`
         })
-      },
+      }
     })
   }
 }
@@ -258,7 +267,7 @@ const toPersonalQrcode = async () => {
   if (!loginStatus.value) {
     handleLogin()
   } else {
-    Taro.navigateTo({url: '/pages/personalQrcode/index'})
+    Taro.navigateTo({ url: '/pages/personalQrcode/index' })
   }
 }
 
@@ -272,10 +281,10 @@ const loginEvent = async () => {
 }
 
 const loopGetAuthList = async () => {
-  let {data} = await getAuthList({
+  const { data } = await getAuthList({
     pageNum: 0,
     pageSize: 0,
-    flag: 1, // 0.认证记录；1.待认证
+    flag: 1 // 0.认证记录；1.待认证
   })
   noticeSize.value = data.size
 }
@@ -286,20 +295,20 @@ const loginStatus = ref(Taro.getStorageSync('loginToken') ? true : false) // 是
 
 watch(
   loginStatus,
-  (value) => {
+  value => {
     // 监听用户登录状态若为true，获取用户认证记录
     if (value) loginEvent()
   },
   {
-    immediate: true,
+    immediate: true
   }
 )
 
 Taro.setStorageSync('loginType', 0) // 重置当前用户为小程序内部运行流程
+Taro.removeStorageSync('certToken') // 返回首页，抹掉certToken，避免重新进入认证时，重复使用该certToken
 
 useDidShow(() => {
   if (Taro.getStorageSync('loginToken')) loginEvent()
-  Taro.removeStorageSync('certToken') // 返回首页，抹掉certToken，避免重新进入认证时，重复使用该certTokens
 })
 
 useDidHide(() => {

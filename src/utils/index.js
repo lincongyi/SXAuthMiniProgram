@@ -42,6 +42,7 @@ export async function isLogin(){
         icon: 'none',
         title: '登录成功',
         mask: true,
+        duration: 1000
       })
     }
   } else {
