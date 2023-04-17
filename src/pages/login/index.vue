@@ -269,6 +269,21 @@ const validateUserInfo = () => {
       title: '身份号码格式有误'
     })
   }
+
+  if ([16, 18].includes(mode.value)) {
+    const { idStartDate, idEndDate } = toRaw(userInfo)
+    if (!idStartDate) {
+      return Taro.showToast({
+        icon: 'none',
+        title: '请选择起始日期'
+      })
+    } else if (!idEndDate) {
+      return Taro.showToast({
+        icon: 'none',
+        title: '请选择截止日期'
+      })
+    }
+  }
 }
 
 // 下一步（先获取手机号码，再走流程）
@@ -368,7 +383,7 @@ const handleCheckCertToken = async () => {
           path: `${backToH5Url}?mode=${mode.value}&foreBackUrl=${data.data.foreBackUrl}`
         })
       }
-      // token已经过期，重定向到到认证结果页面
+      // token已经过期 或者 token已完成认证，重定向到到认证结果页面
       if ([4026, 4030].includes(data.retCode)) {
         const authStr = '22XX'
         Taro.setStorageSync('authStr', authStr)
@@ -377,7 +392,7 @@ const handleCheckCertToken = async () => {
         })
       }
     } else {
-      // token已经过期 或者 token已完成认证
+      // token已经过期 或者 token已完成认证，重定向到到认证结果页面
       if ([4026, 4030].includes(data.retCode)) {
         const authStr = '22XX'
         Taro.setStorageSync('authStr', authStr)
@@ -519,7 +534,7 @@ const handleConfirm = async () => {
 
   // 认证成功
   Taro.removeStorageSync('certToken') // 移除certToken，否则下次认证会重复使用之前的certToken
-  // 不存在loginToken或者小程序内部流程，走注册功能
+  // 不存在loginToken或者切换用户，走注册功能
   if (!Taro.getStorageSync('loginToken') || isSwitch) {
     let data = {
       phoneNum: phoneNum.value,
@@ -535,24 +550,30 @@ const handleConfirm = async () => {
       data.aesUnionId = Taro.getStorageSync('aesUnionId')
     }
 
-    await register(data).then(({ loginToken, loginUser }) => {
-      Taro.setStorageSync('loginToken', loginToken)
-      Taro.setStorageSync('loginUser', loginUser)
-    })
+    const { loginToken, loginUser } = await register(data)
+    // 小程序内部运行
+    if (!loginType) {
+      return Taro.showModal({
+        title: '注册成功',
+        content: `您的账号已绑定${
+          ISALIPAY ? '支付宝' : '微信'
+        }，下次可直接使用${ISALIPAY ? '支付宝' : '微信'}授权快捷登录`,
+        showCancel: false,
+        success: () => {
+          Taro.setStorageSync('loginToken', loginToken)
+          Taro.setStorageSync('loginUser', loginUser)
+          // 跳转到首页
+          Taro.reLaunch({ url: '/pages/index/index' })
+        }
+      })
+    }
   }
 
-  // 小程序内部运行
+  // 小程序内部运行，扫码认证功能，返回认证结果页面
   if (!loginType) {
-    Taro.showModal({
-      title: '注册成功',
-      content: `您的账号已绑定${ISALIPAY ? '支付宝' : '微信'}，下次可直接使用${
-        ISALIPAY ? '支付宝' : '微信'
-      }授权快捷登录`,
-      showCancel: false,
-      success: () => {
-        // 跳转到首页
-        return Taro.reLaunch({ url: '/pages/index/index' })
-      }
+    const { resStr } = result.data
+    return Taro.navigateTo({
+      url: `/pages/authResult/index?mode=${mode.value}&data=${resStr}`
     })
   } else {
     // 第三方跳转
@@ -600,11 +621,13 @@ useDidShow(async () => {
     // 针对切换用户的情况
     if (router.params.isSwitch) {
       isSwitch = Number(router.params.isSwitch)
+      Taro.setNavigationBarTitle({ title: '登录' })
       return
     }
     // 单纯的注册流程，无需判断登录状态和校验certToken
     if (router.params.isRegister) {
       isRegister = router.params.isRegister
+      Taro.setNavigationBarTitle({ title: '注册' })
       return
     }
 
