@@ -172,7 +172,8 @@ const onEndDateChange = e => {
 /**
  * 返回h5页面地址
  */
-const backToH5Url = `${BASE_URL}/sxauthalipay/toMiniProgram.html`
+const backToH5Url =
+  'https://sfrz.wsbs.shxga.gov.cn/sxauthalipay/toMiniProgram.html'
 
 /**
  * 0-小程序内部运行；1-第三方小程序跳转；2-h5跳转

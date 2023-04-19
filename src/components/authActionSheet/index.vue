@@ -7,34 +7,44 @@
     <view class="action-sheet-content">
       <view class="html-parse" v-html="beforeAuth"></view>
 
-      <block v-if="![16,64].includes(Number(mode))">
+      <block v-if="![16, 64].includes(Number(mode))">
         <view class="tips">本次认证需要通过人脸识别验证身份信息</view>
       </block>
 
       <view class="agreement"></view>
 
       <view class="agreement-protocol">
-        <nut-checkbox v-model="isChecked" class="checkbox" icon-name="" icon-active-name="checklist">
+        <nut-checkbox
+          v-model="isChecked"
+          class="checkbox"
+          icon-name=""
+          icon-active-name="checklist"
+        >
           <text v-html="beforeProtocol"></text>
           <text>查看</text>
-          <text v-html="protocolName" class="protocol-link" @tap="toProtocol(protocolUrl)"></text>
+          <text
+            v-html="protocolName"
+            class="protocol-link"
+            @tap="toProtocol(protocolUrl)"
+          ></text>
         </nut-checkbox>
       </view>
 
-      <nut-button type="primary" shape="square" block @tap="onConfirm">确认授权</nut-button>
+      <nut-button type="primary" shape="square" block @tap="onConfirm"
+        >确认授权</nut-button
+      >
     </view>
   </nut-actionsheet>
-
 </template>
 <script setup>
-import {ref} from 'vue'
+import { ref } from 'vue'
 import Taro from '@tarojs/taro'
 import './index.scss'
-import {BASE_URL} from '@utils/request'
 /**
-  * 返回h5页面地址
+ * 返回h5页面地址
  */
-const backToH5Url = `${BASE_URL}/sxauthalipay/toMiniProgram.html`
+const backToH5Url =
+  'https://sfrz.wsbs.shxga.gov.cn/sxauthalipay/toMiniProgram.html'
 
 const props = defineProps({
   beforeAuth: {
@@ -68,8 +78,8 @@ defineExpose({
 })
 const isChecked = ref(false)
 // 查看用户服务协议
-const toProtocol = (url) => {
-  Taro.navigateTo({url: `/pages/webView/index?url=${url}`})
+const toProtocol = url => {
+  Taro.navigateTo({ url: `/pages/webView/index?url=${url}` })
 }
 // 取消授权
 const onClose = () => {
@@ -77,7 +87,7 @@ const onClose = () => {
   Taro.showModal({
     title: '温馨提示',
     content: '是否确认取消授权',
-    success: ({confirm}) => {
+    success: ({ confirm }) => {
       if (confirm) {
         Taro.removeStorageSync('certToken')
         let loginType = Taro.getStorageSync('loginType') ?? 0
@@ -103,10 +113,10 @@ const onClose = () => {
 const emits = defineEmits(['onConfirm'])
 // 确认授权
 const onConfirm = () => {
-  if (!isChecked.value){
+  if (!isChecked.value) {
     return Taro.showToast({
       icon: 'none',
-      title: '请同意服务协议',
+      title: '请同意服务协议'
     })
   }
   isChecked.value = false
