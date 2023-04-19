@@ -12,7 +12,7 @@
           v-model="userInfo.fullName"
           label="姓名"
           placeholder="请输入姓名"
-          :readonly="!canEdit"
+          :readonly="!canUserInfoEdit"
           required
           maxlength="20"
         />
@@ -20,12 +20,12 @@
           v-model="userInfo.idNum"
           label="证件号码"
           placeholder="请输入证件号码"
-          :readonly="!canEdit"
+          :readonly="!canUserInfoEdit"
           required
           maxlength="18"
         />
         <block v-if="[16, 18].includes(mode)">
-          <block v-if="canEdit">
+          <block v-if="canValidityEdit">
             <picker
               mode="date"
               :value="userInfo.idStartDate"
@@ -201,7 +201,8 @@ let isSwitch = 0
  * 当前是否[注册]流程
  */
 let isRegister = 0
-const canEdit = ref(true) // 是否允许用户录入信息
+const canUserInfoEdit = ref(true) // 是否允许用户录入姓名，证件号码
+const canValidityEdit = ref(true) // 是否允许用户录入证件有效期
 const isBtnShow = ref(true) // 控制[下一步]按钮显示隐藏，[下一步]按钮主要用于获取用户手机号码
 // 控制[下一步]按钮样式
 const btnDisabled = computed(() => {
@@ -409,19 +410,19 @@ const handleCheckCertToken = async () => {
   foreBackUrl.value = result.data.foreBackUrl ?? ''
   canSelfAuth.value = result.data.canSelfAuth ?? false
   mode.value = result.data.mode
-  // 如果是第三方跳转过来的，反显用户信息
-  if (loginType) {
-    for (let key in authUser) {
-      userInfo[key] = authUser[key]
-    }
-    // 如果用户在第三方小程序已录入个人信息，就设置输入框不可编辑
-    if (userInfo.idNum && userInfo.fullName) {
-      canEdit.value = false
-      if (loginType && Taro.getStorageSync('loginToken')) {
-        isBtnShow.value = false // 如果第三方跳转过来的用户，有之前注册登录信息，则隐藏下一步按钮并直接显示授权弹窗
-        authActionSheetComponent.value.actionSheetVisible = true
-      }
-    }
+
+  // 反显用户信息
+  for (let key in authUser) {
+    userInfo[key] = authUser[key]
+  }
+  // 如果不存在已录入的个人信息，就设置输入框可编辑
+  if (userInfo.fullName && userInfo.idNum) canUserInfoEdit.value = false
+  if (userInfo.idStartDate && userInfo.idEndDate) canValidityEdit.value = false
+
+  // 如果第三方跳转过来的用户，有之前注册登录信息，则隐藏下一步按钮并直接显示授权弹窗
+  if (!btnDisabled.value && loginType && Taro.getStorageSync('loginToken')) {
+    isBtnShow.value = false
+    authActionSheetComponent.value.actionSheetVisible = true
   }
 
   // 初始化authActionSheet的信息
@@ -494,11 +495,17 @@ const handleConfirm = async () => {
       })
     } else if (loginType === 2) {
       // 返回认证结果h5页面
-      const { resStr } = data
+      const { resStr, foreBackUrl } = data
       Taro.setStorageSync('authStr', resStr) // 标识之前已经走过认证流程，避免返回重新认证使用同一个certToken
-      return Taro.ap.navigateToAlipayPage({
-        path: `${backToH5Url}?mode=${mode.value}&resStr=${resStr}&foreBackUrl=${data.foreBackUrl}`
-      })
+      if (foreBackUrl) {
+        return Taro.ap.navigateToAlipayPage({
+          path: `${backToH5Url}?mode=${mode.value}&resStr=${resStr}&foreBackUrl=${data.foreBackUrl}`
+        })
+      } else {
+        return Taro.navigateTo({
+          url: `/pages/authResult/index?mode=${mode.value}&data=${resStr}`
+        })
+      }
     }
   }
   let result

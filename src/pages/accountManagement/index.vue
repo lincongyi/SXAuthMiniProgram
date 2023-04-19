@@ -141,7 +141,9 @@ const handleConfirm = async () => {
     title: '注销成功',
     mask: true,
     success: () => {
-      Taro.reLaunch({ url: '/pages/index/index' })
+      setTimeout(() => {
+        Taro.reLaunch({ url: '/pages/index/index' })
+      }, 1000)
     }
   })
 }

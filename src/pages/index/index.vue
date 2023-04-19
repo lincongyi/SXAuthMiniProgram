@@ -164,9 +164,13 @@ const handleScanCode = async () => {
         // 校验certToken，并返回授权信息
         result = await checkCerTokenAgent({ certToken: certToken.value })
 
-        // 如果是16||18模式的扫码认证，用户又没有证件有效期信息的话，跳转到认证页面补充信息
+        // 如果是16 || 18模式的扫码认证，用户又没有证件有效期信息的话，跳转到认证页面补充信息
         const { authUser } = result.data
-        if (!authUser) {
+
+        if (
+          [16, 18].includes(result.data.mode) &&
+          (!authUser.idStartDate || !authUser.idEndDate)
+        ) {
           Taro.setStorageSync('certToken', certToken.value)
           return Taro.navigateTo({
             url: '/pages/login/index'
@@ -254,9 +258,11 @@ const handleConfirm = async () => {
       title: '认证成功',
       mask: true,
       success: () => {
-        Taro.navigateTo({
-          url: `/pages/authResult/index?mode=${mode.value}&data=${data.resStr}`
-        })
+        setTimeout(() => {
+          Taro.navigateTo({
+            url: `/pages/authResult/index?mode=${mode.value}&data=${data.resStr}`
+          })
+        }, 1000)
       }
     })
   }
