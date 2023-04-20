@@ -58,17 +58,20 @@
   opacity: 0.5;
 }
 
-.tips-textarea {
-  margin-top: 24px;
-  font-size: 26px;
-  color: #999;
+.end-date {
+  position: relative;
 
-  .normal {
-    display: flex;
-    justify-content: center;
-  }
+  .is-permanent {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 2;
+    padding-right: 48px;
+    transform: translateY(50%);
+    font-size: 28px;
 
-  .emphasize {
-    color: #3b83ff;
+    .nut-switch.nut-switch-base {
+      margin-left: 10px;
+    }
   }
 }

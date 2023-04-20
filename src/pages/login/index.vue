@@ -35,25 +35,48 @@
               <nut-input
                 v-model="userInfo.idStartDate"
                 label="起始日期"
+                placeholder="请选择起始日期"
                 readonly
                 required
                 maxlength="10"
               />
             </picker>
-            <picker
-              mode="date"
-              :value="userInfo.idEndDate"
-              :start="dateTime"
-              @change="onEndDateChange"
-            >
-              <nut-input
-                v-model="userInfo.idEndDate"
-                label="截止日期"
-                readonly
-                required
-                maxlength="10"
-              />
-            </picker>
+            <view class="end-date">
+              <block v-if="!isPermanent">
+                <picker
+                  mode="date"
+                  :value="userInfo.idEndDate"
+                  :start="dateTime"
+                  @change="onEndDateChange"
+                >
+                  <nut-input
+                    v-model="userInfo.idEndDate"
+                    label="截止日期"
+                    placeholder="请选择截止日期"
+                    readonly
+                    required
+                    maxlength="10"
+                  />
+                </picker>
+              </block>
+              <block v-else>
+                <nut-input
+                  label="截止日期"
+                  placeholder="长期有效"
+                  readonly
+                  required
+                  maxlength="10"
+                />
+              </block>
+              <view class="is-permanent">
+                长期有效
+                <nut-switch
+                  v-model="isPermanent"
+                  active-color="#0a7aee"
+                  @change="isPermanentChange"
+                />
+              </view>
+            </view>
           </block>
           <block v-else>
             <nut-input
@@ -63,13 +86,24 @@
               required
               maxlength="10"
             />
-            <nut-input
-              v-model="userInfo.idEndDate"
-              label="截止日期"
-              readonly
-              required
-              maxlength="10"
-            />
+            <block v-if="!isPermanent">
+              <nut-input
+                v-model="userInfo.idEndDate"
+                label="截止日期"
+                readonly
+                required
+                maxlength="10"
+              />
+            </block>
+            <block v-else>
+              <nut-input
+                label="截止日期"
+                placeholder="长期有效"
+                readonly
+                required
+                maxlength="10"
+              />
+            </block>
           </block>
         </block>
       </view>
@@ -103,14 +137,6 @@
           v-show="!btnDisabled"
         ></button>
       </block>
-    </view>
-
-    <view class="tips-textarea">
-      <view class="normal">未注册用户登录时将完成注册，登录即代表</view>
-      <view class="normal">
-        您已同意
-        <view class="emphasize" @tap="toProtocol">《用户服务协议》</view>
-      </view>
     </view>
   </view>
 
@@ -150,7 +176,6 @@ import {
 } from '@utils/taro'
 import { isLogin, idcardRex } from '@utils/index'
 import { alipayAuth } from '@utils/alipayAuth'
-import { BASE_URL } from '@utils/request'
 import { formatDate } from '@utils/index'
 
 /**
@@ -204,6 +229,15 @@ let isSwitch = 0
 let isRegister = 0
 const canUserInfoEdit = ref(true) // 是否允许用户录入姓名，证件号码
 const canValidityEdit = ref(true) // 是否允许用户录入证件有效期
+const isPermanent = ref(false) // 证件有效期是否长期有效
+
+/**
+ * 切换是否长期有效
+ */
+const isPermanentChange = () => {
+  userInfo.idEndDate = isPermanent.value ? '00000000' : ''
+}
+
 const isBtnShow = ref(true) // 控制[下一步]按钮显示隐藏，[下一步]按钮主要用于获取用户手机号码
 // 控制[下一步]按钮样式
 const btnDisabled = computed(() => {
@@ -241,14 +275,6 @@ const ISALIPAY = Taro.getStorageSync('env') === 'ALIPAY'
  * 第三方h5地址
  */
 const foreBackUrl = ref('')
-
-/**
- * 查看用户服务协议
- */
-const toProtocol = () => {
-  const url = `${BASE_URL}/shanxiauthagreement/sxauthuseragreement.html`
-  Taro.navigateTo({ url: `/pages/webView/index?url=${url}` })
-}
 
 /**
  * 校验用户信息
@@ -412,18 +438,23 @@ const handleCheckCertToken = async () => {
   canSelfAuth.value = result.data.canSelfAuth ?? false
   mode.value = result.data.mode
 
-  // 反显用户信息
-  for (let key in authUser) {
-    userInfo[key] = authUser[key]
-  }
-  // 如果不存在已录入的个人信息，就设置输入框可编辑
-  if (userInfo.fullName && userInfo.idNum) canUserInfoEdit.value = false
-  if (userInfo.idStartDate && userInfo.idEndDate) canValidityEdit.value = false
+  if (!isRegister && !isSwitch) {
+    // 反显用户信息
+    for (let key in authUser) {
+      userInfo[key] = authUser[key]
+    }
+    // 如果不存在已录入的个人信息，就设置输入框可编辑
+    if (userInfo.fullName && userInfo.idNum) canUserInfoEdit.value = false
+    if (userInfo.idStartDate && userInfo.idEndDate)
+      canValidityEdit.value = false
+    // 证件有效期，是否长期有效
+    isPermanent.value = userInfo.idEndDate === '00000000'
 
-  // 如果第三方跳转过来的用户，有之前注册登录信息，则隐藏下一步按钮并直接显示授权弹窗
-  if (!btnDisabled.value && loginType && Taro.getStorageSync('loginToken')) {
-    isBtnShow.value = false
-    authActionSheetComponent.value.actionSheetVisible = true
+    // 如果第三方跳转过来的用户，有之前注册登录信息，则隐藏下一步按钮并直接显示授权弹窗
+    if (!btnDisabled.value && loginType && Taro.getStorageSync('loginToken')) {
+      isBtnShow.value = false
+      authActionSheetComponent.value.actionSheetVisible = true
+    }
   }
 
   // 初始化authActionSheet的信息
