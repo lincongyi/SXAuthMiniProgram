@@ -1,7 +1,7 @@
 <template>
   <view class="container">
     <view class="user-info-box">
-      <image class="avatar" mode="widthFix" :src="avatarImage"/>
+      <image class="avatar" mode="widthFix" :src="avatarImage" />
       <block v-if="!loginStatus">
         <view class="unlogin" @tap="handleLogin">
           登录/注册
@@ -11,8 +11,8 @@
       <block v-else>
         <view class="info-wrap" @tap="toUserInfo">
           <view class="user-content">
-            <view class="name">{{fullName}}</view>
-            <view class="id-number">证件号码：{{idNum}}</view>
+            <view class="name">{{ fullName }}</view>
+            <view class="id-number">证件号码：{{ idNum }}</view>
           </view>
           <nut-icon name="arrow-right" size="16" color="#fff"></nut-icon>
         </view>
@@ -20,14 +20,22 @@
     </view>
     <view class="nav">
       <view class="column" @tap="toAuthRequest">
-        <image class="column-icon" mode="widthFix" :src="userCenterRecordImage" />
+        <image
+          class="column-icon"
+          mode="widthFix"
+          :src="userCenterRecordImage"
+        />
         <view class="cell">
           <view class="left-label">认证记录</view>
           <nut-icon name="arrow-right" size="16" color="#bbb"></nut-icon>
         </view>
       </view>
       <view class="column" @tap="toSetting">
-        <image class="column-icon" mode="widthFix" :src="userCenterSettingImage" />
+        <image
+          class="column-icon"
+          mode="widthFix"
+          :src="userCenterSettingImage"
+        />
         <view class="cell">
           <view class="left-label">设置</view>
           <nut-icon name="arrow-right" size="16" color="#bbb"></nut-icon>
@@ -35,21 +43,29 @@
       </view>
       <!-- 测试用的功能 上线屏蔽-->
       <view class="column" @tap="toAddRequest" v-if="isOpened">
-        <image class="column-icon" mode="widthFix" :src="userCenterRecordImage" />
+        <image
+          class="column-icon"
+          mode="widthFix"
+          :src="userCenterRecordImage"
+        />
         <view class="cell">
           <view class="left-label">新增认证请求</view>
           <nut-icon name="arrow-right" size="16" color="#bbb"></nut-icon>
         </view>
       </view>
       <view class="column" @tap="toLoseEfficacy" v-if="isOpened">
-        <image class="column-icon" mode="widthFix" :src="userCenterSettingImage" />
+        <image
+          class="column-icon"
+          mode="widthFix"
+          :src="userCenterSettingImage"
+        />
         <view class="cell">
           <view class="left-label">使loginToken失效</view>
           <nut-icon name="arrow-right" size="16" color="#bbb"></nut-icon>
         </view>
       </view>
     </view>
-    <tabbar/>
+    <tabbar />
   </view>
 
   <!-- Copyright -->
@@ -57,20 +73,24 @@
 </template>
 
 <script setup>
-import {ref, defineAsyncComponent, watch} from 'vue'
-import Taro from '@tarojs/taro'
+import { ref, defineAsyncComponent, watch } from 'vue'
+import Taro, { useDidShow } from '@tarojs/taro'
 import './index.scss'
-import {isLogin} from '@utils/index'
+import { isLogin } from '@utils/index'
 import avatarImage from '@images/avatar-default.png' // 用户默认头像
 import userCenterRecordImage from '@images/user-center-record.png'
 import userCenterSettingImage from '@images/user-center-setting.png'
 
-const tabbar = defineAsyncComponent(() => import('@components/tabbar/index.vue')) // tabbar
+const tabbar = defineAsyncComponent(() =>
+  import('@components/tabbar/index.vue')
+) // tabbar
 
 const fullName = ref('') // 用户名
 const idNum = ref('') // 证件号码
 
 const isOpened = ref(false) // 是否打开新增请求功能入口
+
+const isAllowLogin = ref(true) // 由于登录前要通过小程序的api获取参数，如果有延迟，会触发重复登录的情况；目的：限制重复点击登录
 
 // 登录/注册
 const handleLogin = () => {
@@ -79,10 +99,19 @@ const handleLogin = () => {
     content: '您尚未登录',
     confirmText: '立即登录',
     cancelText: '暂不登录',
-    success: async ({confirm}) => {
+    success: async ({ confirm }) => {
       if (confirm) {
-        await isLogin()
-        loginStatus.value = true
+        if (isAllowLogin.value) {
+          isAllowLogin.value = false
+          try {
+            await isLogin()
+            loginStatus.value = true
+          } catch (error) {
+            return false // 加上这段没用的，编辑器才不报错
+          } finally {
+            isAllowLogin.value = true
+          }
+        }
       }
     }
   })
@@ -104,7 +133,7 @@ const toUserInfo = () => {
 
 // 跳转到认证记录页面
 const toAuthRequest = () => {
-  if (!loginStatus.value){
+  if (!loginStatus.value) {
     handleLogin()
   } else {
     Taro.navigateTo({
@@ -115,7 +144,7 @@ const toAuthRequest = () => {
 
 // 跳转到设置页面
 const toSetting = () => {
-  if (!loginStatus.value){
+  if (!loginStatus.value) {
     handleLogin()
   } else {
     Taro.navigateTo({
@@ -126,7 +155,7 @@ const toSetting = () => {
 
 // 跳转到新增用户请求页面
 const toAddRequest = () => {
-  if (!loginStatus.value){
+  if (!loginStatus.value) {
     handleLogin()
   } else {
     Taro.navigateTo({
@@ -139,18 +168,27 @@ const toAddRequest = () => {
 const toLoseEfficacy = () => {
   Taro.showToast({
     icon: 'none',
-    title: 'loginToken已失效',
+    title: 'loginToken已失效'
   })
   Taro.setStorageSync('loginToken', '111111111111')
 }
 
 const loginStatus = ref(Taro.getStorageSync('loginToken') ? true : false) // 判断用户是否登录状态
 
-watch(loginStatus, (value) => { // 监听用户登录状态若为true，设置用户信息
-  if (value) setLoginUserInfo()
-}, {
-  immediate: true
-})
+watch(
+  loginStatus,
+  value => {
+    // 监听用户登录状态若为true，设置用户信息
+    if (value) setLoginUserInfo()
+  },
+  {
+    immediate: true
+  }
+)
 
 Taro.setStorageSync('loginType', 0) // 重置当前用户为小程序内部运行流程
+
+useDidShow(() => {
+  isAllowLogin.value = true
+})
 </script>

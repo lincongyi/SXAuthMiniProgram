@@ -27,23 +27,26 @@ export async function isLogin(){
         loginType
       }
     }
-    let {loginToken, loginUser, userData} = await login(data)
+    try {
+      const { loginToken, loginUser, userData } = await login(data)
+      Taro.setStorageSync('loginToken', loginToken)
+      Taro.setStorageSync('loginUser', loginUser)
 
-    Taro.setStorageSync('loginToken', loginToken)
-    Taro.setStorageSync('loginUser', loginUser)
+      if (!loginToken){
+        if (ISALIPAY) Taro.setStorageSync('aesUserId', userData.aesUserId) // 加密后的userId
+        else Taro.setStorageSync('aesUnionId', userData.aesUnionId) // 加密后的unionId
+      }
 
-    if (!loginToken){
-      if (ISALIPAY) Taro.setStorageSync('aesUserId', userData.aesUserId) // 加密后的userId
-      else Taro.setStorageSync('aesUnionId', userData.aesUnionId) // 加密后的unionId
-    }
-
-    if (!Taro.getStorageSync('loginType')){
-      Taro.showToast({
-        icon: 'none',
-        title: '登录成功',
-        mask: true,
-        duration: 1000
-      })
+      if (!Taro.getStorageSync('loginType')){
+        Taro.showToast({
+          icon: 'none',
+          title: '登录成功',
+          mask: true,
+          duration: 1000
+        })
+      }
+    } catch (error) {
+      return Promise.reject(error)
     }
   } else {
     return true

@@ -122,10 +122,21 @@ const authActionSheet = defineAsyncComponent(() =>
 ) // 授权弹窗
 const authActionSheetComponent = ref(null)
 
+const isAllowLogin = ref(true) // 由于登录前要通过小程序的api获取参数，如果有延迟，会触发重复登录的情况；目的：限制重复点击登录
+
 // 立即登录
 const loginNow = async () => {
-  await isLogin()
-  loginStatus.value = true
+  if (isAllowLogin.value) {
+    isAllowLogin.value = false
+    try {
+      await isLogin()
+      loginStatus.value = true
+    } catch (error) {
+      return false // 加上这段没用的，编辑器才不报错
+    } finally {
+      isAllowLogin.value = true
+    }
+  }
 }
 
 // 登录/注册
@@ -314,6 +325,7 @@ Taro.setStorageSync('loginType', 0) // 重置当前用户为小程序内部运�
 Taro.removeStorageSync('certToken') // 返回首页，抹掉certToken，避免重新进入认证时，重复使用该certToken
 
 useDidShow(() => {
+  isAllowLogin.value = true
   if (Taro.getStorageSync('loginToken')) loginEvent()
 })
 

@@ -55,7 +55,8 @@ function request(options = {}) {
               content: r.data.retMessage,
               success: ({confirm}) => {
                 // 跳转到登录 || 注册页面
-                if (confirm) Taro.navigateTo({url: '/pages/login/index?isRegister=1'})
+                if (confirm) Taro.navigateTo({ url: '/pages/login/index?isRegister=1' })
+                else reject(r.data.retCode)
               },
             })
           }
