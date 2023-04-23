@@ -90,7 +90,9 @@ const onClose = () => {
     success: ({ confirm }) => {
       if (confirm) {
         Taro.removeStorageSync('certToken')
-        let loginType = Taro.getStorageSync('loginType') ?? 0
+        const authStr = '22XX'
+        Taro.setStorageSync('authStr', authStr)
+        const loginType = Taro.getStorageSync('loginType') ?? 0
         if (loginType === 1) {
           Taro.navigateBackMiniProgram({
             extraData: {
