@@ -21,6 +21,7 @@ export default defineAppConfig({
     navigationBarBackgroundColor: '#fff',
     navigationBarTitleText: '陕西公民实人认证',
     navigationBarTextStyle: 'black',
+    enablePullDownRefresh: false,
   },
   lazyCodeLoading: 'requiredComponents',
   permission: {

@@ -13,18 +13,6 @@
     </view>
 
     <view class="wrap">
-      <!-- 通知消息 start -->
-      <view class="notice" v-if="loginStatus && noticeSize">
-        <image class="notice-icon" mode="widthFix" :src="noticeImage" />
-        <view class="info">
-          您有
-          <view class="amount">{{ noticeSize }}</view>
-          个认证请求待完成
-        </view>
-        <view class="btn" @tap="toAuthRequest">查看</view>
-      </view>
-      <!-- 通知消息 end -->
-
       <!-- 二维码认证 start -->
       <view class="content">
         <view class="section" @tap="handleScanCode">
@@ -46,6 +34,18 @@
         </view>
       </view>
       <!-- 二维码认证 end -->
+
+      <!-- 通知消息 start -->
+      <view class="notice" v-if="loginStatus && noticeSize">
+        <image class="notice-icon" mode="widthFix" :src="noticeImage" />
+        <view class="info">
+          您有
+          <view class="amount">{{ noticeSize }}</view>
+          个认证请求待完成
+        </view>
+        <view class="btn" @tap="toAuthRequest">查看</view>
+      </view>
+      <!-- 通知消息 end -->
     </view>
     <tabbar />
   </view>
@@ -74,7 +74,7 @@
 
 <script setup>
 import { ref, defineAsyncComponent, watch } from 'vue'
-import Taro, { useDidShow, useDidHide } from '@tarojs/taro'
+import Taro, { useDidShow, useDidHide, usePullDownRefresh } from '@tarojs/taro'
 import './index.scss'
 import { isLogin } from '@utils/index'
 import { handleCollectInfo } from '@utils/collectInfo'
@@ -323,6 +323,18 @@ watch(
 
 Taro.setStorageSync('loginType', 0) // 重置当前用户为小程序内部运行流程
 Taro.removeStorageSync('certToken') // 返回首页，抹掉certToken，避免重新进入认证时，重复使用该certToken
+
+usePullDownRefresh(() => {
+  if (!loginStatus.value) {
+    Taro.stopPullDownRefresh()
+    handleLogin()
+  } else {
+    setTimeout(() => {
+      loginEvent()
+      Taro.stopPullDownRefresh()
+    }, 1000)
+  }
+})
 
 useDidShow(() => {
   isAllowLogin.value = true
