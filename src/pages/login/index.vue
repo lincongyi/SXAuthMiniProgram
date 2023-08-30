@@ -634,9 +634,14 @@ const handleConfirm = async () => {
       // 返回认证结果h5页面
       const { resStr } = result.data
       Taro.setStorageSync('authStr', resStr) // 标识之前已经走过认证流程，避免返回重新认证使用同一个certToken
-      Taro.ap.navigateToAlipayPage({
-        path: `${backToH5Url}?mode=${mode.value}&resStr=${resStr}&foreBackUrl=${result.data.foreBackUrl}`
-      })
+      if (!result.data.foreBackUrl) {
+        Taro.navigateTo({
+          url: `/pages/authResult/index?mode=${mode.value}&data=${resStr}`
+        })
+      } else {
+        const path = `${backToH5Url}?mode=${mode.value}&resStr=${resStr}&foreBackUrl=${result.data.foreBackUrl}`
+        Taro.ap.navigateToAlipayPage({ path })
+      }
     }
   }
 }

@@ -1,11 +1,7 @@
 <template>
   <view class="container">
     <view class="banner">
-      <nut-swiper
-        :pagination-visible="true"
-        pagination-color="#fff"
-        auto-play="3000"
-      >
+      <nut-swiper :pagination-visible="true" pagination-color="#fff" auto-play="3000">
         <nut-swiper-item v-for="(item, index) in bannerList" :key="index">
           <img class="banner-image" :src="item" />
         </nut-swiper-item>
@@ -50,15 +46,8 @@
     <tabbar />
   </view>
 
-  <authActionSheet
-    ref="authActionSheetComponent"
-    :beforeAuth="beforeAuth"
-    :beforeProtocol="beforeProtocol"
-    :protocolName="protocolName"
-    :protocolUrl="protocolUrl"
-    :mode="mode"
-    @onConfirm="handleConfirm"
-  />
+  <authActionSheet ref="authActionSheetComponent" :beforeAuth="beforeAuth" :beforeProtocol="beforeProtocol"
+    :protocolName="protocolName" :protocolUrl="protocolUrl" :mode="mode" @onConfirm="handleConfirm" />
 
   <block v-if="!loginStatus">
     <view class="login-tips">
@@ -132,7 +121,7 @@ const loginNow = async () => {
       await isLogin()
       loginStatus.value = true
     } catch (error) {
-      return false // 加上这段没用的，编辑器才不报错
+      console.log(error)
     } finally {
       isAllowLogin.value = true
     }
