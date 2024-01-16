@@ -45,7 +45,7 @@
           ></nut-cell>
         </nut-cell-group>
         <view class="tips"
-          >温馨提示：本次互联网可信身份认证服务由广州大白互联网科技有限公司提供技术支持</view
+          >温馨提示：本次互联网可信身份认证服务由陕西省公安厅“互联网+”可信身份认证平台提供技术支持</view
         >
       </block>
       <!-- 认证成功、认证失败、认证过期 start -->
@@ -156,9 +156,9 @@ const handleConfirm = async () => {
     if (ISALIPAY) {
       verifyResult = await alipayAuth()
     } else {
-      let { userIdKey } = await getUserIdKey({ certToken: certToken.value })
+      const { userIdKey } = await getUserIdKey({ certToken: certToken.value })
       await checkIsSupportFacialRecognition() // 检测设备是否支持活体检测
-      let loginUser = Taro.getStorageSync('loginUser')
+      const loginUser = Taro.getStorageSync('loginUser')
       verifyResult = await startFacialRecognitionVerify(
         loginUser.fullName,
         loginUser.idNum,
@@ -204,7 +204,7 @@ const handleConfirm = async () => {
     }
   }
   if (Object.keys(result).length) {
-    let { data } = result
+    const { data } = result
 
     Taro.showToast({
       icon: 'none',

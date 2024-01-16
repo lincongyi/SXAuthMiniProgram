@@ -1,15 +1,16 @@
 import Taro from '@tarojs/taro'
-export function alipayAuth(){
-  let bizId = generateUUID()
+export function alipayAuth () {
+  const bizId = generateUUID()
   return new Promise((resolve, reject) => {
     Taro.ap.faceVerify({
       bizId, //业务流水号，商户自行生成，需要保证唯一性，不超过64位
       bizType: '1', //业务场景参数，‘1’代表人脸采集，请务必填写
-      success: ({faceRetCode, zimId}) => {
-        if (faceRetCode === '1000') resolve({bizId, zimId}) // 返回码1000 代表人脸采集成功
+      success: ({ faceRetCode, zimId }) => {
+        if (faceRetCode === '1000')
+          resolve({ bizId, zimId }) // 返回码1000 代表人脸采集成功
         else reject()
       },
-      fail: (error) => {
+      fail: error => {
         reject(error)
       }
     })
@@ -17,9 +18,9 @@ export function alipayAuth(){
 }
 
 /**
-  * 生成uuid
+ * 生成uuid
  */
-function generateUUID() {
+function generateUUID () {
   var s = []
   var hexDigits = '0123456789abcdef'
   for (var i = 0; i < 36; i++) {

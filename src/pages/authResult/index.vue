@@ -60,7 +60,7 @@ const authMode = ref(0) // 认证模式
 const authData = ref('') // 认证结果
 // 每项认证步骤的结果：0-失败；1-成功；2-未校验
 const authResultStep = computed(() => {
-  let result = [
+  const result = [
     { key: '实名校验', value: 2 },
     { key: '人像比对', value: 2 }
   ]
@@ -84,7 +84,7 @@ const authResult = computed(() => {
   if (!authData.value || authData.value.includes('2')) {
     return 0
   } else {
-    let item = authResultStep.value.find(item => !item.value) //
+    const item = authResultStep.value.find(item => !item.value) //
     return item ? 0 : 1
   }
 })

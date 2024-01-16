@@ -126,7 +126,7 @@ const handleConfirm = async () => {
     mailBox.value = ''
   }
 
-  let loginUser = Taro.getStorageSync('loginUser')
+  const loginUser = Taro.getStorageSync('loginUser')
   Taro.setStorageSync('loginUser', {
     ...loginUser,
     ...{ email: mailBox.value }

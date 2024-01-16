@@ -119,7 +119,7 @@ const handleLogin = () => {
 
 // 根据用户登录信息填充用户资料
 const setLoginUserInfo = () => {
-  let loginUser = Taro.getStorageSync('loginUser')
+  const loginUser = Taro.getStorageSync('loginUser')
   fullName.value = loginUser.fullName
   idNum.value = loginUser.idNum
 }

@@ -61,21 +61,21 @@ const deleteAccount = () => {
     success: async res => {
       if (res.confirm) {
         // 1.收集信息
-        let collectionInfo = await handleCollectInfo(false)
+        const collectionInfo = await handleCollectInfo(false)
         // 2.获取certToken
-        let authType = 'InsideRegular'
-        let { tokenInfo } = await getCertToken({ authType, collectionInfo }) // 获取certToken
+        const authType = 'InsideRegular'
+        const { tokenInfo } = await getCertToken({ authType, collectionInfo }) // 获取certToken
         certToken.value = tokenInfo.certToken
 
         // 3.校验certToken，并返回授权信息
-        let result = await checkCerTokenAgent({ certToken: certToken.value })
-        let { authTipsInfo } = result.data
+        const result = await checkCerTokenAgent({ certToken: certToken.value })
+        const { authTipsInfo } = result.data
         canSelfAuth.value = result.data.canSelfAuth ?? false
 
         // 初始化authActionSheet的信息
         beforeAuth.value = authTipsInfo.beforeAuth
         beforeProtocol.value = authTipsInfo.beforeProtocol
-        let protocol = authTipsInfo.protocolList[0]
+        const protocol = authTipsInfo.protocolList[0]
         protocolName.value = protocol.name
         protocolUrl.value = protocol.url
         authActionSheetComponent.value.actionSheetVisible = true
@@ -94,9 +94,9 @@ const handleConfirm = async () => {
     if (ISALIPAY) {
       verifyResult = await alipayAuth()
     } else {
-      let { userIdKey } = await getUserIdKey({ certToken: certToken.value })
+      const { userIdKey } = await getUserIdKey({ certToken: certToken.value })
       await checkIsSupportFacialRecognition() // 检测设备是否支持活体检测
-      let loginUser = Taro.getStorageSync('loginUser')
+      const loginUser = Taro.getStorageSync('loginUser')
       verifyResult = await startFacialRecognitionVerify(
         loginUser.fullName,
         loginUser.idNum,
@@ -106,7 +106,7 @@ const handleConfirm = async () => {
   }
 
   // collectionInfo尝试从storage里面取
-  let collectionInfo = await handleCollectInfo()
+  const collectionInfo = await handleCollectInfo()
   // 5.校验活体检测结果
   if (ISALIPAY) {
     await getCertifyResult({

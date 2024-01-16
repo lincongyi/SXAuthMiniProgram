@@ -1,11 +1,18 @@
 import Taro from '@tarojs/taro'
-import {getSetting, openSetting, getLocation, getNetworkType, getSystemInfo, getAccountInfoSync} from '@utils/taro'
+import {
+  getSetting,
+  openSetting,
+  getLocation,
+  getNetworkType,
+  getSystemInfo,
+  getAccountInfoSync
+} from '@utils/taro'
 
 /**
-  * 收集信息
+ * 收集信息
  */
 async function collectInfo () {
-  let collectionInfo = {
+  const collectionInfo = {
     appInfo: {
       appName: '陕西公民实人认证',
       authtermHost: '',
@@ -34,17 +41,17 @@ async function collectInfo () {
     },
     platform: ''
   }
-  let authSetting = await getSetting()
+  const authSetting = await getSetting()
   // 当前用户不允许使用位置信息，
-  if (authSetting['scope.userLocation']===false){
+  if (authSetting['scope.userLocation'] === false) {
     await openSetting() // 打开允许使用位置信息设置
   }
-  let {latitude, longitude} = await getLocation()
+  const { latitude, longitude } = await getLocation()
   collectionInfo.latestLocation = `${longitude},${latitude}`
-  collectionInfo.locationBean = {longitude, latitude}
-  let networkType = await getNetworkType()
+  collectionInfo.locationBean = { longitude, latitude }
+  const networkType = await getNetworkType()
   collectionInfo.phoneInfo.networkType = networkType
-  let {platform, system, model, brand, version} = await getSystemInfo()
+  const { platform, system, model, brand, version } = await getSystemInfo()
   collectionInfo.phoneInfo.osVersion = system
   collectionInfo.phoneInfo.phoneModel = model
   collectionInfo.phoneInfo.manufacturer = brand
@@ -57,18 +64,18 @@ async function collectInfo () {
     console.log(error)
   }
   return {
-    collectionInfo,
+    collectionInfo
   }
 }
 
 /**
-  * 收集信息（封装一下）
+ * 收集信息（封装一下）
  */
-export async function handleCollectInfo(isCache=true){
-  Taro.showLoading({title: '请稍候...'})
+export async function handleCollectInfo (isCache = true) {
+  Taro.showLoading({ title: '请稍候...' })
   let collectionInfo
-  if (!Taro.getStorageSync('collectionInfo')){
-    let result = await collectInfo()
+  if (!Taro.getStorageSync('collectionInfo')) {
+    const result = await collectInfo()
     collectionInfo = result.collectionInfo
     if (isCache) Taro.setStorageSync('collectionInfo', collectionInfo)
   } else {

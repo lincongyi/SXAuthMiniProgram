@@ -1,17 +1,17 @@
 import Taro from '@tarojs/taro'
 /**
-  * 环境判断
+ * 环境判断
  */
-export function getEnv(){
-  let env = Taro.getEnv()
+export function getEnv () {
+  const env = Taro.getEnv()
   Taro.setStorageSync('env', env)
   return env
 }
 
 /**
-  * 版本更新
+ * 版本更新
  */
-export function handleUpdate(){
+export function handleUpdate () {
   const updateManager = Taro.getUpdateManager()
   updateManager.onUpdateReady(function () {
     Taro.confirm({
@@ -28,22 +28,22 @@ export function handleUpdate(){
   updateManager.onUpdateFailed(function () {
     Taro.showModal({
       title: '更新提示',
-      content: '版本更新失败',
+      content: '版本更新失败'
     })
   })
 }
 
 /**
-  * 用户登录 -> 微信小程序
+ * 用户登录 -> 微信小程序
  */
-export function TaroLogin(){
+export function TaroLogin () {
   return new Promise((resolve, reject) => {
     Taro.login({
-      success: ({code}) => {
+      success: ({ code }) => {
         Taro.setStorageSync('code', code)
         resolve(code)
       },
-      fail: (error) => {
+      fail: error => {
         reject(error)
       }
     })
@@ -51,34 +51,34 @@ export function TaroLogin(){
 }
 
 /**
-  * 获取用户信息 -> 微信小程序
+ * 获取用户信息 -> 微信小程序
  */
-export function getUserInfo(){
+export function getUserInfo () {
   return new Promise((resolve, reject) => {
     Taro.getUserInfo({
-      success: (res) => {
+      success: res => {
         Taro.setStorageSync('signature', res.signature)
         Taro.setStorageSync('userSystemInfo', res.userSystemInfo)
         resolve(res)
       },
-      fail: (err) => {
+      fail: err => {
         reject(err)
-      },
+      }
     })
   })
 }
 
 /**
-  * 获取授权码 -> 支付宝小程序
+ * 获取授权码 -> 支付宝小程序
  */
-export function getAuthCode(){
+export function getAuthCode () {
   return new Promise((resolve, reject) => {
     Taro.ap.getAuthCode({
       scopes: 'auth_user',
-      success: ({authCode}) => {
+      success: ({ authCode }) => {
         resolve(authCode)
       },
-      fail: (error) => {
+      fail: error => {
         reject(error)
       }
     })
@@ -86,15 +86,15 @@ export function getAuthCode(){
 }
 
 /**
-  * 获取用户的当前设置
+ * 获取用户的当前设置
  */
-export function getSetting(){
+export function getSetting () {
   return new Promise((resolve, reject) => {
     Taro.getSetting({
-      success: ({authSetting}) => {
+      success: ({ authSetting }) => {
         resolve(authSetting)
       },
-      fail: (error) => {
+      fail: error => {
         reject(error)
       }
     })
@@ -102,19 +102,19 @@ export function getSetting(){
 }
 
 /**
-  * 调起客户端小程序设置界面，返回用户设置的操作结果。
+ * 调起客户端小程序设置界面，返回用户设置的操作结果。
  */
-export function openSetting(){
-  return new Promise((resolve) => {
+export function openSetting () {
+  return new Promise(resolve => {
     Taro.openSetting({
-      success: ({authSetting}) => {
+      success: ({ authSetting }) => {
         resolve(authSetting['scope.userLocation'])
       },
       fail: () => {
         return Taro.showModal({
           title: '温馨提示',
           content: '请在个人设置中允许获取地理位置',
-          showCancel: false,
+          showCancel: false
         })
       }
     })
@@ -122,13 +122,13 @@ export function openSetting(){
 }
 
 /**
-  * 获取当前的地理位置、速度
+ * 获取当前的地理位置、速度
  */
-export function getLocation(){
-  return new Promise((resolve) => {
+export function getLocation () {
+  return new Promise(resolve => {
     Taro.getLocation({
       type: 'gcj02',
-      success: (res) => {
+      success: res => {
         resolve(res)
       },
       fail: () => {
@@ -136,7 +136,7 @@ export function getLocation(){
         return Taro.showModal({
           title: '温馨提示',
           content: '获取定位失败，请重试',
-          showCancel: false,
+          showCancel: false
         })
       }
     })
@@ -144,19 +144,19 @@ export function getLocation(){
 }
 
 /**
-  * 获取网络类型
+ * 获取网络类型
  */
-export function getNetworkType(){
-  return new Promise((resolve) => {
+export function getNetworkType () {
+  return new Promise(resolve => {
     Taro.getNetworkType({
-      success: ({networkType}) => {
+      success: ({ networkType }) => {
         resolve(networkType)
       },
       fail: () => {
         return Taro.showModal({
           title: '温馨提示',
           content: '获取网络类型失败, 请重试',
-          showCancel: false,
+          showCancel: false
         })
       }
     })
@@ -164,19 +164,19 @@ export function getNetworkType(){
 }
 
 /**
-  * 获取系统信息
+ * 获取系统信息
  */
-export function getSystemInfo(){
-  return new Promise((resolve) => {
+export function getSystemInfo () {
+  return new Promise(resolve => {
     Taro.getSystemInfo({
-      success: (res) => {
+      success: res => {
         resolve(res)
       },
       fail: () => {
         return Taro.showModal({
           title: '温馨提示',
           content: '获取系统信息失败, 请重试',
-          showCancel: false,
+          showCancel: false
         })
       }
     })
@@ -184,27 +184,27 @@ export function getSystemInfo(){
 }
 
 /**
-  * 获取当前帐号信息
+ * 获取当前帐号信息
  */
-export function getAccountInfoSync(){
+export function getAccountInfoSync () {
   return Taro.getAccountInfoSync()
 }
 
 /**
-  * 检测设备是否支持活体检测
+ * 检测设备是否支持活体检测
  */
-export function checkIsSupportFacialRecognition(){
+export function checkIsSupportFacialRecognition () {
   return new Promise((resolve, reject) => {
     Taro.checkIsSupportFacialRecognition({
-      success: (res) => {
+      success: res => {
         resolve(res)
       },
-      fail: (e) => {
+      fail: e => {
         reject(e)
         return Taro.showModal({
           title: '温馨提示',
           content: e.errMsg,
-          showCancel: false,
+          showCancel: false
         })
       }
     })
@@ -212,33 +212,34 @@ export function checkIsSupportFacialRecognition(){
 }
 
 /**
-  * 活体检测
+ * 活体检测
  */
-export function startFacialRecognitionVerify(name, idCardNumber, userIdKey){
-  return new Promise((resolve) => {
+export function startFacialRecognitionVerify (name, idCardNumber, userIdKey) {
+  return new Promise(resolve => {
     Taro.startFacialRecognitionVerify({
       name,
       idCardNumber,
       userIdKey,
-      success: ({verifyResult}) => {
+      success: ({ verifyResult }) => {
         resolve(verifyResult)
       },
-      fail: async ({errMsg, errCode, verifyResult}) => {
+      fail: async ({ errMsg, errCode, verifyResult }) => {
         Taro.removeStorageSync('certToken') // 移除certToken，否则下次认证会重复使用之前的certToken
-        if (errCode === 10004) { // 人脸与身份信息不匹配
+        if (errCode === 10004) {
+          // 人脸与身份信息不匹配
           resolve(verifyResult)
         } else {
           let errMssage
           if (errMsg.includes('cancel')) errMssage = '取消认证'
-          else errMssage = errMsg.substring(errMsg.indexOf(':fail')+6)
+          else errMssage = errMsg.substring(errMsg.indexOf(':fail') + 6)
           Taro.showToast({
             icon: 'none',
             title: errMssage,
             mask: true,
             success: () => {
               setTimeout(() => {
-                let loginType = Taro.getStorageSync('loginType') ?? 0
-                if (loginType) Taro.navigateBackMiniProgram({extraData: {}})
+                const loginType = Taro.getStorageSync('loginType') ?? 0
+                if (loginType) Taro.navigateBackMiniProgram({ extraData: {} })
                 else Taro.removeStorageSync('certToken')
               }, 1000)
             }
@@ -250,12 +251,12 @@ export function startFacialRecognitionVerify(name, idCardNumber, userIdKey){
 }
 
 /**
-  * 获取手机号码 -> 支付宝小程序
+ * 获取手机号码 -> 支付宝小程序
  */
-export function alipayGetPhoneNumber(){
-  return new Promise((resolve) => {
+export function alipayGetPhoneNumber () {
+  return new Promise(resolve => {
     Taro.getPhoneNumber({
-      success: (res) => {
+      success: res => {
         resolve(res.response)
       }
     })

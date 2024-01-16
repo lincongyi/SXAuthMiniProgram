@@ -3,14 +3,15 @@
     <view class="certificate-pannel">
       <view class="column">
         <view class="top-conent">起始日期</view>
-        <view :class="['selected-date', {'unselected':!idStartDate}]">
+        <view :class="['selected-date', { unselected: !idStartDate }]">
           <picker
             mode="date"
             :value="startDateValue"
             :start="minDate"
-            :end="(new Date())"
-            @change="handleStartDateChange">
-            <view>{{idStartDate||'请选择身份证有效期起始日期'}}</view>
+            :end="new Date()"
+            @change="handleStartDateChange"
+          >
+            <view>{{ idStartDate || '请选择身份证有效期起始日期' }}</view>
           </picker>
         </view>
       </view>
@@ -19,23 +20,29 @@
           <text>截止日期</text>
           <view class="right-controller">
             <view class="right-label">长期有效</view>
-            <nut-switch v-model="isPermanent" @change="isPermanentChange"/>
+            <nut-switch v-model="isPermanent" @change="isPermanentChange" />
           </view>
         </view>
-        <view v-show="!isPermanent" :class="['selected-date', {'unselected':!idEndDate}]">
+        <view
+          v-show="!isPermanent"
+          :class="['selected-date', { unselected: !idEndDate }]"
+        >
           <picker
             mode="date"
             :value="endDateValue"
-            :start="(new Date())"
+            :start="new Date()"
             :end="maxDate"
-            @change="handleEndDateChange">
-            <view>{{idEndDate||'请选择身份证有效期截止日期'}}</view>
+            @change="handleEndDateChange"
+          >
+            <view>{{ idEndDate || '请选择身份证有效期截止日期' }}</view>
           </picker>
         </view>
       </view>
     </view>
     <view class="btn-warp">
-      <nut-button type="primary" shape="square" block @tap="handleConfirm">确定</nut-button>
+      <nut-button type="primary" shape="square" block @tap="handleConfirm"
+        >确定</nut-button
+      >
     </view>
   </view>
 
@@ -44,10 +51,10 @@
 </template>
 
 <script setup>
-import {ref} from 'vue'
-import Taro, {useDidShow} from '@tarojs/taro'
+import { ref } from 'vue'
+import Taro, { useDidShow } from '@tarojs/taro'
 import './index.scss'
-import {updateYXQ} from '@api/setting'
+import { updateYXQ } from '@api/setting'
 
 // 默认起始日期
 const minDate = ref('2000-01-01') // 限制开始时间
@@ -55,53 +62,55 @@ const maxDate = ref('2040-12-31') // 限制结束时间
 const idStartDate = ref('') // 起始日期
 const idEndDate = ref('') // 截至日期
 // 计算日期差值
-const calcDate = (date) => {
-  let todayTimestamp = Date.now()
-  let originTimestamp = Date.parse(date)
-  let targetTimestamp = (todayTimestamp+originTimestamp) / 2
-  let target = new Date(targetTimestamp)
-  return `${target.getFullYear()}-${fillZero(target.getMonth()+1)}-${fillZero(target.getDate())}`
+const calcDate = date => {
+  const todayTimestamp = Date.now()
+  const originTimestamp = Date.parse(date)
+  const targetTimestamp = (todayTimestamp + originTimestamp) / 2
+  const target = new Date(targetTimestamp)
+  return `${target.getFullYear()}-${fillZero(target.getMonth() + 1)}-${fillZero(
+    target.getDate()
+  )}`
 }
-const fillZero = (target) => {
+const fillZero = target => {
   target = target + ''
-  return (target.length === 1 ? `0${target}` : target)
+  return target.length === 1 ? `0${target}` : target
 }
 const startDateValue = ref(calcDate(minDate.value))
 const endDateValue = ref(calcDate(maxDate.value))
 const isPermanent = ref(false) // 是否长期有效
 
 // 设置起始日期
-const handleStartDateChange = (e) => {
+const handleStartDateChange = e => {
   idStartDate.value = e.detail.value.replace(/\//g, '-') // 兼容ios日期返回'/'，同意处理成'-'
   // 设置的是起始日期的话，截止日期最大年度单位+20
-  let date = new Date()
-  let year = date.getFullYear()+20
+  const date = new Date()
+  const year = date.getFullYear() + 20
   maxDate.value = `${year}-12-31`
 }
 
 // 设置截止日期
-const handleEndDateChange = (e) => {
+const handleEndDateChange = e => {
   idEndDate.value = e.detail.value.replace(/\//g, '-') // 兼容ios日期返回'/'，同意处理成'-'
 }
 
 // 切换是否长期有效
 const isPermanentChange = () => {
-  idEndDate.value = isPermanent.value ? '00000000':'' // 长期有效传8个0
+  idEndDate.value = isPermanent.value ? '00000000' : '' // 长期有效传8个0
 }
 
 // 确定
 const handleConfirm = async () => {
-  if (!idStartDate.value){
+  if (!idStartDate.value) {
     return Taro.showToast({
       icon: 'none',
       title: '请选择起始日期'
     })
-  } else if (!idEndDate.value){
+  } else if (!idEndDate.value) {
     return Taro.showToast({
       icon: 'none',
       title: '请选择截止日期'
     })
-  } else if (idStartDate.value===idEndDate.value){
+  } else if (idStartDate.value === idEndDate.value) {
     return Taro.showModal({
       title: '温馨提示',
       content: '起始日期不能大于或等于截止日期',
@@ -112,25 +121,31 @@ const handleConfirm = async () => {
     idStartDate: idStartDate.value.replace(/-/g, ''),
     idEndDate: idEndDate.value.replace(/-/g, '')
   })
-  Taro.setStorageSync('loginUser', {...Taro.getStorageSync('loginUser'), ...{idStartDate: idStartDate.value.replace(/-/g, '.'), idEndDate: idEndDate.value.replace(/-/g, '.')}})
+  Taro.setStorageSync('loginUser', {
+    ...Taro.getStorageSync('loginUser'),
+    ...{
+      idStartDate: idStartDate.value.replace(/-/g, '.'),
+      idEndDate: idEndDate.value.replace(/-/g, '.')
+    }
+  })
   Taro.showToast({
     title: '设置成功',
     mask: true,
     success: () => {
       setTimeout(() => {
-        Taro.navigateBack({delta: 1})
+        Taro.navigateBack({ delta: 1 })
       }, 1000)
     }
   })
 }
 
 // 格式化日期显示
-const formatDate = (date) => {
+const formatDate = date => {
   date = date.replace(/\./g, '')
-  let arr = [4, 2, 2]
-  let target = []
+  const arr = [4, 2, 2]
+  const target = []
   let flag = 0
-  for (let i=0;i<arr.length;i++){
+  for (let i = 0; i < arr.length; i++) {
     target.push(date.substr(flag, arr[i]))
     flag += arr[i]
   }
@@ -138,14 +153,17 @@ const formatDate = (date) => {
 }
 
 useDidShow(() => {
-  if (Taro.getStorageSync('loginToken')){
-    let loginUser = Taro.getStorageSync('loginUser')
+  if (Taro.getStorageSync('loginToken')) {
+    const loginUser = Taro.getStorageSync('loginUser')
     // 初始化起始日期
-    if (loginUser.idStartDate) startDateValue.value = idStartDate.value = formatDate(loginUser.idStartDate)
+    if (loginUser.idStartDate)
+      startDateValue.value = idStartDate.value = formatDate(
+        loginUser.idStartDate
+      )
 
     // 初始化截止日期
-    if (loginUser.idEndDate){
-      if (loginUser.idEndDate === '00000000'){
+    if (loginUser.idEndDate) {
+      if (loginUser.idEndDate === '00000000') {
         endDateValue.value = ''
         isPermanent.value = true
       } else {
